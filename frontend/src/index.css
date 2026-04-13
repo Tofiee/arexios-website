@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200;
+  }
+}
+
+@keyframes aimX {
+  0% { transform: translateX(-35vw); }
+  100% { transform: translateX(25vw); }
+}
+@keyframes aimY {
+  0% { transform: translateY(-25vh); }
+  100% { transform: translateY(20vh); }
+}
+
+.target-move-x { animation: aimX 7s ease-in-out infinite alternate; }
+.target-move-y { animation: aimY 6s ease-in-out infinite alternate; }
+
+.cursor-crosshair {
+  cursor: crosshair !important;
+}
+
+@keyframes shatterParticle {
+  0% { transform: scale(1) translate(0, 0); opacity: 1; }
+  100% { transform: scale(0) translate(var(--tx), var(--ty)); opacity: 0; }
+}
+
+@keyframes textPop {
+  0% { transform: scale(1); opacity: 1; color: white; }
+  100% { transform: scale(1.5) translateY(-30px); opacity: 0; color: #ef4444; }
+}
+
+.particle {
+  animation: shatterParticle 0.4s cubic-bezier(0,0,0.2,1) forwards;
+}
+
+.hit-text {
+  animation: textPop 0.5s ease-out forwards;
+}

@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+mysql-connector-python
+PyJWT
+passlib[bcrypt]
+python-dotenv
+authlib
+httpx
+itsdangerous
+python-a2s
+ts3
+beautifulsoup4
+lxml
+pywebpush
+python-socketio

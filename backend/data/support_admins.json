@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Tofie",
+    "steam_id": "76561198116871167",
+    "rank": "Yönetici"
+  },
+  {
+    "id": 2,
+    "name": "Admin2",
+    "steam_id": "76561198000000001",
+    "rank": "Admin"
+  },
+  {
+    "id": 3,
+    "name": "Admin3",
+    "steam_id": "76561198000000002",
+    "rank": "Moderatör"
+  }
+]

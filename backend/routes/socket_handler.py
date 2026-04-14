@@ -77,8 +77,11 @@ async def connect(sid, environ):
     else:
         client_ip = environ.get('REMOTE_ADDR', 'unknown')
     
+    user_agent = environ.get('HTTP_USER_AGENT', 'Bilinmiyor')
+    
     active_sessions[sid] = {
         'ip_address': client_ip,
+        'user_agent': user_agent,
         'user_name': None,
         'user_id': None,
         'user_email': None,
@@ -114,6 +117,7 @@ async def user_join(sid, data):
     
     existing_info = active_sessions.get(sid, {})
     ip_address = existing_info.get('ip_address', 'unknown')
+    user_agent = existing_info.get('user_agent', 'Bilinmiyor')
     location = await get_location_from_ip(ip_address)
     
     active_sessions[sid] = {
@@ -122,7 +126,8 @@ async def user_join(sid, data):
         'user_email': user_email,
         'session_id': session_id,
         'ip_address': ip_address,
-        'location': location
+        'location': location,
+        'user_agent': user_agent
     }
     
     if session_id:
@@ -133,7 +138,8 @@ async def user_join(sid, data):
             'session_id': session_id,
             'ip_address': ip_address,
             'location': location,
-            'user_name': user_name
+            'user_name': user_name,
+            'user_agent': user_agent
         }, room='admin_room')
     
     await send_admin_status_info(sid)

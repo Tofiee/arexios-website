@@ -93,6 +93,31 @@ function AdminPanelContent() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const getDeviceIcon = (userAgent) => {
+    if (!userAgent) return 'PC';
+    const ua = userAgent.toLowerCase();
+    if (ua.includes('mobile') || ua.includes('android')) return '📱';
+    if (ua.includes('iphone') || ua.includes('ipad')) return '📱';
+    if (ua.includes('tablet') || ua.includes('ipad')) return '📲';
+    return '💻';
+  };
+
+  const getDeviceName = (userAgent) => {
+    if (!userAgent) return 'Bilinmiyor';
+    const ua = userAgent.toLowerCase();
+    if (ua.includes('chrome') && !ua.includes('edg')) return 'Chrome';
+    if (ua.includes('firefox')) return 'Firefox';
+    if (ua.includes('safari') && !ua.includes('chrome')) return 'Safari';
+    if (ua.includes('edg')) return 'Edge';
+    if (ua.includes('opera')) return 'Opera';
+    if (ua.includes('windows')) return 'Windows';
+    if (ua.includes('mac')) return 'Mac';
+    if (ua.includes('linux')) return 'Linux';
+    if (ua.includes('android')) return 'Android';
+    if (ua.includes('iphone') || ua.includes('ipad')) return 'iOS';
+    return 'PC';
+  };
+
   const connectSocket = () => {
     const newSocket = io(SOCKET_URL, {
       transports: ['polling', 'websocket'],
@@ -143,11 +168,13 @@ function AdminPanelContent() {
     newSocket.on('admin_notification', (data) => {
       fetchSessions();
       
-      if (data.ip_address && data.location) {
-        setActiveSession(prev => prev && prev.id === data.session_id ? {
+      const sessionId = Number(data.session_id);
+      if (data.ip_address || data.location || data.user_agent) {
+        setActiveSession(prev => prev && prev.id === sessionId ? {
           ...prev,
           ip_address: data.ip_address,
-          location: data.location
+          location: data.location,
+          user_agent: data.user_agent
         } : prev);
       }
     });
@@ -241,21 +268,24 @@ function AdminPanelContent() {
     });
 
     newSocket.on('user_location', (data) => {
+      const sessionId = Number(data.session_id);
       setUserLocations(prev => ({
         ...prev,
-        [data.session_id]: {
+        [sessionId]: {
           page_url: data.page_url,
           page_name: data.page_name,
           ip_address: data.ip_address,
-          location: data.location
+          location: data.location,
+          user_agent: data.user_agent
         }
       }));
       
-      if (activeSession?.id === data.session_id) {
+      if (activeSession?.id === sessionId) {
         setActiveSession(prev => prev ? {
           ...prev,
           ip_address: data.ip_address,
-          location: data.location
+          location: data.location,
+          user_agent: data.user_agent
         } : null);
       }
     });
@@ -909,13 +939,24 @@ function AdminPanelContent() {
                           ⏱ {formatDuration(sessionDuration)}
                         </span>
                       </p>
-                      {(activeSession.ip_address || activeSession.location) && (
-                        <p className="text-xs text-slate-400 mt-1">
-                          🌐 {activeSession.location || 'Bilinmiyor'}
-                          {activeSession.ip_address && activeSession.ip_address !== 'unknown' && (
-                            <span className="ml-1">({activeSession.ip_address})</span>
+                      {(activeSession.ip_address || activeSession.location || activeSession.user_agent) && (
+                        <div className="flex flex-wrap items-center gap-3 mt-1 text-xs">
+                          {activeSession.location && (
+                            <span className="text-slate-400">
+                              🌐 {activeSession.location}
+                            </span>
                           )}
-                        </p>
+                          {activeSession.ip_address && activeSession.ip_address !== 'unknown' && (
+                            <span className="text-slate-400">
+                              📍 {activeSession.ip_address}
+                            </span>
+                          )}
+                          {activeSession.user_agent && activeSession.user_agent !== 'Bilinmiyor' && (
+                            <span className="text-slate-400" title={activeSession.user_agent}>
+                              💻 {getDeviceIcon(activeSession.user_agent)} {getDeviceName(activeSession.user_agent)}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
                     <div className="flex items-center gap-2">

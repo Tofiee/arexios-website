@@ -1,9 +1,14 @@
 from fastapi import APIRouter, HTTPException
 import a2s
-import ts3
 import httpx
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+
+try:
+    import ts3
+    TS3_AVAILABLE = True
+except ImportError:
+    TS3_AVAILABLE = False
 
 router = APIRouter(prefix="/servers", tags=["Servers"])
 
@@ -62,6 +67,9 @@ async def get_cs_status():
             return {"status": "offline", "error": "timeout"}
 
 def _fetch_ts3_direct():
+    if not TS3_AVAILABLE:
+        return {"status": "offline", "error": "ts3 module not available"}
+    
     try:
         with ts3.query.TS3Connection(f"telnet://{TS_IP}:{TS_PORT}", timeout=2.0) as ts3conn:
             ts3conn.exec_("use", sid=1)

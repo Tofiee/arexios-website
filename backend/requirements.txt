@@ -9,7 +9,6 @@ authlib
 httpx
 itsdangerous
 python-a2s
-ts3
 beautifulsoup4
 lxml
 pywebpush

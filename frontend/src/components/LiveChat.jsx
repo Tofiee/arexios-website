@@ -276,13 +276,17 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
 
     socketRef.current.on('session_closed', (data) => {
       setSessionClosed(true);
+      let msg = 'Destek oturumu sonlandırıldı.';
+      if (data?.reason === 'already_closed') {
+        msg = 'Bu oturum kapatıldı. Yeni bir destek talebi başlatabilirsiniz.';
+      } else if (data?.closed_by === 'user') {
+        msg = 'Konuşmayı sonlandırdınız.';
+      }
       setMessages(prev => [...prev, {
         id: Date.now(),
         sender_type: 'system',
         sender_name: 'Sistem',
-        message: data?.reason === 'already_closed' 
-          ? 'Bu oturum kapatıldı. Yeni bir destek talebi başlatabilirsiniz.'
-          : 'Destek oturumu sonlandırıldı.',
+        message: msg,
         created_at: new Date().toISOString()
       }]);
     });

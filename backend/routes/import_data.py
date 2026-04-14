@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends
-from database import get_db
-import mysql.connector
+from fastapi import APIRouter
+from sqlalchemy import text
 import os
 
 router = APIRouter()
@@ -28,18 +27,30 @@ SQL_DATA = {
     }
 }
 
+def get_connection():
+    import mysql.connector
+    return mysql.connector.connect(
+        host=os.getenv('MYSQL_HOST', 'mysql.railway.internal'),
+        port=int(os.getenv('MYSQL_PORT', '3306')),
+        user=os.getenv('MYSQL_USER', 'root'),
+        password=os.getenv('MYSQL_PASSWORD'),
+        database=os.getenv('MYSQL_DATABASE', 'railway')
+    )
+
 @router.post("/import-initial-data")
-def import_initial_data(db = Depends(get_db)):
+def import_initial_data():
     results = {"server_admins": None, "skin_categories": None, "skins": None, "users": None}
     
     try:
-        cursor = db.cursor()
+        conn = get_connection()
+        cursor = conn.cursor()
         
         try:
             cursor.execute("""
                 INSERT INTO server_admins (username, steam_id, is_active) 
                 VALUES (%s, %s, %s)
             """, (SQL_DATA["admin"]["username"], SQL_DATA["admin"]["steam_id"], SQL_DATA["admin"]["is_active"]))
+            conn.commit()
             results["server_admins"] = "inserted"
         except Exception as e:
             if "Duplicate" in str(e) or "UNIQUE" in str(e):
@@ -52,14 +63,13 @@ def import_initial_data(db = Depends(get_db)):
                 INSERT INTO skin_categories (name, slug, is_active) 
                 VALUES (%s, %s, %s)
             """, (SQL_DATA["category"]["name"], SQL_DATA["category"]["slug"], SQL_DATA["category"]["is_active"]))
+            conn.commit()
             results["skin_categories"] = "inserted"
         except Exception as e:
             if "Duplicate" in str(e) or "UNIQUE" in str(e):
                 results["skin_categories"] = "already exists"
             else:
                 results["skin_categories"] = f"error: {str(e)}"
-        
-        db.commit()
         
         cursor.execute("SELECT id FROM skin_categories WHERE slug = %s", (SQL_DATA["category"]["slug"],))
         category = cursor.fetchone()
@@ -77,6 +87,7 @@ def import_initial_data(db = Depends(get_db)):
                     SQL_DATA["skin"]["is_active"],
                     category_id
                 ))
+                conn.commit()
                 results["skins"] = "inserted"
             except Exception as e:
                 if "Duplicate" in str(e) or "UNIQUE" in str(e):
@@ -100,6 +111,7 @@ def import_initial_data(db = Depends(get_db)):
                 SQL_DATA["user"]["discord_id"],
                 SQL_DATA["user"]["discord_username"]
             ))
+            conn.commit()
             results["users"] = "inserted"
         except Exception as e:
             if "Duplicate" in str(e) or "UNIQUE" in str(e):
@@ -107,8 +119,8 @@ def import_initial_data(db = Depends(get_db)):
             else:
                 results["users"] = f"error: {str(e)}"
         
-        db.commit()
         cursor.close()
+        conn.close()
         
         return {"status": "success", "results": results}
     

@@ -175,7 +175,13 @@ function AdminPanelContent() {
 
     newSocket.on('session_closed', (data) => {
       const sessionId = Number(data.session_id);
-      setSessions(prev => prev.filter(s => s.id !== sessionId));
+      console.log('session_closed received:', sessionId, data.closed_by);
+      setSessions(prev => {
+        const before = prev.length;
+        const filtered = prev.filter(s => s.id !== sessionId);
+        console.log('Sessions before:', before, 'after:', filtered.length);
+        return filtered;
+      });
       
       if (activeSession?.id === sessionId) {
         if (data.closed_by === 'admin') {

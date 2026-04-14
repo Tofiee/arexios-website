@@ -413,7 +413,7 @@ function AdminPanelContent() {
   const handleAssignSession = () => {
     if (!socket || !activeSession) return;
     
-    socket.emit('assign_session', {
+    socket.emit('take_session', {
       session_id: activeSession.id,
       admin_id: user?.id || 0,
       admin_name: user?.username || 'Admin'

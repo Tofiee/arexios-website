@@ -4,9 +4,28 @@ from datetime import datetime, timedelta
 from database import SessionLocal
 import models
 import os
+import httpx
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
 VERCEL_URL = os.getenv("VERCEL_URL", "https://arexios-website.vercel.app")
+
+async def get_location_from_ip(ip_address):
+    if not ip_address or ip_address in ['127.0.0.1', 'localhost', '::1']:
+        return 'Local'
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(f"http://ip-api.com/json/{ip_address}?fields=status,country,city")
+            data = response.json()
+            if data.get('status') == 'success':
+                country = data.get('country', '')
+                city = data.get('city', '')
+                if city:
+                    return f"{city}, {country}"
+                return country
+            return ip_address
+    except Exception as e:
+        print(f"IP lookup error: {e}")
+        return ip_address
 
 sio = socketio.AsyncServer(
     async_mode='asgi',
@@ -49,6 +68,21 @@ except ImportError:
 async def connect(sid, environ):
     print(f"Client connected: {sid}")
     print(f"  environ path: {environ.get('PATH_INFO', 'N/A')}")
+    
+    remote_addr = environ.get('HTTP_X_FORWARDED_FOR', environ.get('REMOTE_ADDR', ''))
+    if remote_addr:
+        ip_list = remote_addr.split(',')
+        client_ip = ip_list[0].strip()
+    else:
+        client_ip = environ.get('REMOTE_ADDR', 'unknown')
+    
+    active_sessions[sid] = {
+        'ip_address': client_ip,
+        'user_name': None,
+        'user_id': None,
+        'user_email': None,
+        'session_id': None
+    }
 
 @sio.event
 async def disconnect(sid):
@@ -77,15 +111,28 @@ async def user_join(sid, data):
     user_email = data.get('user_email', '')
     session_id = data.get('session_id')
     
+    existing_info = active_sessions.get(sid, {})
+    ip_address = existing_info.get('ip_address', 'unknown')
+    location = await get_location_from_ip(ip_address)
+    
     active_sessions[sid] = {
         'user_name': user_name,
         'user_id': user_id,
         'user_email': user_email,
-        'session_id': session_id
+        'session_id': session_id,
+        'ip_address': ip_address,
+        'location': location
     }
     
     if session_id:
         await sio.enter_room(sid, f"session_{session_id}")
+        
+        await sio.emit('user_location', {
+            'session_id': session_id,
+            'ip_address': ip_address,
+            'location': location,
+            'user_name': user_name
+        }, room='admin_room')
     
     await send_admin_status_info(sid)
 
@@ -216,6 +263,10 @@ async def send_message(sid, data):
         }
         
         if sender_type == 'user':
+            user_info = active_sessions.get(sid, {})
+            ip_address = user_info.get('ip_address', 'unknown')
+            location = user_info.get('location', 'Bilinmiyor')
+            
             await sio.emit('new_message', message_data, room='admin_room')
             
             await sio.emit('admin_notification', {
@@ -223,7 +274,9 @@ async def send_message(sid, data):
                 'user_name': sender_name,
                 'session_id': session_id,
                 'message_preview': message[:50],
-                'timestamp': datetime.now().isoformat()
+                'timestamp': datetime.now().isoformat(),
+                'ip_address': ip_address,
+                'location': location
             }, room='admin_room')
             
             if PUSH_ENABLED and online_admins:

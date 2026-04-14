@@ -188,6 +188,14 @@ function AdminPanelContent() {
             created_at: new Date().toISOString()
           }]);
         }
+      } else if (data.closed_by === 'admin') {
+        setSessions(prev => prev.map(s => 
+          s.id === data.session_id ? { ...s, status: 'closed' } : s
+        ));
+        if (activeSession?.id === data.session_id) {
+          setActiveSession(null);
+          setMessages([]);
+        }
       } else {
         setSessions(prev => prev.map(s => 
           s.id === data.session_id ? { ...s, status: 'closed' } : s

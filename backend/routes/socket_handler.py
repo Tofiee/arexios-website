@@ -554,6 +554,8 @@ async def close_session(sid, data):
     admin_id = data.get('admin_id')
     reason = data.get('reason', 'manual')
     
+    await sio.enter_room(sid, f"session_{session_id}")
+    
     if session_id in taken_sessions and taken_sessions[session_id] == admin_id:
         del taken_sessions[session_id]
     

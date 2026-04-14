@@ -36,9 +36,6 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
   const [sessionClosed, setSessionClosed] = useState(false);
   const [adminStatusInfo, setAdminStatusInfo] = useState({ online_count: 0, busy_count: 0, away_count: 0, total_count: 0, any_admin_online: false, estimated_response_time: null });
 
-  useEffect(() => {
-    console.log('[DEBUG] adminStatusInfo changed:', adminStatusInfo);
-  }, [adminStatusInfo]);
   const [showMenu, setShowMenu] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const messagesEndRef = useRef(null);
@@ -204,7 +201,6 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
     socketRef.current = socket;
 
     socket.on('connect', async () => {
-      console.log('[SOCKET] Connected, ID:', socket.id);
       setIsConnecting(false);
       
       let currentSessionId = sessionIdRef.current;
@@ -219,7 +215,7 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
           sessionIdRef.current = currentSessionId;
           setSessionId(currentSessionId);
         } catch (err) {
-          console.error('Failed to create session:', err);
+          // Silent fail
         }
       } else {
         try {
@@ -228,7 +224,7 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
             setMessages(res.data);
           }
         } catch (err) {
-          console.log('No previous messages found');
+          // Silent fail
         }
       }
       
@@ -239,15 +235,14 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
         session_id: currentSessionId
       });
       socket.emit('request_admin_status');
-      console.log('user_join emitted, session:', currentSessionId);
     });
     
-    socket.on('connect_error', (err) => {
-      console.error('Socket connection error:', err);
+    socket.on('connect_error', () => {
+      // Silent fail
     });
 
-    socketRef.current.on('connect_error', (error) => {
-      console.log('[SOCKET] Connection error:', error);
+    socketRef.current.on('connect_error', () => {
+      // Silent fail
     });
 
     socketRef.current.on('new_message', (data) => {
@@ -297,7 +292,6 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
     socketRef.current.on('admin_list', (data) => setAdminOnline(data.admins?.length > 0));
 
     socketRef.current.on('admin_status_info', (data) => {
-      console.log('admin_status_info received:', data);
       setAdminStatusInfo(data);
     });
     
@@ -306,7 +300,6 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
     });
 
     socketRef.current.on('disconnect', () => {
-      console.log('Socket disconnected');
     });
   };
 

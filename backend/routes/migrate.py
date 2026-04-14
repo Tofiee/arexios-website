@@ -6,11 +6,20 @@ router = APIRouter()
 
 @router.post("/migrate/add-columns")
 def migrate_add_columns():
-    host = os.getenv('MYSQLHOST', 'mysql.railway.internal')
-    port = int(os.getenv('MYSQLPORT', '3306'))
-    user = os.getenv('MYSQLUSER', 'root')
-    password = os.getenv('MYSQLPASSWORD') or os.getenv('MYSQL_ROOT_PASSWORD')
-    database = os.getenv('MYSQLDATABASE', 'railway')
+    MYSQL_URL = os.getenv('MYSQL_URL', '')
+    
+    if not MYSQL_URL:
+        return {"status": "error", "message": "MYSQL_URL not found"}
+    
+    url_parts = MYSQL_URL.replace("mysql://", "").split("/")
+    user_pass_host_port = url_parts[0]
+    db_name = url_parts[1] if len(url_parts) > 1 else "railway"
+    
+    user_pass, host_port = user_pass_host_port.rsplit("@", 1)
+    user = user_pass.split(":")[0]
+    password = user_pass.split(":")[1] if ":" in user_pass else ""
+    host = host_port.split(":")[0]
+    port = int(host_port.split(":")[1]) if ":" in host_port else 3306
     
     try:
         conn = mysql.connector.connect(
@@ -18,7 +27,7 @@ def migrate_add_columns():
             port=port,
             user=user,
             password=password,
-            database=database
+            database=db_name
         )
         cursor = conn.cursor()
         
@@ -35,6 +44,6 @@ def migrate_add_columns():
         cursor.close()
         conn.close()
         
-        return {"status": "success", "message": "Columns added", "tables": tables}
+        return {"status": "success", "message": "Columns added", "tables": [t[0] for t in tables]}
     except Exception as e:
         return {"status": "error", "message": str(e)}

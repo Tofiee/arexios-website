@@ -590,14 +590,11 @@ async def close_session(sid, data):
                 }, room='admin_room')
             else:
                 print(f"Admin closing session {session_id}, user_sessions contains: {session_id in user_sessions}")
-                if session_id in user_sessions:
-                    user_sid = user_sessions[session_id]
-                    print(f"Sending to user socket: {user_sid}")
-                    await sio.emit('session_closed', {
-                        'session_id': session_id,
-                        'reason': reason,
-                        'closed_by': 'admin'
-                    }, to=user_sid)
+                await sio.emit('session_closed', {
+                    'session_id': session_id,
+                    'reason': reason,
+                    'closed_by': 'admin'
+                }, room=f"session_{session_id}")
                 
                 await sio.emit('session_closed', {
                     'session_id': session_id,

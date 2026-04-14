@@ -956,7 +956,7 @@ function AdminPanelContent() {
                           )}
                           {userLocations[activeSession.id]?.user_agent && userLocations[activeSession.id].user_agent !== 'Bilinmiyor' && (
                             <span className="text-slate-400" title={userLocations[activeSession.id].user_agent}>
-                              💻 {getDeviceIcon(userLocations[activeSession.id].user_agent)} {getDeviceName(userLocations[activeSession.id].user_agent)}
+                              💻 {getDeviceName(userLocations[activeSession.id].user_agent)}
                             </span>
                           )}
                         </div>

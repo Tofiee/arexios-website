@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
 
 router = APIRouter(prefix="/auth/google", tags=["Google OAuth"])
 
@@ -30,7 +31,7 @@ async def login(request: Request):
     if not os.getenv("GOOGLE_CLIENT_ID") or not os.getenv("GOOGLE_CLIENT_SECRET"):
         return RedirectResponse(url=f"{FRONTEND_URL}/login?error=google_not_configured")
 
-    redirect_uri = "http://127.0.0.1:8000/auth/google/callback"
+    redirect_uri = f"{BACKEND_URL}/auth/google/callback"
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @router.get("/callback")

@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
 
 router = APIRouter(prefix="/auth/steam", tags=["Steam OpenID"])
 
@@ -18,11 +19,11 @@ STEAM_OPENID_URL = "https://steamcommunity.com/openid/login"
 
 @router.get("/login")
 def login(request: Request, link_token: str = None):
-    return_to = "http://127.0.0.1:8000/auth/steam/callback"
+    return_to = f"{BACKEND_URL}/auth/steam/callback"
     if link_token:
         return_to += f"?link_token={link_token}"
     
-    realm = "http://127.0.0.1:8000"
+    realm = BACKEND_URL
     params = {
         "openid.ns": "http://specs.openid.net/auth/2.0",
         "openid.mode": "checkid_setup",

@@ -6,10 +6,17 @@ import models
 import os
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
+VERCEL_URL = os.getenv("VERCEL_URL", "https://arexios-website.vercel.app")
 
 sio = socketio.AsyncServer(
     async_mode='asgi',
-    cors_allowed_origins=[FRONTEND_URL, "http://127.0.0.1:5173", "http://localhost:5173"],
+    cors_allowed_origins=[
+        FRONTEND_URL,
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "https://arexios-website.vercel.app",
+        "https://*.vercel.app"
+    ],
     cors_credentials=True,
     ping_timeout=60,
     ping_interval=25

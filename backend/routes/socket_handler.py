@@ -139,7 +139,7 @@ async def user_join(sid, data):
     await send_admin_status_info(sid)
 
 @sio.event
-async def request_admin_status(sid, data):
+async def request_admin_status(sid, data=None):
     await send_admin_status_info(sid)
 
 async def send_admin_status_info(sid=None):
@@ -556,6 +556,9 @@ async def close_session(sid, data):
     session_id = data.get('session_id')
     admin_id = data.get('admin_id')
     reason = data.get('reason', 'manual')
+    
+    print(f"[CLOSE_SESSION] sid={sid}, session_id={session_id}, admin_id={admin_id}, reason={reason}")
+    print(f"[CLOSE_SESSION] user_sessions keys: {list(user_sessions.keys())}")
     
     await sio.enter_room(sid, f"session_{session_id}")
     

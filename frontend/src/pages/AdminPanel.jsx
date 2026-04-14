@@ -174,7 +174,13 @@ function AdminPanelContent() {
     });
 
     newSocket.on('session_closed', (data) => {
-      if (data.reason === 'user_closed') {
+      if (data.closed_by === 'admin') {
+        setSessions(prev => prev.filter(s => s.id !== data.session_id));
+        if (activeSession?.id === data.session_id) {
+          setActiveSession(null);
+          setMessages([]);
+        }
+      } else if (data.reason === 'user_closed') {
         setSessions(prev => prev.map(s => 
           s.id === data.session_id ? { ...s, status: 'user_closed' } : s
         ));
@@ -187,14 +193,6 @@ function AdminPanelContent() {
             message: 'Kullanıcı konuşmayı sonlandırdı.',
             created_at: new Date().toISOString()
           }]);
-        }
-      } else if (data.closed_by === 'admin') {
-        setSessions(prev => prev.map(s => 
-          s.id === data.session_id ? { ...s, status: 'closed' } : s
-        ));
-        if (activeSession?.id === data.session_id) {
-          setActiveSession(null);
-          setMessages([]);
         }
       } else {
         setSessions(prev => prev.map(s => 

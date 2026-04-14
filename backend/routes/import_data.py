@@ -30,11 +30,11 @@ SQL_DATA = {
 def get_connection():
     import mysql.connector
     return mysql.connector.connect(
-        host=os.getenv('MYSQL_HOST', 'mysql.railway.internal'),
-        port=int(os.getenv('MYSQL_PORT', '3306')),
-        user=os.getenv('MYSQL_USER', 'root'),
-        password=os.getenv('MYSQL_PASSWORD'),
-        database=os.getenv('MYSQL_DATABASE', 'railway')
+        host=os.getenv('MYSQLHOST', 'mysql.railway.internal'),
+        port=int(os.getenv('MYSQLPORT', '3306')),
+        user=os.getenv('MYSQLUSER', 'root'),
+        password=os.getenv('MYSQLPASSWORD') or os.getenv('MYSQL_ROOT_PASSWORD'),
+        database=os.getenv('MYSQLDATABASE', 'railway')
     )
 
 @router.post("/import-initial-data")

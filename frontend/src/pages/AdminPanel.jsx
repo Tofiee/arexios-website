@@ -94,11 +94,9 @@ function AdminPanelContent() {
   };
 
   const getDeviceIcon = (userAgent) => {
-    if (!userAgent) return 'PC';
+    if (!userAgent) return '💻';
     const ua = userAgent.toLowerCase();
-    if (ua.includes('mobile') || ua.includes('android')) return '📱';
-    if (ua.includes('iphone') || ua.includes('ipad')) return '📱';
-    if (ua.includes('tablet') || ua.includes('ipad')) return '📲';
+    if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone') || ua.includes('ipad')) return '📱';
     return '💻';
   };
 
@@ -113,9 +111,9 @@ function AdminPanelContent() {
     if (ua.includes('windows')) return 'Windows';
     if (ua.includes('mac')) return 'Mac';
     if (ua.includes('linux')) return 'Linux';
-    if (ua.includes('android')) return 'Android';
-    if (ua.includes('iphone') || ua.includes('ipad')) return 'iOS';
-    return 'PC';
+    if (ua.includes('android')) return 'Chrome (Android)';
+    if (ua.includes('iphone') || ua.includes('ipad')) return 'Safari (iOS)';
+    return 'Bilinmiyor';
   };
 
   const connectSocket = () => {

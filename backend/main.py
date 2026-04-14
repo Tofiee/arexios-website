@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 import socketio
 import asyncio
 from database import engine, Base
-from routes import google, steam, users, servers, stats, discord, discord_auth, admins, complaints, gametracker, support, push, skins, skin_categories, import_data
+from routes import google, steam, users, servers, stats, discord, discord_auth, admins, complaints, gametracker, support, push, skins, skin_categories, import_data, migrate
 from routes.socket_handler import sio, admin_status_scheduler, session_cleanup_scheduler
 import security
 import os
@@ -44,6 +44,7 @@ app.include_router(push.router)
 app.include_router(skins.router)
 app.include_router(skin_categories.router)
 app.include_router(import_data.router)
+app.include_router(migrate.router)
 
 uploads_dir = os.path.join(os.path.dirname(__file__), "uploads")
 os.makedirs(uploads_dir, exist_ok=True)

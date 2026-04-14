@@ -45,6 +45,7 @@ online_admins = {}
 active_sessions = {}
 taken_sessions = {}
 admin_sessions = {}
+user_sessions = {}
 
 AWAY_TIMEOUT_MINUTES = 5
 AWAY_CHECK_INTERVAL = 60
@@ -125,6 +126,7 @@ async def user_join(sid, data):
     }
     
     if session_id:
+        user_sessions[session_id] = sid
         await sio.enter_room(sid, f"session_{session_id}")
         
         await sio.emit('user_location', {
@@ -570,28 +572,35 @@ async def close_session(sid, data):
             db.commit()
             
             if reason == 'user_closed':
-                await sio.emit('session_closed', {
-                    'session_id': session_id,
-                    'reason': reason,
-                    'closed_by': 'user'
-                }, room=f"session_{session_id}")
+                if session_id in user_sessions:
+                    user_sid = user_sessions[session_id]
+                    await sio.emit('session_closed', {
+                        'session_id': session_id,
+                        'reason': reason,
+                        'closed_by': 'user'
+                    }, to=user_sid)
                 
                 await sio.emit('user_session_closed', {
                     'session_id': session_id,
                     'user_name': session.user_name
                 }, room='admin_room')
             else:
-                await sio.emit('session_closed', {
-                    'session_id': session_id,
-                    'reason': reason,
-                    'closed_by': 'admin'
-                }, room=f"session_{session_id}")
+                if session_id in user_sessions:
+                    user_sid = user_sessions[session_id]
+                    await sio.emit('session_closed', {
+                        'session_id': session_id,
+                        'reason': reason,
+                        'closed_by': 'admin'
+                    }, to=user_sid)
                 
                 await sio.emit('session_closed', {
                     'session_id': session_id,
                     'reason': reason,
                     'closed_by': 'admin'
                 }, room='admin_room')
+            
+            if session_id in user_sessions:
+                del user_sessions[session_id]
             
     finally:
         db.close()

@@ -4,6 +4,8 @@ import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 import { ShoppingCart, Crown, Shield, Star, CheckCircle, X, Info } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 export default function Market() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
@@ -167,7 +169,7 @@ export default function Market() {
                   {!user?.discord_username && (
                     <button
                       type="button"
-                      onClick={() => window.location.href = `http://127.0.0.1:8000/discord/login?link_token=${localStorage.getItem('access_token')}`}
+                      onClick={() => window.location.href = `${API_URL}/discord/login?link_token=${localStorage.getItem('access_token')}`}
                       className="whitespace-nowrap flex items-center px-4 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors shadow-lg"
                     >
                       Otomatik Çek

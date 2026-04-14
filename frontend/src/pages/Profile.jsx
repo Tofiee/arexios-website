@@ -3,6 +3,8 @@ import { AuthContext } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 export default function Profile() {
   const { t } = useTranslation();
   const { user, checkAuth, logoutUser } = useContext(AuthContext);
@@ -76,15 +78,15 @@ export default function Profile() {
                    <p className="text-slate-700 dark:text-slate-200 font-mono text-sm">{user.steam_id || 'Bağlanmadı'}</p>
                  </div>
                  
-                 {!user.steam_id && (
-                   <button 
-                     onClick={() => window.location.href = `http://127.0.0.1:8000/auth/steam/login?link_token=${localStorage.getItem('access_token')}`}
-                     className="mt-4 w-full py-2 bg-[#171a21] hover:bg-[#2a475e] text-white text-xs font-bold uppercase tracking-widest rounded transition-colors flex items-center justify-center gap-2"
-                   >
-                     <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam" className="w-4 h-4 brightness-200" />
-                     Steam'i Bağla
-                   </button>
-                 )}
+                  {!user.steam_id && (
+                    <button 
+                      onClick={() => window.location.href = `${API_URL}/auth/steam/login?link_token=${localStorage.getItem('access_token')}`}
+                      className="mt-4 w-full py-2 bg-[#171a21] hover:bg-[#2a475e] text-white text-xs font-bold uppercase tracking-widest rounded transition-colors flex items-center justify-center gap-2"
+                    >
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam" className="w-4 h-4 brightness-200" />
+                      Steam'i Bağla
+                    </button>
+                  )}
                </div>
 
                {/* Discord Card */}
@@ -94,14 +96,14 @@ export default function Profile() {
                    <p className="text-slate-700 dark:text-slate-200 font-bold tracking-widest text-sm">{user.discord_username || 'Eşleştirilmedi'}</p>
                  </div>
                  
-                 {!user.discord_username && (
-                   <button 
-                     onClick={() => window.location.href = `http://127.0.0.1:8000/discord/login?link_token=${localStorage.getItem('access_token')}`}
-                     className="mt-4 w-full py-2 bg-[#5865F2] hover:bg-[#4752C4] shadow-lg shadow-[#5865F2]/20 text-white text-xs font-bold uppercase tracking-widest rounded transition-colors flex items-center justify-center gap-2"
-                   >
-                     Discord'u Eşleştir
-                   </button>
-                 )}
+                  {!user.discord_username && (
+                    <button 
+                      onClick={() => window.location.href = `${API_URL}/discord/login?link_token=${localStorage.getItem('access_token')}`}
+                      className="mt-4 w-full py-2 bg-[#5865F2] hover:bg-[#4752C4] shadow-lg shadow-[#5865F2]/20 text-white text-xs font-bold uppercase tracking-widest rounded transition-colors flex items-center justify-center gap-2"
+                    >
+                      Discord'u Eşleştir
+                    </button>
+                  )}
                </div>
 
                {/* Register Date Card */}

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 // Using direct URL params for errors now instead of state
 import { useLocation } from 'react-router-dom';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 export default function Login() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -240,7 +242,7 @@ export default function Login() {
 
             <div className="flex flex-col gap-4">
               <a 
-                href="http://127.0.0.1:8000/auth/steam/login"
+                href={`${API_URL}/auth/steam/login`}
                 className="w-full py-4 bg-[#171a21] hover:bg-[#2a475e] text-white font-bold uppercase tracking-widest rounded border-b-4 border-[#101214] active:border-b-0 active:translate-y-1 transition-all shadow-[0_0_15px_rgba(42,71,94,0.3)] hover:shadow-[0_0_20px_rgba(42,71,94,0.5)] text-sm flex items-center justify-center gap-3"
               >
                 <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam" className="w-6 h-6 brightness-200" />
@@ -248,7 +250,7 @@ export default function Login() {
               </a>
 
               <a 
-                href="http://127.0.0.1:8000/auth/google/login"
+                href={`${API_URL}/auth/google/login`}
                 className="w-full py-4 bg-white hover:bg-gray-100 text-gray-800 font-bold uppercase tracking-widest rounded border-b-4 border-gray-300 active:border-b-0 active:translate-y-1 transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] text-sm flex items-center justify-center gap-3"
               >
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" className="w-6 h-6" />

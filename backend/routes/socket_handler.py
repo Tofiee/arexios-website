@@ -582,12 +582,18 @@ async def close_session(sid, data):
                     'reason': reason,
                     'closed_by': 'user'
                 }, room=f"session_{session_id}")
-            
-            await sio.emit('session_closed', {
-                'session_id': session_id,
-                'reason': reason,
-                'closed_by': 'admin'
-            }, room='admin_room')
+                
+                await sio.emit('session_closed', {
+                    'session_id': session_id,
+                    'reason': reason,
+                    'closed_by': 'user'
+                }, room='admin_room')
+            else:
+                await sio.emit('session_closed', {
+                    'session_id': session_id,
+                    'reason': reason,
+                    'closed_by': 'admin'
+                }, room='admin_room')
             
     finally:
         db.close()

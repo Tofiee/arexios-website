@@ -53,6 +53,8 @@ class SupportSession(Base):
     status = Column(String(20), default="waiting")  # "waiting", "active", "closed"
     assigned_admin_id = Column(Integer, nullable=True)
     assigned_admin_name = Column(String(100), nullable=True)
+    ip_address = Column(String(50), nullable=True)
+    location = Column(String(100), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

@@ -183,6 +183,9 @@ async def send_message(sid, data):
     if not message or not message.strip():
         return
     
+    if session_id:
+        await sio.enter_room(sid, f"session_{session_id}")
+    
     db = SessionLocal()
     try:
         session = db.query(models.SupportSession).filter(models.SupportSession.id == session_id).first()

@@ -29,12 +29,38 @@ SQL_DATA = {
 
 def get_connection():
     import mysql.connector
+    
+    # Try Railway's DATABASE_URL first
+    DATABASE_URL = os.getenv("DATABASE_URL", "")
+    
+    # If no DATABASE_URL, try MYSQL_URL from Railway
+    if not DATABASE_URL or "localhost" in DATABASE_URL:
+        DATABASE_URL = os.getenv("MYSQL_URL", "")
+    
+    # If still empty, construct from individual variables
+    if not DATABASE_URL or "localhost" in DATABASE_URL:
+        host = os.getenv("MYSQLHOST", "mysql.railway.internal")
+        port = os.getenv("MYSQLPORT", "3306")
+        user = os.getenv("MYSQLUSER", "root")
+        password = os.getenv("MYSQLPASSWORD") or os.getenv("MYSQL_ROOT_PASSWORD", "")
+        db = os.getenv("MYSQLDATABASE", "railway")
+        DATABASE_URL = f"mysql+mysqlconnector://{user}:{password}@{host}:{port}/{db}"
+    
+    url_parts = DATABASE_URL.replace("mysql+mysqlconnector://", "").split("/")
+    user_pass_host_port = url_parts[0]
+    db_name = url_parts[1].split('?')[0] if len(url_parts) > 1 else "railway"
+    user_pass, host_port = user_pass_host_port.split("@")
+    user = user_pass.split(":")[0]
+    password = user_pass.split(":")[1] if ":" in user_pass else ""
+    host = host_port.split(":")[0]
+    port = int(host_port.split(":")[1]) if ":" in host_port else 3306
+    
     return mysql.connector.connect(
-        host=os.getenv('MYSQLHOST', 'mysql.railway.internal'),
-        port=int(os.getenv('MYSQLPORT', '3306')),
-        user=os.getenv('MYSQLUSER', 'root'),
-        password=os.getenv('MYSQLPASSWORD') or os.getenv('MYSQL_ROOT_PASSWORD'),
-        database=os.getenv('MYSQLDATABASE', 'railway')
+        host=host,
+        port=port,
+        user=user,
+        password=password,
+        database=db_name
     )
 
 @router.post("/import-initial-data")

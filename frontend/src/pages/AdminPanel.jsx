@@ -269,6 +269,7 @@ function AdminPanelContent() {
 
     newSocket.on('user_location', (data) => {
       const sessionId = Number(data.session_id);
+      console.log('user_location received:', sessionId, data);
       setUserLocations(prev => ({
         ...prev,
         [sessionId]: {
@@ -280,7 +281,9 @@ function AdminPanelContent() {
         }
       }));
       
+      console.log('activeSession id:', activeSession?.id, 'data.session_id:', sessionId);
       if (activeSession?.id === sessionId) {
+        console.log('Updating activeSession with:', data);
         setActiveSession(prev => prev ? {
           ...prev,
           ip_address: data.ip_address,

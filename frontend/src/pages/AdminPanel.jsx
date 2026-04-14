@@ -174,27 +174,46 @@ function AdminPanelContent() {
     });
 
     newSocket.on('session_closed', (data) => {
-      const isUserClosed = data.reason === 'user_closed' || data.closed_by === 'user';
-      
       setSessions(prev => prev.filter(s => s.id !== data.session_id));
       
       if (activeSession?.id === data.session_id) {
-        if (isUserClosed) {
+        if (data.closed_by === 'admin') {
           setMessages(prev => [...prev, {
             id: Date.now(),
             sender_type: 'system',
             sender_name: 'Sistem',
-            message: 'Kullanıcı konuşmayı sonlandırdı.',
+            message: 'Destek konuşmayı sonlandırdı.',
             created_at: new Date().toISOString()
           }]);
           setTimeout(() => {
             setActiveSession(null);
             setMessages([]);
-          }, 2000);
+          }, 3000);
         } else {
           setActiveSession(null);
           setMessages([]);
         }
+      }
+      fetchSessions();
+    });
+
+    newSocket.on('user_session_closed', (data) => {
+      setSessions(prev => prev.map(s => 
+        s.id === data.session_id ? { ...s, status: 'user_closed' } : s
+      ));
+      
+      if (activeSession?.id === data.session_id) {
+        setMessages(prev => [...prev, {
+          id: Date.now(),
+          sender_type: 'system',
+          sender_name: 'Sistem',
+          message: 'Kullanıcı konuşmayı sonlandırdı.',
+          created_at: new Date().toISOString()
+        }]);
+        setTimeout(() => {
+          setActiveSession(null);
+          setMessages([]);
+        }, 2000);
       }
       fetchSessions();
     });

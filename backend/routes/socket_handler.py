@@ -570,27 +570,23 @@ async def close_session(sid, data):
             db.commit()
             
             if reason == 'user_closed':
-                msg = models.SupportMessage(
-                    session_id=session_id,
-                    sender_type='system',
-                    sender_name='Sistem',
-                    message='Kullanıcı konuşmayı sonlandırdı.'
-                )
-                db.add(msg)
-                db.commit()
-                
                 await sio.emit('session_closed', {
                     'session_id': session_id,
                     'reason': reason,
                     'closed_by': 'user'
                 }, room=f"session_{session_id}")
                 
+                await sio.emit('user_session_closed', {
+                    'session_id': session_id,
+                    'user_name': session.user_name
+                }, room='admin_room')
+            else:
                 await sio.emit('session_closed', {
                     'session_id': session_id,
                     'reason': reason,
-                    'closed_by': 'user'
-                }, room='admin_room')
-            else:
+                    'closed_by': 'admin'
+                }, room=f"session_{session_id}")
+                
                 await sio.emit('session_closed', {
                     'session_id': session_id,
                     'reason': reason,

@@ -276,7 +276,7 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
 
     socketRef.current.on('session_closed', (data) => {
       setSessionClosed(true);
-      let msg = 'Destek oturumu sonlandırıldı.';
+      let msg = 'Destek konuşmayı sonlandırdı.';
       if (data?.reason === 'already_closed') {
         msg = 'Bu oturum kapatıldı. Yeni bir destek talebi başlatabilirsiniz.';
       } else if (data?.closed_by === 'user') {

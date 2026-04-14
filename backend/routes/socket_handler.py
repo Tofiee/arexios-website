@@ -588,6 +588,9 @@ async def close_session(sid, data):
                     'session_id': session_id,
                     'user_name': session.user_name
                 }, room='admin_room')
+                
+                db.delete(session)
+                db.commit()
             else:
                 print(f"Admin closing session {session_id}, user_sessions contains: {session_id in user_sessions}")
                 await sio.emit('session_closed', {
@@ -601,6 +604,9 @@ async def close_session(sid, data):
                     'reason': reason,
                     'closed_by': 'admin'
                 }, room='admin_room')
+                
+                db.delete(session)
+                db.commit()
             
             if session_id in user_sessions:
                 del user_sessions[session_id]

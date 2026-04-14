@@ -174,9 +174,10 @@ function AdminPanelContent() {
     });
 
     newSocket.on('session_closed', (data) => {
-      setSessions(prev => prev.filter(s => s.id !== data.session_id));
+      const sessionId = Number(data.session_id);
+      setSessions(prev => prev.filter(s => s.id !== sessionId));
       
-      if (activeSession?.id === data.session_id) {
+      if (activeSession?.id === sessionId) {
         if (data.closed_by === 'admin') {
           setMessages(prev => [...prev, {
             id: Date.now(),
@@ -198,11 +199,12 @@ function AdminPanelContent() {
     });
 
     newSocket.on('user_session_closed', (data) => {
+      const sessionId = Number(data.session_id);
       setSessions(prev => prev.map(s => 
-        s.id === data.session_id ? { ...s, status: 'user_closed' } : s
+        s.id === sessionId ? { ...s, status: 'user_closed' } : s
       ));
       
-      if (activeSession?.id === data.session_id) {
+      if (activeSession?.id === sessionId) {
         setMessages(prev => [...prev, {
           id: Date.now(),
           sender_type: 'system',

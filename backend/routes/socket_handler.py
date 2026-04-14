@@ -275,6 +275,7 @@ async def send_message(sid, data):
             user_info = active_sessions.get(sid, {})
             ip_address = user_info.get('ip_address', 'unknown')
             location = user_info.get('location', 'Bilinmiyor')
+            user_agent = user_info.get('user_agent', 'Bilinmiyor')
             
             await sio.emit('new_message', message_data, room='admin_room')
             
@@ -285,7 +286,16 @@ async def send_message(sid, data):
                 'message_preview': message[:50],
                 'timestamp': datetime.now().isoformat(),
                 'ip_address': ip_address,
-                'location': location
+                'location': location,
+                'user_agent': user_agent
+            }, room='admin_room')
+            
+            await sio.emit('user_location', {
+                'session_id': session_id,
+                'ip_address': ip_address,
+                'location': location,
+                'user_name': sender_name,
+                'user_agent': user_agent
             }, room='admin_room')
             
             if PUSH_ENABLED and online_admins:

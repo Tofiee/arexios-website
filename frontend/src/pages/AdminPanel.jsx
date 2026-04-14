@@ -140,8 +140,16 @@ function AdminPanelContent() {
       }
     });
 
-    newSocket.on('admin_notification', () => {
+    newSocket.on('admin_notification', (data) => {
       fetchSessions();
+      
+      if (data.ip_address && data.location) {
+        setActiveSession(prev => prev && prev.id === data.session_id ? {
+          ...prev,
+          ip_address: data.ip_address,
+          location: data.location
+        } : prev);
+      }
     });
 
     newSocket.on('new_message', (msgData) => {
@@ -211,9 +219,19 @@ function AdminPanelContent() {
         ...prev,
         [data.session_id]: {
           page_url: data.page_url,
-          page_name: data.page_name
+          page_name: data.page_name,
+          ip_address: data.ip_address,
+          location: data.location
         }
       }));
+      
+      if (activeSession?.id === data.session_id) {
+        setActiveSession(prev => prev ? {
+          ...prev,
+          ip_address: data.ip_address,
+          location: data.location
+        } : null);
+      }
     });
 
     setSocket(newSocket);
@@ -865,6 +883,14 @@ function AdminPanelContent() {
                           ⏱ {formatDuration(sessionDuration)}
                         </span>
                       </p>
+                      {(activeSession.ip_address || activeSession.location) && (
+                        <p className="text-xs text-slate-400 mt-1">
+                          🌐 {activeSession.location || 'Bilinmiyor'}
+                          {activeSession.ip_address && activeSession.ip_address !== 'unknown' && (
+                            <span className="ml-1">({activeSession.ip_address})</span>
+                          )}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       {!activeSession.assigned_admin ? (

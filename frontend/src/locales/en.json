@@ -325,6 +325,9 @@
     "rule_9": "Not knowing server rules is not an excuse",
     "rule_10": "Ban duration may be extended in case of rule violations",
     "date": "Date",
-    "estimated_response_time": "Estimated response time"
+    "estimated_response_time": "Estimated response time",
+    "site_announcement": "Site Announcement",
+    "important_notice": "Important Notice",
+    "i_understand": "I Understand"
   }
 }

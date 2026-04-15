@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import LiveChat from './components/LiveChat';
+import SiteAnnouncementModal from './components/SiteAnnouncementModal';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -73,6 +74,7 @@ function App() {
 
   return (
     <div className="min-h-screen font-sans selection:bg-orange-500/30 selection:text-white flex flex-col">
+      <SiteAnnouncementModal />
       <Navbar />
       <div className="flex-grow">
         <Routes>

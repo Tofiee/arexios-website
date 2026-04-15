@@ -325,6 +325,9 @@
     "rule_9": "Server kurallarını bilmemek mazeret değildir",
     "rule_10": "Kural ihlali durumunda ban süresi uzatılabilir",
     "date": "Tarih",
-    "estimated_response_time": "Tahmini yanıt süresi"
+    "estimated_response_time": "Tahmini yanıt süresi",
+    "site_announcement": "Site Duyurusu",
+    "important_notice": "Önemli Bilgi",
+    "i_understand": "Anladım"
   }
 }

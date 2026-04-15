@@ -1051,11 +1051,11 @@ ${transcript}
                   onKeyPress={handleKeyPress}
                   placeholder={t('type_message')}
                   className="flex-1 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500"
-                  disabled={isConnecting}
+                  disabled={isConnecting || sessionClosed}
                 />
                 <button
                   onClick={sendMessage}
-                  disabled={!inputMessage.trim() || isConnecting}
+                  disabled={!inputMessage.trim() || isConnecting || sessionClosed}
                   className="px-4 py-3 bg-orange-600 hover:bg-orange-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl transition-colors"
                 >
                   <Send className="w-5 h-5" />

@@ -357,8 +357,24 @@ function AdminPanelContent() {
 
   const fetchLivechatAdmins = async () => {
     try {
-      const res = await api.get('/admin/livechat-admins');
-      setLivechatAdmins(res.data);
+      const [adminsRes, usersRes] = await Promise.all([
+        api.get('/admin/livechat-admins'),
+        api.get('/users/all').catch(() => ({ data: [] }))
+      ]);
+      
+      const usersMap = {};
+      if (usersRes.data) {
+        usersRes.data.forEach(u => {
+          if (u.steam_id) usersMap[u.steam_id] = u;
+        });
+      }
+      
+      const adminsWithProfiles = adminsRes.data.map(admin => ({
+        ...admin,
+        profile: usersMap[admin.steam_id] || null
+      }));
+      
+      setLivechatAdmins(adminsWithProfiles);
     } catch (err) {
       console.error('Failed to fetch livechat admins:', err);
     }
@@ -983,10 +999,16 @@ function AdminPanelContent() {
                       <div key={admin.id} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">{admin.username.charAt(0).toUpperCase()}</div>
+                            <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
+                              {admin.profile?.avatar_url ? (
+                                <img src={admin.profile.avatar_url} alt={admin.username} className="w-full h-full object-cover" />
+                              ) : (
+                                admin.username.charAt(0).toUpperCase()
+                              )}
+                            </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <p className="font-medium text-slate-900 dark:text-white">{admin.username}</p>
+                                <p className="font-medium text-slate-900 dark:text-white">{admin.profile?.username || admin.username}</p>
                                 {admin.is_superadmin && <span className="px-2 py-0.5 text-xs bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full">{t('superadmin')}</span>}
                               </div>
                               <p className="text-xs text-slate-500">{admin.steam_id}</p>

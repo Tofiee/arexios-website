@@ -266,16 +266,30 @@ def run_migration(db: Session = Depends(get_db)):
             except Exception as e:
                 results.append(f"can_settings already exists or error: {str(e)}")
         
-        for col, default_val in [('can_livechat', True), ('can_skin_management', True)]:
-            if col in existing_columns:
-                try:
-                    conn.execute(db.text(f"ALTER TABLE livechat_admins MODIFY COLUMN {col} BOOLEAN DEFAULT {default_val}"))
-                    results.append(f"Updated {col} default to TRUE")
-                except:
-                    results.append(f"Could not update {col}")
-        
         db.commit()
         return {"status": "success", "results": results}
     except Exception as e:
         db.commit()
         return {"status": "error", "message": str(e)}
+
+@router.post("/make-superadmin")
+def make_superadmin(data: dict, db: Session = Depends(get_db)):
+    """Make a user superadmin by steam_id"""
+    steam_id = data.get("steam_id")
+    if not steam_id:
+        return {"status": "error", "message": "steam_id required"}
+    
+    admin = db.query(models.LiveChatAdmin).filter(
+        models.LiveChatAdmin.steam_id == steam_id
+    ).first()
+    
+    if not admin:
+        return {"status": "error", "message": "Admin not found"}
+    
+    admin.is_superadmin = True
+    admin.can_livechat = True
+    admin.can_skin_management = True
+    admin.can_settings = True
+    db.commit()
+    
+    return {"status": "success", "message": f"{admin.username} is now superadmin"}

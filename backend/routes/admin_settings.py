@@ -272,13 +272,9 @@ def run_migration(db: Session = Depends(get_db)):
         db.commit()
         return {"status": "error", "message": str(e)}
 
-@router.post("/make-superadmin")
-def make_superadmin(data: dict, db: Session = Depends(get_db)):
+@router.get("/make-superadmin")
+def make_superadmin(steam_id: str, db: Session = Depends(get_db)):
     """Make a user superadmin by steam_id"""
-    steam_id = data.get("steam_id")
-    if not steam_id:
-        return {"status": "error", "message": "steam_id required"}
-    
     admin = db.query(models.LiveChatAdmin).filter(
         models.LiveChatAdmin.steam_id == steam_id
     ).first()

@@ -241,6 +241,55 @@ async def send_message(sid, data):
     if session_id:
         user_sessions[session_id] = sid
         await sio.enter_room(sid, f"session_{session_id}")
+
+@sio.event
+async def admin_message(sid, data):
+    session_id = data.get('session_id')
+    message = data.get('message')
+    sender_name = data.get('sender_name', 'Admin')
+    
+    if not message or not message.strip():
+        return
+    
+    db = SessionLocal()
+    try:
+        session = db.query(models.SupportSession).filter(models.SupportSession.id == session_id).first()
+        if session and session.status == 'closed':
+            await sio.emit('session_closed', {
+                'session_id': session_id,
+                'reason': 'already_closed'
+            }, room=f"session_{session_id}")
+            return
+        
+        msg = models.SupportMessage(
+            session_id=session_id,
+            sender_type='admin',
+            sender_name=sender_name,
+            message=message.strip()
+        )
+        db.add(msg)
+        db.commit()
+        db.refresh(msg)
+        
+        message_data = {
+            'id': msg.id,
+            'session_id': session_id,
+            'sender_type': 'admin',
+            'sender_name': sender_name,
+            'message': message,
+            'created_at': msg.created_at.isoformat()
+        }
+        
+        await sio.emit('new_message', message_data, room=f"session_{session_id}")
+        await sio.emit('new_message', message_data, room='admin_room')
+        await sio.emit('admin_typing', {
+            'session_id': session_id,
+            'admin_name': sender_name,
+            'is_typing': False
+        }, room=f"session_{session_id}")
+        
+    finally:
+        db.close()
     
     db = SessionLocal()
     try:

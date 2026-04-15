@@ -116,5 +116,9 @@ class LiveChatAdmin(Base):
     steam_id = Column(String(50), nullable=False, unique=True)
     username = Column(String(100), nullable=False)
     is_active = Column(Boolean, default=True)
+    is_superadmin = Column(Boolean, default=False)
+    can_livechat = Column(Boolean, default=False)
+    can_skin_management = Column(Boolean, default=False)
+    can_view_skins = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

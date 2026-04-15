@@ -46,7 +46,7 @@ function AdminPanelContent() {
   const [livechatAdmins, setLivechatAdmins] = useState([]);
   const [siteUsers, setSiteUsers] = useState([]);
   const [showLivechatAdminModal, setShowLivechatAdminModal] = useState(false);
-  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '', avatar_url: '', provider: '' });
+  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: false, can_skin_management: false, can_view_skins: true });
   const [usersIniEntries, setUsersIniEntries] = useState([]);
   const [syncResult, setSyncResult] = useState(null);
   
@@ -405,7 +405,16 @@ function AdminPanelContent() {
       await api.delete(`/admin/livechat-admins/${adminId}`);
       fetchLivechatAdmins();
     } catch (err) {
-      alert(t('error_deleting'));
+      alert(err.response?.data?.detail || t('error_deleting'));
+    }
+  };
+
+  const handleUpdateAdminPermission = async (adminId, permission, value) => {
+    try {
+      await api.put(`/admin/livechat-admins/${adminId}`, { [permission]: value });
+      fetchLivechatAdmins();
+    } catch (err) {
+      alert(err.response?.data?.detail || t('error_updating'));
     }
   };
 
@@ -971,17 +980,40 @@ function AdminPanelContent() {
                     <p className="text-center py-4 text-slate-500">Henüz admin eklenmemiş</p>
                   ) : (
                     livechatAdmins.map(admin => (
-                      <div key={admin.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">{admin.username.charAt(0).toUpperCase()}</div>
-                          <div>
-                            <p className="font-medium text-slate-900 dark:text-white">{admin.username}</p>
-                            <p className="text-xs text-slate-500">{admin.steam_id}</p>
+                      <div key={admin.id} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">{admin.username.charAt(0).toUpperCase()}</div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium text-slate-900 dark:text-white">{admin.username}</p>
+                                {admin.is_superadmin && <span className="px-2 py-0.5 text-xs bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full">{t('superadmin')}</span>}
+                              </div>
+                              <p className="text-xs text-slate-500">{admin.steam_id}</p>
+                            </div>
                           </div>
+                          {!admin.is_superadmin && (
+                            <button onClick={() => handleDeleteLivechatAdmin(admin.id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
-                        <button onClick={() => handleDeleteLivechatAdmin(admin.id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {!admin.is_superadmin && (
+                          <div className="grid grid-cols-3 gap-2">
+                            <label className="flex items-center gap-2 text-sm">
+                              <input type="checkbox" checked={admin.can_livechat || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_livechat', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                              <span className="text-slate-700 dark:text-slate-300">{t('livechat_access')}</span>
+                            </label>
+                            <label className="flex items-center gap-2 text-sm">
+                              <input type="checkbox" checked={admin.can_skin_management || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_skin_management', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                              <span className="text-slate-700 dark:text-slate-300">{t('skin_management_access')}</span>
+                            </label>
+                            <label className="flex items-center gap-2 text-sm">
+                              <input type="checkbox" checked={admin.can_view_skins !== false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_view_skins', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                              <span className="text-slate-700 dark:text-slate-300">{t('view_skins_access')}</span>
+                            </label>
+                          </div>
+                        )}
                       </div>
                     ))
                   )}
@@ -1663,9 +1695,28 @@ function AdminPanelContent() {
                   })
                 )}
               </div>
+              {livechatAdminForm.steam_id && (
+                <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                  <p className="text-sm font-medium text-green-800 dark:text-green-300 mb-3">{t('permissions_for')} {livechatAdminForm.username}:</p>
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" checked={livechatAdminForm.can_livechat || false} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, can_livechat: e.target.checked})} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('livechat_access')}</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" checked={livechatAdminForm.can_skin_management || false} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, can_skin_management: e.target.checked})} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('skin_management_access')}</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input type="checkbox" checked={livechatAdminForm.can_view_skins !== false} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, can_view_skins: e.target.checked})} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('view_skins_access')}</span>
+                    </label>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3 flex-shrink-0">
-              <button onClick={() => setShowLivechatAdminModal(false)} className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors">
+              <button onClick={() => { setShowLivechatAdminModal(false); setLivechatAdminForm({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: false, can_skin_management: false, can_view_skins: true }); }} className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors">
                 {t('cancel')}
               </button>
               <button

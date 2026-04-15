@@ -328,6 +328,12 @@
     "estimated_response_time": "Tahmini yanıt süresi",
     "site_announcement": "Site Duyurusu",
     "important_notice": "Önemli Bilgi",
-    "i_understand": "Anladım"
+    "i_understand": "Anladım",
+    "superadmin": "Superadmin",
+    "livechat_access": "Live Chat Erişimi",
+    "skin_management_access": "Skin Yönetimi",
+    "view_skins_access": "Skin Görüntüleme",
+    "permissions_for": "Yetkiler:",
+    "error_updating": "Güncellenirken hata oluştu"
   }
 }

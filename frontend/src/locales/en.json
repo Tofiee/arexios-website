@@ -328,6 +328,12 @@
     "estimated_response_time": "Estimated response time",
     "site_announcement": "Site Announcement",
     "important_notice": "Important Notice",
-    "i_understand": "I Understand"
+    "i_understand": "I Understand",
+    "superadmin": "Superadmin",
+    "livechat_access": "Live Chat Access",
+    "skin_management_access": "Skin Management",
+    "view_skins_access": "View Skins",
+    "permissions_for": "Permissions for:",
+    "error_updating": "Error updating"
   }
 }

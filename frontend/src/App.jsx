@@ -30,6 +30,7 @@ const GuestRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const { user, loading } = React.useContext(AuthContext);
   const [isAdmin, setIsAdmin] = useState(null);
+  const location = useLocation();
   
   useEffect(() => {
     if (user?.steam_id) {
@@ -41,7 +42,7 @@ const AdminRoute = ({ children }) => {
     }
   }, [user]);
   
-  if (loading || isAdmin === null) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0a0c10]">
         <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
@@ -49,7 +50,16 @@ const AdminRoute = ({ children }) => {
     );
   }
   
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  
+  if (isAdmin === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0a0c10]">
+        <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+  
   if (!isAdmin) return <Navigate to="/" replace />;
   
   return children;

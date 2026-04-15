@@ -476,22 +476,34 @@ async def close_inactive_sessions():
         ).all()
         
         for session in inactive_sessions:
-            session.status = 'closed'
-            db.commit()
+            session_id = session.id
             
             msg = SupportMessage(
-                session_id=session.id,
+                session_id=session_id,
                 sender_type='system',
                 sender_name='Sistem',
                 message='Oturum 2 saat işlem yapılmadığı için otomatik olarak kapatıldı.'
             )
             db.add(msg)
+            session.status = 'closed'
             db.commit()
             
+            if session_id in user_sessions:
+                await sio.emit('session_closed', {
+                    'session_id': session_id,
+                    'reason': 'timeout',
+                    'closed_by': 'system'
+                }, room=f"session_{session_id}")
+                del user_sessions[session_id]
+            
             await sio.emit('session_closed', {
-                'session_id': session.id,
-                'reason': 'timeout'
+                'session_id': session_id,
+                'reason': 'timeout',
+                'closed_by': 'system'
             }, room='admin_room')
+            
+            db.delete(session)
+            db.commit()
             
     except Exception as e:
         print(f"Error closing inactive sessions: {e}")

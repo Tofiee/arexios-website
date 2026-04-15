@@ -14,12 +14,14 @@ const SiteAnnouncementModal = () => {
     const fetchAnnouncement = async () => {
       try {
         const dismissedId = localStorage.getItem(ANNOUNCEMENT_DISMISSED_KEY);
-        const res = await api.get('/settings/site');
+        const res = await api.get('/admin/settings');
         
         if (res.data?.announcement_active && res.data?.announcement_content) {
-          if (dismissedId !== res.data.announcement_id) {
+          const contentHash = btoa(res.data.announcement_title + res.data.announcement_content).slice(0, 50);
+          const announcementId = `ann_${contentHash}`;
+          if (dismissedId !== announcementId) {
             setAnnouncement({
-              id: res.data.announcement_id,
+              id: announcementId,
               title: res.data.announcement_title,
               content: res.data.announcement_content
             });

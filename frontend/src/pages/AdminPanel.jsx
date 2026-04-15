@@ -879,7 +879,7 @@ function AdminPanelContent() {
                   <Server className="w-5 h-5 text-blue-500" />
                   CS 1.6 Sunucu Bilgileri
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sunucu IP</label>
                     <input type="text" value={settingsForm?.cs16_server_ip || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_server_ip: e.target.value})} placeholder="185.100.68.100" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
@@ -888,11 +888,39 @@ function AdminPanelContent() {
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Port</label>
                     <input type="text" value={settingsForm?.cs16_server_port || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_server_port: e.target.value})} placeholder="27015" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">GameTracker URL</label>
-                    <input type="text" value={settingsForm?.cs16_gametracker_url || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_gametracker_url: e.target.value})} placeholder="https://www.gametracker.com/server/..." className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
-                  </div>
                 </div>
+                {settingsForm?.cs16_server_ip && settingsForm?.cs16_server_port && (
+                  <div className="mt-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">GameTracker Entegrasyonu:</p>
+                    <div className="flex flex-wrap gap-3">
+                      <a
+                        href={`https://www.gametracker.com/server_info/${settingsForm.cs16_server_ip}:${settingsForm.cs16_server_port}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Sunucuyu Görüntüle
+                      </a>
+                      <a
+                        href={`https://www.gametracker.com/addserver/?query=${settingsForm.cs16_server_ip}:${settingsForm.cs16_server_port}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        GameTracker'a Ekle
+                      </a>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-2">
+                      IP: <span className="font-mono">{settingsForm.cs16_server_ip}:{settingsForm.cs16_server_port}</span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">

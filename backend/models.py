@@ -97,8 +97,8 @@ class SiteSettings(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     cs16_server_ip = Column(String(100), nullable=True)
+    cs16_server_ip = Column(String(100), nullable=True)
     cs16_server_port = Column(String(10), nullable=True)
-    cs16_gametracker_url = Column(String(255), nullable=True)
     ts3_server_ip = Column(String(100), nullable=True)
     ts3_server_port = Column(String(10), nullable=True)
     ts3_query_port = Column(String(10), nullable=True)

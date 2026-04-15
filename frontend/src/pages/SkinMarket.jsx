@@ -85,7 +85,7 @@ export default function SkinMarket({ liveChatRef }) {
         setOptionalNote('');
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'İletişim sırasında bir hata oluştu.' });
+      setMessage({ type: 'error', text: t('error_occurred') });
     }
     setPurchasing(false);
   };
@@ -115,10 +115,10 @@ export default function SkinMarket({ liveChatRef }) {
             <Crown className="w-6 h-6 text-yellow-500 absolute -top-1 -right-1" />
           </div>
           <h1 className="text-4xl md:text-5xl font-black uppercase text-slate-900 dark:text-white" style={{ fontFamily: 'Impact, sans-serif' }}>
-            SKIN MARKET
+            {t('skin_market_title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 max-w-xl">
-            Özel skinleri satın alarak sunucumuzu destekleyin ve benzersiz görünümler kazanın!
+            {t('skin_market_desc')}
           </p>
         </div>
 
@@ -138,7 +138,7 @@ export default function SkinMarket({ liveChatRef }) {
                   : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
               }`}
             >
-              Tümü
+              {t('all')}
             </button>
             {categories.map(cat => (
               <button
@@ -159,7 +159,7 @@ export default function SkinMarket({ liveChatRef }) {
         {skins.length === 0 ? (
           <div className="text-center py-20">
             <ShoppingBag className="w-20 h-20 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500 text-lg">Henüz skin eklenmemiş.</p>
+            <p className="text-slate-500 text-lg">{t('no_skins_market')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -179,7 +179,7 @@ export default function SkinMarket({ liveChatRef }) {
                     }}
                   />
                   <div className="absolute top-3 right-3 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                    {skin.price} TL
+                    {skin.price} {t('tl')}
                   </div>
                 </div>
                 <div className="p-4">
@@ -191,7 +191,7 @@ export default function SkinMarket({ liveChatRef }) {
                     className="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg"
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    Satın Al
+                    {t('purchase')}
                   </button>
                 </div>
               </div>
@@ -204,7 +204,7 @@ export default function SkinMarket({ liveChatRef }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden animate-fade-in-up">
             <div className="bg-gradient-to-r from-orange-600 to-orange-700 p-4 flex justify-between items-center text-white">
-              <h3 className="font-black tracking-wider uppercase">Skin Siparişi</h3>
+              <h3 className="font-black tracking-wider uppercase">{t('skin_order_title')}</h3>
               <button onClick={() => setSelectedSkin(null)} className="hover:bg-white/20 p-1 rounded-full transition-colors">
                 <X className="w-5 h-5" />
               </button>
@@ -217,7 +217,7 @@ export default function SkinMarket({ liveChatRef }) {
                 </div>
                 <div>
                   <h4 className="font-bold text-slate-800 dark:text-white">{getSkinDisplayName(selectedSkin)}</h4>
-                  <p className="text-2xl font-black text-orange-600 mt-1">{selectedSkin.price} TL</p>
+                  <p className="text-2xl font-black text-orange-600 mt-1">{selectedSkin.price} {t('tl')}</p>
                 </div>
               </div>
             </div>
@@ -225,29 +225,29 @@ export default function SkinMarket({ liveChatRef }) {
             <form onSubmit={handlePurchase} className="p-6 space-y-4">
               <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-3 rounded text-xs font-medium flex gap-2">
                 <Info className="w-4 h-4 shrink-0" />
-                Satın alacağınız skin için gerekli hesap bilgileri Canlı Destek yetkililerimiz tarafından verilecektir.
+                {t('purchase_info')}
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Oyun İçi Nick *</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('ingame_nick_required')}</label>
                 <input
                   type="text"
                   required
                   value={playerNick}
                   onChange={e => setPlayerNick(e.target.value)}
-                  placeholder="Zorunlu Alan"
+                  placeholder={t('nick_required_placeholder')}
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Discord ID</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('discord_id_label')}</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={discordId}
                     onChange={e => setDiscordId(e.target.value)}
-                    placeholder="Örn: arexios#1234"
+                    placeholder={t('discord_placeholder')}
                     className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 transition-colors"
                   />
                   {!user?.discord_username && (
@@ -256,18 +256,18 @@ export default function SkinMarket({ liveChatRef }) {
                       onClick={() => window.location.href = `http://127.0.0.1:8000/discord/login?link_token=${localStorage.getItem('access_token')}`}
                       className="whitespace-nowrap flex items-center px-4 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors shadow-lg"
                     >
-                      Otomatik Çek
+                      {t('auto_fetch')}
                     </button>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">Not (Opsiyonel)</label>
+                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('optional_note')}</label>
                 <textarea
                   value={optionalNote}
                   onChange={e => setOptionalNote(e.target.value)}
-                  placeholder="Varsa iletmek istediğiniz mesaj..."
+                  placeholder={t('note_placeholder')}
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 transition-colors resize-none h-20"
                 />
               </div>
@@ -277,7 +277,7 @@ export default function SkinMarket({ liveChatRef }) {
                 disabled={purchasing}
                 className={`w-full py-3 rounded-lg font-bold text-white shadow-lg uppercase tracking-wider text-sm transition-all ${purchasing ? 'bg-slate-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-500 active:scale-95'}`}
               >
-                {purchasing ? 'İletiliyor...' : 'Sipariş Ver'}
+                {purchasing ? t('sending') : t('place_order')}
               </button>
 
               {message && (

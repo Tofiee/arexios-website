@@ -15,19 +15,6 @@ export default function Home() {
   const [showRulesModal, setShowRulesModal] = useState(false);
   const [rulesAccepted, setRulesAccepted] = useState(false);
 
-  const serverRules = [
-    "Hile kullanmak yasaktır (AWP+Scope, Speed, Bunny Hop, vb.)",
-    "Server sahiplerine ve adminlere saygılı davranın",
-    "Irk, din, cinsiyet veya siyasi görüş ayrımcılığı yapmak yasaktır",
-    "Reklam yapmak veya spam atmak yasaktır",
-    "Takma isim kullanımı adminleri rahatsız edecek şekilde olmamalıdır",
-    "Flood veya aşırı ses yapmak yasaktır",
-    "Gerçek silah isimleri kullanımı yasaktır (AK-47, M4A1 vb.)",
-    "Oyun dışı hakaret veya tehdit yasaktır",
-    "Server kurallarını bilmemek mazeret değildir",
-    "Kural ihlali durumunda ban süresi uzatılabilir"
-  ];
-
   useEffect(() => {
     if (user?.steam_id) {
       api.get(`/admins/is-admin?steam_id=${encodeURIComponent(user.steam_id)}`)
@@ -118,7 +105,7 @@ export default function Home() {
             className="col-span-full bg-purple-600 hover:bg-purple-500 p-4 rounded-xl border border-purple-500 shadow-2xl flex items-center justify-center gap-3 transition-all hover:scale-[1.02]"
           >
             <Shield className="w-6 h-6 text-white" />
-            <span className="text-white font-bold uppercase tracking-widest">Admin Paneli</span>
+            <span className="text-white font-bold uppercase tracking-widest">{t('admin_panel')}</span>
           </Link>
         )}
 
@@ -170,7 +157,7 @@ export default function Home() {
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-orange-500" />
                   <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                    {csStatus.data.admin_online} admin sunucuda çevrimiçi
+                    {csStatus.data.admin_online} {t('admin_online_server')}
                   </span>
                 </div>
               </div>
@@ -221,7 +208,7 @@ export default function Home() {
             <div className="bg-orange-600 text-white p-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Shield className="w-6 h-6" />
-                <h2 className="text-xl font-bold">Sunucu Kuralları</h2>
+                <h2 className="text-xl font-bold">{t('server_rules_title')}</h2>
               </div>
               <button
                 onClick={() => setShowRulesModal(false)}
@@ -235,17 +222,49 @@ export default function Home() {
             
             <div className="p-6 overflow-y-auto">
               <p className="text-slate-600 dark:text-slate-400 mb-4">
-                Sunucuya bağlanmadan önce kuralları okuyun ve kabul edin.
+                {t('read_rules_before_connect')}
               </p>
               <ul className="space-y-3">
-                {serverRules.map((rule, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">
-                      {index + 1}
-                    </span>
-                    <span className="text-slate-700 dark:text-slate-300">{rule}</span>
-                  </li>
-                ))}
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">1</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_1')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">2</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_2')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">3</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_3')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">4</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_4')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">5</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_5')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">6</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_6')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">7</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_7')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">8</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_8')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">9</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_9')}</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-bold mt-0.5">10</span>
+                  <span className="text-slate-700 dark:text-slate-300">{t('rule_10')}</span>
+                </li>
               </ul>
             </div>
 
@@ -257,14 +276,14 @@ export default function Home() {
                   onChange={(e) => setRulesAccepted(e.target.checked)}
                   className="w-5 h-5 text-orange-600 rounded border-slate-300 focus:ring-orange-500"
                 />
-                <span className="text-slate-700 dark:text-slate-300">Kuralları okudum ve kabul ediyorum</span>
+                <span className="text-slate-700 dark:text-slate-300">{t('accept_rules')}</span>
               </label>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowRulesModal(false)}
                   className="flex-1 py-3 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors"
                 >
-                  İptal
+                  {t('cancel')}
                 </button>
                 <a
                   href={`steam://connect/${CS_IP}`}
@@ -280,7 +299,7 @@ export default function Home() {
                       : 'bg-slate-300 dark:bg-slate-600 text-slate-400 dark:text-slate-500 cursor-not-allowed'
                   }`}
                 >
-                  Bağlan
+                  {t('connect')}
                 </a>
               </div>
             </div>

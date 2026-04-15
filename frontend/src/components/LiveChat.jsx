@@ -78,7 +78,7 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
     close: () => setIsOpen(false),
     sendSkinPurchase: (skinInfo) => {
       setIsOpen(true);
-      const message = `🎮 SKIN SATIN ALMA TALEBİ\n\n📦 Skin: ${skinInfo.skinName}\n💰 Fiyat: ${skinInfo.price} TL\n👤 Oyuncu: ${skinInfo.playerNick || 'Belirtilmedi'}\n💬 Discord: ${skinInfo.discordId || 'Belirtilmedi'}\n📝 Not: ${skinInfo.optionalNote || 'Yok'}`;
+      const message = `🎮 SKIN SATIN ALMA TALEBİ\n\n📦 Skin: ${skinInfo.skinName}\n💰 ${t('price')}: ${skinInfo.price} TL\n👤 ${t('ingame_nick')}: ${skinInfo.playerNick || 'Belirtilmedi'}\n💬 ${t('discord_id')}: ${skinInfo.discordId || 'Belirtilmedi'}\n📝 ${t('optional_note')}: ${skinInfo.optionalNote || 'Yok'}`;
       
       sendMessage(message);
     }
@@ -126,14 +126,14 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
 
   const getPageName = (path) => {
     const pageNames = {
-      '/': 'Ana Sayfa',
-      '/servers': 'Sunucular',
-      '/bans': 'Ban Listesi',
-      '/admins': 'Adminler',
+      '/': t('home'),
+      '/servers': t('server_cat'),
+      '/bans': t('ban_list'),
+      '/admins': t('admin_cat'),
       '/about': 'Hakkımızda',
       '/contact': 'İletişim',
-      '/profile': 'Profil',
-      '/support': 'Destek',
+      '/profile': t('profile'),
+      '/support': t('support'),
     };
     return pageNames[path] || path;
   };
@@ -270,26 +270,26 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
       setMessages(prev => [...prev, {
         id: Date.now(),
         sender_type: 'system',
-        sender_name: 'Sistem',
-        message: `${data.admin_name} konuşmanızı devraldı.`,
+        sender_name: t('system'),
+        message: `${data.admin_name} ${t('admin_took_conversation')}`,
         created_at: new Date().toISOString()
       }]);
     });
 
     socketRef.current.on('session_closed', (data) => {
       setSessionClosed(true);
-      let msg = 'Destek konuşmayı sonlandırdı.';
+      let msg = t('admin_closed');
       if (data?.reason === 'timeout') {
-        msg = 'Oturum 2 saat işlem yapılmadığı için otomatik olarak kapatıldı. Yeni bir destek talebi başlatabilirsiniz.';
+        msg = t('session_timeout');
       } else if (data?.reason === 'already_closed') {
-        msg = 'Bu oturum kapatıldı. Yeni bir destek talebi başlatabilirsiniz.';
+        msg = t('session_already_closed');
       } else if (data?.closed_by === 'user') {
-        msg = 'Konuşmayı sonlandırdınız.';
+        msg = t('you_ended_conversation');
       }
       setMessages(prev => [...prev, {
         id: Date.now(),
         sender_type: 'system',
-        sender_name: 'Sistem',
+        sender_name: t('system'),
         message: msg,
         created_at: new Date().toISOString()
       }]);
@@ -410,9 +410,9 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
 
   const submitComplaint = async () => {
     const typeLabels = {
-      'server': 'Sunucu Şikayeti',
-      'cheater': 'Hile Şikayeti',
-      'admin': 'Admin Şikayeti'
+      'server': t('server_complaint'),
+      'cheater': t('cheat_complaint'),
+      'admin': t('admin_complaint')
     };
 
     let fullMessage = `📋 YENİ ŞİKAYET\n`;
@@ -503,18 +503,18 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
   const handleDownloadTranscript = () => {
     const transcript = messages.map(msg => {
       const time = new Date(msg.created_at).toLocaleString('tr-TR');
-      const sender = msg.sender_type === 'admin' ? 'Yetkili' : msg.sender_type === 'system' ? 'Sistem' : 'Siz';
+      const sender = msg.sender_type === 'admin' ? t('admin') : msg.sender_type === 'system' ? t('system') : 'Siz';
       return `[${time}] ${sender}: ${msg.message}`;
     }).join('\n\n');
 
-    const header = `=== Arexios Canlı Destek Transkript ===\nTarih: ${new Date().toLocaleString('tr-TR')}\nSession ID: ${sessionId || 'N/A'}\n========================================\n\n`;
+    const header = `=== Arexios ${t('live_support')} Transcript ===\n${t('date')}: ${new Date().toLocaleString('tr-TR')}\nSession ID: ${sessionId || 'N/A'}\n========================================\n\n`;
     const fullTranscript = header + transcript;
 
     const blob = new Blob([fullTranscript], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `destek-transkript-${Date.now()}.txt`;
+    a.download = `support-transcript-${Date.now()}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -524,20 +524,20 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
   const handleSendTranscript = () => {
     const transcript = messages.map(msg => {
       const time = new Date(msg.created_at).toLocaleString('tr-TR');
-      const sender = msg.sender_type === 'admin' ? 'Yetkili' : msg.sender_type === 'system' ? 'Sistem' : 'Siz';
+      const sender = msg.sender_type === 'admin' ? t('admin') : msg.sender_type === 'system' ? t('system') : 'Siz';
       return `[${time}] ${sender}: ${msg.message}`;
     }).join('\n\n');
 
     const emailBody = encodeURIComponent(`
-Arexios Canlı Destek Transkripti
+Arexios ${t('live_support')} Transcript
 
-Tarih: ${new Date().toLocaleString('tr-TR')}
+${t('date')}: ${new Date().toLocaleString('tr-TR')}
 Session ID: ${sessionId || 'N/A'}
 
 ${transcript}
     `.trim());
 
-    window.open(`mailto:?subject=Arexios Destek Transkripti&body=${emailBody}`);
+    window.open(`mailto:?subject=Arexios Support Transcript&body=${emailBody}`);
   };
 
   const handleEndConversation = () => {
@@ -582,12 +582,12 @@ ${transcript}
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
               <div>
-                <h3 className="font-bold text-lg">Canlı Destek</h3>
+                <h3 className="font-bold text-lg">{t('live_support')}</h3>
                 <p className="text-xs text-orange-100">
-                  {isConnecting ? 'Bağlanıyor...' : 
+                  {isConnecting ? t('connecting') : 
                     adminStatusInfo.any_admin_online ? 
-                      `${adminStatusInfo.total_count} yetkili çevrimiçi` : 
-                      'Çevrimdışı'}
+                      `${adminStatusInfo.total_count} ${t('admin_online_count')}` : 
+                      t('offline')}
                 </p>
               </div>
             </div>
@@ -618,7 +618,7 @@ ${transcript}
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
-                        Konuşmayı İndir
+                        {t('download_conversation')}
                       </button>
                       <button
                         onClick={() => {
@@ -630,7 +630,7 @@ ${transcript}
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
-                        Mail Olarak Gönder
+                        {t('send_via_email')}
                       </button>
                       <button
                         onClick={() => {
@@ -649,7 +649,7 @@ ${transcript}
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
                           </svg>
                         )}
-                        Ses {soundEnabled ? 'Açık' : 'Kapalı'}
+                        {t('sound')} {soundEnabled ? t('sound_on') : t('sound_off')}
                       </button>
                       <div className="border-t border-slate-200 dark:border-slate-700 my-1" />
                       {!sessionClosed && sessionId && (
@@ -663,7 +663,7 @@ ${transcript}
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                           </svg>
-                          Konuşmayı Sonlandır
+                          {t('end_conversation')}
                         </button>
                       )}
                     </div>
@@ -693,42 +693,42 @@ ${transcript}
             ) : (
               <>
                 <div className="bg-white dark:bg-[#151822] rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                  <h4 className="font-bold text-slate-900 dark:text-white mb-2">Hoş Geldiniz!</h4>
+                  <h4 className="font-bold text-slate-900 dark:text-white mb-2">{t('welcome')}</h4>
                   {adminStatusInfo.any_admin_online ? (
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm">
                         {adminStatusInfo.online_count > 0 ? (
                           <span className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
                             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                            <span>{adminStatusInfo.total_count} yetkili çevrimiçi</span>
+                            <span>{adminStatusInfo.total_count} {t('admin_online_count')}</span>
                           </span>
                         ) : adminStatusInfo.busy_count > 0 ? (
                           <span className="flex items-center gap-2 text-yellow-600 dark:text-yellow-400">
                             <span className="w-2 h-2 bg-yellow-500 rounded-full"></span>
-                            <span>{adminStatusInfo.total_count} yetkili meşgul</span>
+                            <span>{adminStatusInfo.total_count} {t('meşgul')}</span>
                           </span>
                         ) : (
                           <span className="flex items-center gap-2 text-slate-500">
                             <span className="w-2 h-2 bg-slate-400 rounded-full"></span>
-                            <span>{adminStatusInfo.total_count} yetkili uzakta</span>
+                            <span>{adminStatusInfo.total_count} {t('uzakta')}</span>
                           </span>
                         )}
                       </div>
                       {adminStatusInfo.estimated_response_time && (
                         <p className="text-xs text-slate-500">
-                          Tahmini yanıt süresi: <span className="font-medium">{adminStatusInfo.estimated_response_time}</span>
+                          {t('estimated_response_time')}: <span className="font-medium">{adminStatusInfo.estimated_response_time}</span>
                         </p>
                       )}
                     </div>
                   ) : (
                     <p className="text-sm text-slate-600 dark:text-slate-300">
-                      Şu an destek ekibimiz çevrimdışı. Mesajınızı bırakın, en kısa sürede size dönüş yapacağız.
+                      {t('admin_offline_message')}
                     </p>
                   )}
                   {user && (
                     <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
                       <p className="text-xs text-slate-500">
-                        Giriş yapan: <span className="font-semibold text-orange-600">{user.username}</span>
+                        {t('logged_in_as')} <span className="font-semibold text-orange-600">{user.username}</span>
                       </p>
                     </div>
                   )}
@@ -736,28 +736,28 @@ ${transcript}
 
                 {!showComplaintForm && (
                   <div className="bg-white dark:bg-[#151822] rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 font-bold uppercase tracking-wider">Hızlı İşlemler</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 font-bold uppercase tracking-wider">{t('quick_actions')}</p>
                     <div className="grid grid-cols-3 gap-2">
                       <button
                         onClick={() => openComplaintForm('server')}
                         className="flex flex-col items-center gap-1 p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                       >
                         <Server className="w-5 h-5 text-orange-500" />
-                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Sunucu</span>
+                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{t('server_cat')}</span>
                       </button>
                       <button
                         onClick={() => openComplaintForm('cheater')}
                         className="flex flex-col items-center gap-1 p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                       >
                         <AlertTriangle className="w-5 h-5 text-red-500" />
-                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Hile</span>
+                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{t('cheat_cat')}</span>
                       </button>
                       <button
                         onClick={() => openComplaintForm('admin')}
                         className="flex flex-col items-center gap-1 p-3 rounded-lg bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                       >
                         <Shield className="w-5 h-5 text-purple-500" />
-                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">Admin</span>
+                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{t('admin_cat')}</span>
                       </button>
                     </div>
                   </div>
@@ -767,9 +767,9 @@ ${transcript}
                   <div className="bg-white dark:bg-[#151822] rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-bold text-slate-900 dark:text-white">
-                        {complaintType === 'server' && 'Sunucu Şikayeti'}
-                        {complaintType === 'cheater' && 'Hile Şikayeti'}
-                        {complaintType === 'admin' && 'Admin Şikayeti'}
+                        {complaintType === 'server' && t('server_complaint')}
+                        {complaintType === 'cheater' && t('cheat_complaint')}
+                        {complaintType === 'admin' && t('admin_complaint')}
                       </p>
                       <button
                         onClick={() => {
@@ -788,9 +788,9 @@ ${transcript}
                     {complaintStep === 1 && (
                       <>
                         <p className="text-xs text-slate-500 mb-3">
-                          {complaintType === 'cheater' && 'Hile yaptığını düşündüğünüz oyuncuyu seçin:'}
-                          {complaintType === 'admin' && 'Şikayet etmek istediğiniz admini seçin:'}
-                          {complaintType === 'server' && 'Sunucu şikayeti için devam edebilirsiniz.'}
+                          {complaintType === 'cheater' && t('select_player')}
+                          {complaintType === 'admin' && t('select_admin')}
+                          {complaintType === 'server' && t('server_complaint_continue')}
                         </p>
 
                         {complaintType === 'cheater' && (
@@ -814,7 +814,7 @@ ${transcript}
                                 </button>
                               ))
                             ) : (
-                              <p className="text-xs text-slate-500 text-center py-2">Sunucuda oyuncu yok</p>
+                              <p className="text-xs text-slate-500 text-center py-2">{t('no_players_on_server')}</p>
                             )}
                           </div>
                         )}
@@ -855,7 +855,7 @@ ${transcript}
                             }}
                             className="w-full py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm rounded-lg transition-colors"
                           >
-                            Devam Et
+                            {t('continue_btn')}
                           </button>
                         )}
                       </>
@@ -864,16 +864,16 @@ ${transcript}
                     {complaintType === 'cheater' && complaintStep === 2 && (
                       <>
                         <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                          <button onClick={() => setComplaintStep(1)} className="hover:text-slate-700">← Geri</button>
-                          <span>Adım 2/3</span>
+                          <button onClick={() => setComplaintStep(1)} className="hover:text-slate-700">← {t('back')}</button>
+                          <span>{t('step')} 2/3</span>
                         </div>
                         {selectedPlayer && (
                           <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg mb-3">
-                            <p className="text-xs text-slate-500">Hedef:</p>
+                            <p className="text-xs text-slate-500">{t('target')}</p>
                             <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedPlayer.name}</p>
                           </div>
                         )}
-                        <p className="text-xs text-slate-500 mb-2">Hile türünü seçin:</p>
+                        <p className="text-xs text-slate-500 mb-2">{t('select_cheat_type')}</p>
                         <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
                           {CHEAT_TYPES.map((cheat) => (
                             <button
@@ -897,59 +897,59 @@ ${transcript}
                     )}
 
                     {complaintStep === 3 && complaintType !== 'cheater' && (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-xs text-slate-500">
-                          <button 
-                            onClick={() => {
-                              if (complaintType === 'admin') setComplaintStep(1);
-                              else if (complaintType === 'server') setComplaintStep(1);
-                            }} 
-                            className="hover:text-slate-700"
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-xs text-slate-500">
+                            <button 
+                              onClick={() => {
+                                if (complaintType === 'admin') setComplaintStep(1);
+                                else if (complaintType === 'server') setComplaintStep(1);
+                              }} 
+                              className="hover:text-slate-700"
+                            >
+                              ← {t('back')}
+                            </button>
+                          </div>
+                          {selectedPlayer && (
+                            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                              <p className="text-xs text-slate-500">{t('target')}</p>
+                              <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedPlayer.name}</p>
+                            </div>
+                          )}
+                          {selectedAdmin && (
+                            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                              <p className="text-xs text-slate-500">{t('admin_label')}</p>
+                              <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedAdmin.name}</p>
+                            </div>
+                          )}
+                          <textarea
+                            value={complaintMessage}
+                            onChange={(e) => setComplaintMessage(e.target.value)}
+                            placeholder={t('write_complaint')}
+                            rows={3}
+                            className="w-full p-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white resize-none"
+                          />
+                          <button
+                            onClick={submitComplaint}
+                            disabled={!complaintMessage.trim()}
+                            className="w-full py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-lg transition-colors"
                           >
-                            ← Geri
+                            {t('submit_complaint')}
                           </button>
                         </div>
-                        {selectedPlayer && (
-                          <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                            <p className="text-xs text-slate-500">Hedef:</p>
-                            <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedPlayer.name}</p>
-                          </div>
-                        )}
-                        {selectedAdmin && (
-                          <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                            <p className="text-xs text-slate-500">Admin:</p>
-                            <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedAdmin.name}</p>
-                          </div>
-                        )}
-                        <textarea
-                          value={complaintMessage}
-                          onChange={(e) => setComplaintMessage(e.target.value)}
-                          placeholder="Şikayetinizi yazın..."
-                          rows={3}
-                          className="w-full p-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white resize-none"
-                        />
-                        <button
-                          onClick={submitComplaint}
-                          disabled={!complaintMessage.trim()}
-                          className="w-full py-2 bg-orange-500 hover:bg-orange-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-lg transition-colors"
-                        >
-                          Gönder
-                        </button>
-                      </div>
-                    )}
+                      )}
 
                     {complaintType === 'cheater' && complaintStep === 3 && (
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                          <button onClick={() => setComplaintStep(2)} className="hover:text-slate-700">← Geri</button>
-                          <span>Adım 3/3</span>
+                          <button onClick={() => setComplaintStep(2)} className="hover:text-slate-700">← {t('back')}</button>
+                          <span>{t('step')} 3/3</span>
                         </div>
                         <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                          <p className="text-xs text-slate-500">Hedef:</p>
+                          <p className="text-xs text-slate-500">{t('target')}</p>
                           <p className="text-sm font-bold text-slate-900 dark:text-white">{selectedPlayer?.name}</p>
                           {selectedCheatType && (
                             <>
-                              <p className="text-xs text-slate-500 mt-1">Hile:</p>
+                              <p className="text-xs text-slate-500 mt-1">{t('cheat_cat')}:</p>
                               <p className="text-sm font-bold text-red-500">
                                 {CHEAT_TYPES.find(c => c.id === selectedCheatType)?.icon} {CHEAT_TYPES.find(c => c.id === selectedCheatType)?.label}
                               </p>
@@ -959,7 +959,7 @@ ${transcript}
                         <textarea
                           value={complaintMessage}
                           onChange={(e) => setComplaintMessage(e.target.value)}
-                          placeholder="Ek bilgi (opsiyonel)..."
+                          placeholder={t('optional_info')}
                           rows={2}
                           className="w-full p-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white resize-none"
                         />
@@ -967,7 +967,7 @@ ${transcript}
                           onClick={submitComplaint}
                           className="w-full py-2 bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm rounded-lg transition-colors"
                         >
-                          Şikayeti Gönder
+                          {t('send_complaint')}
                         </button>
                       </div>
                     )}
@@ -1007,7 +1007,7 @@ ${transcript}
                   <div className="flex justify-center">
                     <div className="bg-slate-200 dark:bg-slate-800 px-4 py-2 rounded-full flex items-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin text-orange-500" />
-                      <span className="text-xs text-slate-600 dark:text-slate-300">Yanıt bekleniyor...</span>
+                      <span className="text-xs text-slate-600 dark:text-slate-300">{t('waiting_for_response')}</span>
                     </div>
                   </div>
                 )}
@@ -1015,7 +1015,7 @@ ${transcript}
                 {adminTyping && (
                   <div className="flex justify-start">
                     <div className="bg-white dark:bg-[#151822] px-4 py-2 rounded-2xl rounded-bl-md border border-slate-200 dark:border-slate-700 flex items-center gap-2">
-                      <span className="text-xs text-slate-500">{adminTypingName} yazıyor</span>
+                      <span className="text-xs text-slate-500">{adminTypingName} {t('typing')}</span>
                       <span className="flex gap-1">
                         <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0ms'}} />
                         <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}} />
@@ -1039,7 +1039,7 @@ ${transcript}
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                Yeni Destek Talebi Başlat
+                {t('start_new_ticket')}
               </button>
             ) : (
               <div className="flex gap-2">
@@ -1049,7 +1049,7 @@ ${transcript}
                   value={inputMessage}
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
-                  placeholder="Mesajınızı yazın..."
+                  placeholder={t('type_message')}
                   className="flex-1 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500"
                   disabled={isConnecting}
                 />

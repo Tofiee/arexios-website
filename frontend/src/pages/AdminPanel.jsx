@@ -113,7 +113,7 @@ function AdminPanelContent() {
   };
 
   const getDeviceName = (userAgent) => {
-    if (!userAgent) return 'Bilinmiyor';
+    if (!userAgent) return t('device_unknown');
     const ua = userAgent.toLowerCase();
     if (ua.includes('chrome') && !ua.includes('edg')) return 'Chrome';
     if (ua.includes('firefox')) return 'Firefox';
@@ -125,7 +125,7 @@ function AdminPanelContent() {
     if (ua.includes('linux')) return 'Linux';
     if (ua.includes('android')) return 'Chrome (Android)';
     if (ua.includes('iphone') || ua.includes('ipad')) return 'Safari (iOS)';
-    return 'Bilinmiyor';
+    return t('device_unknown');
   };
 
   const connectSocket = () => {
@@ -221,8 +221,8 @@ function AdminPanelContent() {
           setMessages(prev => [...prev, {
             id: Date.now(),
             sender_type: 'system',
-            sender_name: 'Sistem',
-            message: 'Destek konuşmayı sonlandırdı.',
+            sender_name: t('system'),
+            message: t('admin_closed'),
             created_at: new Date().toISOString()
           }]);
           setTimeout(() => {
@@ -247,8 +247,8 @@ function AdminPanelContent() {
         setMessages(prev => [...prev, {
           id: Date.now(),
           sender_type: 'system',
-          sender_name: 'Sistem',
-          message: 'Kullanıcı konuşmayı sonlandırdı.',
+          sender_name: t('system'),
+          message: t('user_closed'),
           created_at: new Date().toISOString()
         }]);
         setTimeout(() => {
@@ -752,7 +752,7 @@ function AdminPanelContent() {
             }`}
           >
             <MessageCircle className="w-4 h-4 inline mr-2" />
-            Destek
+            {t('support')}
           </button>
           <button
             onClick={() => { setActiveTab('skins'); fetchSkins(); }}
@@ -763,7 +763,7 @@ function AdminPanelContent() {
             }`}
           >
             <Package className="w-4 h-4 inline mr-2" />
-            Skin Yönetimi
+            {t('skin_management')}
           </button>
           <button
             onClick={() => { setActiveTab('settings'); fetchSettings(); }}
@@ -774,7 +774,7 @@ function AdminPanelContent() {
             }`}
           >
             <Settings className="w-4 h-4 inline mr-2" />
-            Ayarlar
+            {t('settings')}
           </button>
         </div>
       </div>
@@ -784,28 +784,28 @@ function AdminPanelContent() {
           <div className="p-6 overflow-auto h-full">
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Skin Yönetimi</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('skin_management')}</h2>
                 <div className="flex gap-2">
                   <button
                     onClick={() => { setShowCategoryModal(true); setCategoryForm({ name: '' }); }}
                     className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition-colors"
                   >
                     <Tag className="w-4 h-4" />
-                    Kategori Ekle
+                    {t('add_category_btn')}
                   </button>
                   <button
                     onClick={() => handleOpenSkinModal()}
                     className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    Yeni Skin Ekle
+                    {t('add_skin_btn')}
                   </button>
                 </div>
               </div>
 
               {categories.length > 0 && (
                 <div className="mb-6 p-4 bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800">
-                  <h3 className="font-bold text-slate-800 dark:text-white mb-3">Kategoriler</h3>
+                  <h3 className="font-bold text-slate-800 dark:text-white mb-3">{t('categories')}</h3>
                   <div className="flex flex-wrap gap-2">
                     {categories.map(cat => (
                       <div key={cat.id} className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">
@@ -830,7 +830,7 @@ function AdminPanelContent() {
                       <img src={skin.image_url} alt={skin.name} className="w-full h-full object-cover" />
                       {!skin.is_active && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">Pasif</span>
+                          <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">{t('pasif')}</span>
                         </div>
                       )}
                     </div>
@@ -838,14 +838,14 @@ function AdminPanelContent() {
                       <h3 className="font-bold text-slate-900 dark:text-white truncate">
                         {skin.category_name ? `${skin.category_name} | ` : ''}{skin.name}
                       </h3>
-                      <p className="text-xl font-black text-orange-600 mt-1">{skin.price} TL</p>
+                      <p className="text-xl font-black text-orange-600 mt-1">{skin.price} {t('tl')}</p>
                       <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => handleOpenSkinModal(skin)}
                           className="flex-1 flex items-center justify-center gap-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
                         >
                           <Edit className="w-3 h-3" />
-                          Düzenle
+                          {t('düzenle')}
                         </button>
                         <button
                           onClick={() => handleDeleteSkin(skin.id)}
@@ -860,7 +860,7 @@ function AdminPanelContent() {
                 {skins.length === 0 && (
                   <div className="col-span-full text-center py-12 text-slate-500">
                     <Package className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    <p>Henüz skin eklenmemiş.</p>
+                    <p>{t('no_skins')}</p>
                   </div>
                 )}
               </div>
@@ -1078,7 +1078,7 @@ function AdminPanelContent() {
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <MessageCircle className="w-5 h-5 text-orange-500" />
-                    Destek Talepleri
+                    {t('support_requests')}
                   </h2>
                   <span className="px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
                     {sessions.length}
@@ -1096,26 +1096,26 @@ function AdminPanelContent() {
                   {notificationsEnabled ? (
                     <>
                       <Bell className="w-4 h-4" />
-                      Bildirimler Açık
+                      {t('notifications_on')}
                     </>
                   ) : (
                     <>
                       <BellOff className="w-4 h-4" />
-                      Bildirimleri Aç
+                      {t('enable_notifications')}
                     </>
                   )}
                 </button>
                 
                 <div className="flex items-center gap-2 mt-2 text-xs">
                   <span className={`w-2 h-2 rounded-full ${connected ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                  <span className="text-slate-500">{connected ? 'Bağlı' : 'Bağlantı kesildi'}</span>
+                  <span className="text-slate-500">{connected ? t('connected_status') : t('disconnected_status')}</span>
                 </div>
                 
                 <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                  <p className="text-xs font-medium text-slate-500 mb-2">Adminler</p>
+                  <p className="text-xs font-medium text-slate-500 mb-2">{t('admins_label')}</p>
                   <div className="flex flex-wrap gap-2">
                     {onlineAdmins.length === 0 && (
-                      <span className="text-xs text-slate-400">Henüz admin yok</span>
+                      <span className="text-xs text-slate-400">{t('no_admins_online')}</span>
                     )}
                     {onlineAdmins.map((admin, idx) => (
                       <div key={idx} className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-full">
@@ -1133,7 +1133,7 @@ function AdminPanelContent() {
                   </div>
                   
                   <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                    <p className="text-xs font-medium text-slate-500 mb-2">Durumunuz</p>
+                    <p className="text-xs font-medium text-slate-500 mb-2">{t('your_status')}</p>
                     <div className="grid grid-cols-2 gap-1">
                       <button
                         onClick={() => handleSetStatus('online')}
@@ -1144,7 +1144,7 @@ function AdminPanelContent() {
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-current"></span>
-                        Çevrimiçi
+                        {t('çevrimiçi')}
                       </button>
                       <button
                         onClick={() => handleSetStatus('busy')}
@@ -1155,7 +1155,7 @@ function AdminPanelContent() {
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-current"></span>
-                        Meşgul
+                        {t('meşgul')}
                       </button>
                       <button
                         onClick={() => handleSetStatus('away')}
@@ -1166,7 +1166,7 @@ function AdminPanelContent() {
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-current"></span>
-                        Uzakta
+                        {t('uzakta')}
                       </button>
                       <button
                         onClick={() => handleSetStatus('offline')}
@@ -1177,7 +1177,7 @@ function AdminPanelContent() {
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-current"></span>
-                        Çevrimdışı
+                        {t('çevrimdışı')}
                       </button>
                     </div>
                   </div>
@@ -1192,7 +1192,7 @@ function AdminPanelContent() {
                 ) : sessions.length === 0 ? (
                   <div className="text-center py-8 px-4">
                     <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500 text-sm">Henüz destek talebi yok</p>
+                    <p className="text-slate-500 text-sm">{t('no_support_requests')}</p>
                   </div>
                 ) : (
                   sessions.map(session => (
@@ -1207,7 +1207,7 @@ function AdminPanelContent() {
                         <button
                           onClick={(e) => handleDeleteSession(session.id, e)}
                           className="absolute top-2 right-2 p-1 rounded bg-red-500 hover:bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Sil"
+                          title={t('delete')}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -1227,11 +1227,11 @@ function AdminPanelContent() {
                                 ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
                                 : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
                         }`}>
-                          {session.status === 'waiting' ? 'Bekliyor' : session.status === 'active' ? 'Aktif' : session.status === 'user_closed' ? 'Kullanıcı Çıktı' : 'Kapalı'}
+                          {session.status === 'waiting' ? t('waiting') : session.status === 'active' ? t('active_session') : session.status === 'user_closed' ? t('user_left') : t('closed')}
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 truncate">
-                        {session.last_message || 'Henüz mesaj yok'}
+                        {session.last_message || t('no_messages_yet')}
                       </p>
                       <div className="flex items-center justify-between mt-1">
                         <div className="flex items-center gap-1 text-xs text-slate-400">
@@ -1254,9 +1254,9 @@ function AdminPanelContent() {
                         {activeSession.user_name}
                       </h3>
                       <p className="text-xs text-slate-500">
-                        Oturum #{activeSession.id}
+                        {t('session_id')}{activeSession.id}
                         {activeSession.assigned_admin && (
-                          <span className="ml-2">• {activeSession.assigned_admin} tarafından devralındı</span>
+                          <span className="ml-2">• {activeSession.assigned_admin} {t('assigned_to_you')}</span>
                         )}
                         <span className="ml-2 text-emerald-600 font-medium">
                           ⏱ {formatDuration(sessionDuration)}
@@ -1289,7 +1289,7 @@ function AdminPanelContent() {
                           className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-lg flex items-center gap-2"
                         >
                           <Users className="w-4 h-4" />
-                          Konuşmayı Devral
+                          {t('take_conversation')}
                         </button>
                       ) : (
                         <button
@@ -1297,7 +1297,7 @@ function AdminPanelContent() {
                           className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg flex items-center gap-2"
                         >
                           <LogOut className="w-4 h-4" />
-                          Oturumu Devret
+                          {t('transfer_conversation')}
                         </button>
                       )}
                       <button
@@ -1305,7 +1305,7 @@ function AdminPanelContent() {
                         className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg flex items-center gap-2"
                       >
                         <XCircle className="w-4 h-4" />
-                        Konuşmayı Sonlandır
+                        {t('end_conversation')}
                       </button>
                     </div>
                   </div>
@@ -1313,7 +1313,7 @@ function AdminPanelContent() {
                   <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-[#0a0c10]">
                     {!activeSession.assigned_admin && (
                       <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 p-4 rounded-lg text-center">
-                        <p className="text-sm">Bu konuşmayı devralmak için yukarıdaki "Konuşmayı Devral" butonuna tıklayın.</p>
+                        <p className="text-sm">{t('take_conversation_first')}</p>
                       </div>
                     )}
                     
@@ -1347,7 +1347,7 @@ function AdminPanelContent() {
                           <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
                         </div>
                         <span className="font-medium">{activeSession.user_name}:</span>
-                        <span>{typingUsers[activeSession.id]?.typing_text || 'yazıyor...'}</span>
+                        <span>{typingUsers[activeSession.id]?.typing_text || t('typing_text')}</span>
                       </div>
                     )}
                     <div ref={messagesEndRef} />
@@ -1361,7 +1361,7 @@ function AdminPanelContent() {
                         value={inputMessage}
                         onChange={handleAdminInputChange}
                         onKeyPress={handleKeyPress}
-                        placeholder={activeSession.assigned_admin ? "Yanıtınızı yazın..." : "Önce konuşmayı devralın..."}
+                        placeholder={activeSession.assigned_admin ? t('type_response') : t('take_session_first_placeholder')}
                         disabled={!activeSession.assigned_admin}
                         className="flex-1 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
                       />
@@ -1371,7 +1371,7 @@ function AdminPanelContent() {
                         className="px-6 py-3 bg-orange-600 hover:bg-orange-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors flex items-center gap-2"
                       >
                         <Send className="w-5 h-5" />
-                        Gönder
+                        {t('gönder')}
                       </button>
                     </div>
                   </div>
@@ -1381,10 +1381,10 @@ function AdminPanelContent() {
                   <div className="text-center">
                     <MessageCircle className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                      Destek Paneli
+                      {t('support_panel_title')}
                     </h3>
                     <p className="text-slate-500">
-                      Sol taraftan bir oturum seçin veya bekleyin
+                      {t('select_session_hint')}
                     </p>
                   </div>
                 </div>
@@ -1398,7 +1398,7 @@ function AdminPanelContent() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden">
             <div className="bg-orange-600 text-white p-4 flex items-center justify-between">
-              <h3 className="font-bold text-lg">{editingSkin ? 'Skin Düzenle' : 'Yeni Skin Ekle'}</h3>
+              <h3 className="font-bold text-lg">{editingSkin ? t('edit_skin') : t('add_new_skin')}</h3>
               <button onClick={() => setShowSkinModal(false)} className="hover:bg-orange-500 p-1 rounded transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -1407,43 +1407,43 @@ function AdminPanelContent() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('kategori')}</label>
                 <select
                   value={skinForm.category_id}
                   onChange={(e) => setSkinForm({ ...skinForm, category_id: e.target.value })}
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
                 >
-                  <option value="">Kategori Seçin (Opsiyonel)</option>
+                  <option value="">{t('select_category')}</option>
                   {categories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Skin Adı *</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('skin_name_required')}</label>
                 <input
                   type="text"
                   value={skinForm.name}
                   onChange={(e) => setSkinForm({ ...skinForm, name: e.target.value })}
-                  placeholder="Örn: Asiimov"
+                  placeholder={t('example_skin')}
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Resim *</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('resim')}</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={skinForm.image_url}
                     onChange={(e) => setSkinForm({ ...skinForm, image_url: e.target.value })}
-                    placeholder="URL veya dosya yükleyin..."
+                    placeholder={t('upload_image')}
                     className="flex-1 px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
                   />
                   <label className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg cursor-pointer transition-colors flex items-center">
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
-                    Yükle
+                    {t('upload')}
                     <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                   </label>
                 </div>
@@ -1454,12 +1454,12 @@ function AdminPanelContent() {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Fiyat (TL) *</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('fiyat_tl')}</label>
                 <input
                   type="number"
                   value={skinForm.price}
                   onChange={(e) => setSkinForm({ ...skinForm, price: e.target.value })}
-                  placeholder="100"
+                  placeholder={t('price_placeholder')}
                   min="1"
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
                 />
@@ -1470,13 +1470,13 @@ function AdminPanelContent() {
                 onClick={() => setShowSkinModal(false)}
                 className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors"
               >
-                İptal
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSaveSkin}
                 className="flex-1 py-2 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors"
               >
-                Kaydet
+                {t('save')}
               </button>
             </div>
           </div>
@@ -1487,7 +1487,7 @@ function AdminPanelContent() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden">
             <div className="bg-purple-600 text-white p-4 flex items-center justify-between">
-              <h3 className="font-bold text-lg">Yeni Kategori Ekle</h3>
+              <h3 className="font-bold text-lg">{t('add_new_category')}</h3>
               <button onClick={() => setShowCategoryModal(false)} className="hover:bg-purple-500 p-1 rounded transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -1496,15 +1496,15 @@ function AdminPanelContent() {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Kategori Adı *</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('category_name_required')}</label>
                 <input
                   type="text"
                   value={categoryForm.name}
                   onChange={(e) => setCategoryForm({ name: e.target.value })}
-                  placeholder="Örn: AWP, AK-47, M4A1"
+                  placeholder={t('example_category')}
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-purple-500"
                 />
-                <p className="text-xs text-slate-500 mt-1">Silah kategorisi (AWP, AK-47, M4A1-S, vb.)</p>
+                <p className="text-xs text-slate-500 mt-1">{t('category_desc')}</p>
               </div>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3">
@@ -1512,13 +1512,13 @@ function AdminPanelContent() {
                 onClick={() => setShowCategoryModal(false)}
                 className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors"
               >
-                İptal
+                {t('cancel')}
               </button>
               <button
                 onClick={handleSaveCategory}
                 className="flex-1 py-2 px-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition-colors"
               >
-                Ekle
+                {t('add')}
               </button>
             </div>
           </div>
@@ -1529,10 +1529,10 @@ function AdminPanelContent() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-[#151822] rounded-xl p-6 w-[500px] max-w-[90%]">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
-              Oturumu Devret
+              {t('transfer_session_title')}
             </h3>
             <p className="text-sm text-slate-500 mb-4">
-              Oturumu devretmek istediğiniz admini seçin:
+              {t('select_admin_to_transfer')}
             </p>
             <div className="max-h-80 overflow-y-auto space-y-2 mb-4">
               {['Yönetici', 'Admin', 'Moderatör', 'Üye'].map((rank) => {
@@ -1565,7 +1565,7 @@ function AdminPanelContent() {
                               ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' 
                               : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
                           }`}>
-                            {isOnline ? 'Online' : 'Offline'}
+                            {isOnline ? t('online_status') : t('offline_status')}
                           </span>
                         </button>
                       );
@@ -1582,14 +1582,14 @@ function AdminPanelContent() {
                 }}
                 className="flex-1 px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg font-medium transition-colors"
               >
-                İptal
+                {t('cancel')}
               </button>
               <button
                 onClick={handleTransferSession}
                 disabled={!selectedTransferAdmin}
                 className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
-                Devret
+                {t('devret')}
               </button>
             </div>
           </div>
@@ -1602,7 +1602,7 @@ function AdminPanelContent() {
             <div className="bg-green-600 text-white p-4 flex items-center justify-between flex-shrink-0">
               <h3 className="font-bold text-lg flex items-center gap-2">
                 <UserPlus className="w-5 h-5" />
-                Live Chat Admin Ekle
+                {t('add_livechat_admin')}
               </h3>
               <button onClick={() => setShowLivechatAdminModal(false)} className="hover:bg-green-500 p-1 rounded transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1611,10 +1611,10 @@ function AdminPanelContent() {
               </button>
             </div>
             <div className="p-4 flex-1 overflow-y-auto">
-              <p className="text-sm text-slate-500 mb-3">Bir kullanıcı seçin:</p>
+              <p className="text-sm text-slate-500 mb-3">{t('select_user_prompt')}</p>
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {siteUsers.length === 0 ? (
-                  <p className="text-center py-4 text-slate-500">Kullanıcı bulunamadı</p>
+                  <p className="text-center py-4 text-slate-500">{t('user_not_found')}</p>
                 ) : (
                   siteUsers.map(user => {
                     const isAlreadyAdmin = livechatAdmins.some(a => a.steam_id === user.steam_id);
@@ -1650,13 +1650,13 @@ function AdminPanelContent() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-slate-900 dark:text-white truncate">{user.username}</p>
-                          <p className="text-xs text-slate-500">{user.steam_id || 'Steam ID yok'} • {user.provider}</p>
+                          <p className="text-xs text-slate-500">{user.steam_id || t('steam_id_yok')} • {user.provider}</p>
                         </div>
                         {isAlreadyAdmin && (
-                          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">Zaten Admin</span>
+                          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">{t('zaten_admin')}</span>
                         )}
                         {!user.steam_id && (
-                          <span className="text-xs bg-slate-300 text-slate-600 px-2 py-1 rounded-full">Steam yok</span>
+                          <span className="text-xs bg-slate-300 text-slate-600 px-2 py-1 rounded-full">{t('steam_yok')}</span>
                         )}
                       </div>
                     );
@@ -1666,14 +1666,14 @@ function AdminPanelContent() {
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3 flex-shrink-0">
               <button onClick={() => setShowLivechatAdminModal(false)} className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors">
-                İptal
+                {t('cancel')}
               </button>
               <button
                 onClick={handleAddLivechatAdmin}
                 disabled={!livechatAdminForm.steam_id}
                 className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
               >
-                Ekle
+                {t('add')}
               </button>
             </div>
           </div>

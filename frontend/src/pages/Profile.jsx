@@ -14,17 +14,17 @@ export default function Profile() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("msg") === "linked") {
-      setStatusMsg("Steam hesabı başarıyla bağlandı!");
+      setStatusMsg(t('steam_linked'));
       checkAuth();
       window.history.replaceState({}, document.title, window.location.pathname);
     }
     if (params.get("success") === "discord_linked") {
-      setStatusMsg("Discord hesabınız başarıyla eşleştirildi!");
+      setStatusMsg(t('discord_linked'));
       checkAuth();
       window.history.replaceState({}, document.title, window.location.pathname);
     }
     if (params.get("error") === "discord_denied") {
-      setStatusMsg("Discord bağlantısı reddedildi.");
+      setStatusMsg(t('discord_denied'));
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, [location]);
@@ -67,33 +67,33 @@ export default function Profile() {
                   {user.provider}
                 </span>
               </h2>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">{user.email || 'E-Posta Eklenmemiş'}</p>
+               <p className="text-slate-500 dark:text-slate-400 mt-1">{user.email || t('email_not_added')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                {/* Steam Card */}
                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50 flex flex-col justify-between">
-                 <div>
-                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Steam ID</h3>
-                   <p className="text-slate-700 dark:text-slate-200 font-mono text-sm">{user.steam_id || 'Bağlanmadı'}</p>
-                 </div>
-                 
-                  {!user.steam_id && (
-                    <button 
-                      onClick={() => window.location.href = `${API_URL}/auth/steam/login?link_token=${localStorage.getItem('access_token')}`}
-                      className="mt-4 w-full py-2 bg-[#171a21] hover:bg-[#2a475e] text-white text-xs font-bold uppercase tracking-widest rounded transition-colors flex items-center justify-center gap-2"
-                    >
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam" className="w-4 h-4 brightness-200" />
-                      Steam'i Bağla
-                    </button>
-                  )}
-               </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{t('steam_id_label')}</h3>
+                    <p className="text-slate-700 dark:text-slate-200 font-mono text-sm">{user.steam_id || t('not_connected_steam')}</p>
+                  </div>
+                  
+                   {!user.steam_id && (
+                     <button 
+                       onClick={() => window.location.href = `${API_URL}/auth/steam/login?link_token=${localStorage.getItem('access_token')}`}
+                       className="mt-4 w-full py-2 bg-[#171a21] hover:bg-[#2a475e] text-white text-xs font-bold uppercase tracking-widest rounded transition-colors flex items-center justify-center gap-2"
+                     >
+                       <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg" alt="Steam" className="w-4 h-4 brightness-200" />
+                       {t('connect_steam')}
+                     </button>
+                   )}
+                </div>
 
                {/* Discord Card */}
                <div className="bg-[#5865F2]/5 dark:bg-[#5865F2]/10 p-4 rounded-xl border border-[#5865F2]/20 flex flex-col justify-between">
                  <div>
-                   <h3 className="text-xs font-bold text-[#5865F2] uppercase tracking-wider mb-1">Discord HESABI</h3>
-                   <p className="text-slate-700 dark:text-slate-200 font-bold tracking-widest text-sm">{user.discord_username || 'Eşleştirilmedi'}</p>
+                   <h3 className="text-xs font-bold text-[#5865F2] uppercase tracking-wider mb-1">{t('discord_account')}</h3>
+                   <p className="text-slate-700 dark:text-slate-200 font-bold tracking-widest text-sm">{user.discord_username || t('not_matched')}</p>
                  </div>
                  
                   {!user.discord_username && (
@@ -101,14 +101,14 @@ export default function Profile() {
                       onClick={() => window.location.href = `${API_URL}/discord/login?link_token=${localStorage.getItem('access_token')}`}
                       className="mt-4 w-full py-2 bg-[#5865F2] hover:bg-[#4752C4] shadow-lg shadow-[#5865F2]/20 text-white text-xs font-bold uppercase tracking-widest rounded transition-colors flex items-center justify-center gap-2"
                     >
-                      Discord'u Eşleştir
+                      {t('match_discord')}
                     </button>
                   )}
-               </div>
+                </div>
 
                {/* Register Date Card */}
                <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700/50">
-                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Kayıt Tarihi</h3>
+                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">{t('registration_date')}</h3>
                  <p className="text-slate-700 dark:text-slate-200 text-sm font-medium">
                    {new Date(user.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
                  </p>
@@ -122,7 +122,7 @@ export default function Profile() {
             onClick={logoutUser}
             className="px-6 py-2 bg-red-600 hover:bg-red-500 text-white font-bold uppercase tracking-widest rounded transition-colors"
           >
-            Çıkış Yap
+            {t('logout')}
           </button>
         </div>
       </div>

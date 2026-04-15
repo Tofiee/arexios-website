@@ -242,7 +242,7 @@ def delete_livechat_admin(admin_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"message": "Admin silindi"}
 
-@router.post("/migrate")
+@router.get("/migrate")
 def run_migration(db: Session = Depends(get_db)):
     """Run database migrations for new columns"""
     results = []

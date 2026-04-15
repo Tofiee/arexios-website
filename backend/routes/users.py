@@ -31,3 +31,18 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
 @router.get("/me", response_model=schemas.UserResponse)
 def get_user_me(current_user: models.User = Depends(get_current_user)):
     return current_user
+
+@router.get("/all")
+def get_all_users(db: Session = Depends(get_db)):
+    users = db.query(models.User).filter(models.User.is_active == True).all()
+    return [
+        {
+            "id": u.id,
+            "username": u.username,
+            "email": u.email,
+            "steam_id": u.steam_id,
+            "avatar_url": u.avatar_url,
+            "provider": u.provider
+        }
+        for u in users
+    ]

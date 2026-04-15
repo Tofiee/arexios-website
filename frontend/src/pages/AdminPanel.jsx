@@ -42,8 +42,9 @@ function AdminPanelContent() {
   const [settings, setSettings] = useState(null);
   const [settingsForm, setSettingsForm] = useState(null);
   const [livechatAdmins, setLivechatAdmins] = useState([]);
+  const [siteUsers, setSiteUsers] = useState([]);
   const [showLivechatAdminModal, setShowLivechatAdminModal] = useState(false);
-  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '' });
+  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '', avatar_url: '', provider: '' });
   const [usersIniEntries, setUsersIniEntries] = useState([]);
   const [syncResult, setSyncResult] = useState(null);
   
@@ -358,6 +359,15 @@ function AdminPanelContent() {
       setLivechatAdmins(res.data);
     } catch (err) {
       console.error('Failed to fetch livechat admins:', err);
+    }
+  };
+
+  const fetchSiteUsers = async () => {
+    try {
+      const res = await api.get('/users/all');
+      setSiteUsers(res.data);
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
     }
   };
 
@@ -921,7 +931,7 @@ function AdminPanelContent() {
                 </h3>
                 <div className="mb-4 flex justify-between items-center">
                   <p className="text-sm text-slate-500">Live chat'e erişebilecek adminler</p>
-                  <button onClick={() => { setShowLivechatAdminModal(true); setLivechatAdminForm({ steam_id: '', username: '' }); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
+                  <button onClick={() => { fetchSiteUsers(); setShowLivechatAdminModal(true); setLivechatAdminForm({ steam_id: '', username: '', avatar_url: '', provider: '' }); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
                     <UserPlus className="w-4 h-4" />
                     Admin Ekle
                   </button>
@@ -1558,8 +1568,8 @@ function AdminPanelContent() {
 
       {showLivechatAdminModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <div className="bg-green-600 text-white p-4 flex items-center justify-between">
+          <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 overflow-hidden max-h-[80vh] flex flex-col">
+            <div className="bg-green-600 text-white p-4 flex items-center justify-between flex-shrink-0">
               <h3 className="font-bold text-lg flex items-center gap-2">
                 <UserPlus className="w-5 h-5" />
                 Live Chat Admin Ekle
@@ -1570,21 +1580,69 @@ function AdminPanelContent() {
                 </svg>
               </button>
             </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Steam ID *</label>
-                <input type="text" value={livechatAdminForm.steam_id} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, steam_id: e.target.value})} placeholder="76561198000000000" className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-green-500" />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Kullanıcı Adı *</label>
-                <input type="text" value={livechatAdminForm.username} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, username: e.target.value})} placeholder="Tofie" className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-green-500" />
+            <div className="p-4 flex-1 overflow-y-auto">
+              <p className="text-sm text-slate-500 mb-3">Bir kullanıcı seçin:</p>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {siteUsers.length === 0 ? (
+                  <p className="text-center py-4 text-slate-500">Kullanıcı bulunamadı</p>
+                ) : (
+                  siteUsers.map(user => {
+                    const isAlreadyAdmin = livechatAdmins.some(a => a.steam_id === user.steam_id);
+                    return (
+                      <div
+                        key={user.id}
+                        onClick={() => {
+                          if (!isAlreadyAdmin && user.steam_id) {
+                            setLivechatAdminForm({
+                              steam_id: user.steam_id,
+                              username: user.username,
+                              avatar_url: user.avatar_url,
+                              provider: user.provider
+                            });
+                          }
+                        }}
+                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                          isAlreadyAdmin
+                            ? 'bg-slate-100 dark:bg-slate-800 opacity-50 cursor-not-allowed'
+                            : livechatAdminForm.steam_id === user.steam_id
+                              ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-500'
+                              : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700'
+                        }`}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-slate-300 dark:bg-slate-600 overflow-hidden flex-shrink-0">
+                          {user.avatar_url ? (
+                            <img src={user.avatar_url} alt={user.username} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-500 font-bold">
+                              {user.username.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-900 dark:text-white truncate">{user.username}</p>
+                          <p className="text-xs text-slate-500">{user.steam_id || 'Steam ID yok'} • {user.provider}</p>
+                        </div>
+                        {isAlreadyAdmin && (
+                          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">Zaten Admin</span>
+                        )}
+                        {!user.steam_id && (
+                          <span className="text-xs bg-slate-300 text-slate-600 px-2 py-1 rounded-full">Steam yok</span>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3 flex-shrink-0">
               <button onClick={() => setShowLivechatAdminModal(false)} className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors">
                 İptal
               </button>
-              <button onClick={handleAddLivechatAdmin} className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
+              <button
+                onClick={handleAddLivechatAdmin}
+                disabled={!livechatAdminForm.steam_id}
+                className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
+              >
                 Ekle
               </button>
             </div>

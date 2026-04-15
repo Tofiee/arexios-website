@@ -1686,27 +1686,26 @@ function AdminPanelContent() {
                 {siteUsers.length === 0 ? (
                   <p className="text-center py-4 text-slate-500">{t('user_not_found')}</p>
                 ) : (
-                  siteUsers.map(user => {
-                    const isAlreadyAdmin = livechatAdmins.some(a => a.steam_id === user.steam_id);
-                    return (
+                  siteUsers
+                    .filter(user => {
+                      const isAlreadyAdmin = livechatAdmins.some(a => a.steam_id === user.steam_id);
+                      return !isAlreadyAdmin && user.steam_id;
+                    })
+                    .map(user => (
                       <div
                         key={user.id}
                         onClick={() => {
-                          if (!isAlreadyAdmin && user.steam_id) {
-                            setLivechatAdminForm({
-                              steam_id: user.steam_id,
-                              username: user.username,
-                              avatar_url: user.avatar_url,
-                              provider: user.provider
-                            });
-                          }
+                          setLivechatAdminForm({
+                            steam_id: user.steam_id,
+                            username: user.username,
+                            avatar_url: user.avatar_url,
+                            provider: user.provider
+                          });
                         }}
                         className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
-                          isAlreadyAdmin
-                            ? 'bg-slate-100 dark:bg-slate-800 opacity-50 cursor-not-allowed'
-                            : livechatAdminForm.steam_id === user.steam_id
-                              ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-500'
-                              : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700'
+                          livechatAdminForm.steam_id === user.steam_id
+                            ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-500'
+                            : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700'
                         }`}
                       >
                         <div className="w-10 h-10 rounded-full bg-slate-300 dark:bg-slate-600 overflow-hidden flex-shrink-0">
@@ -1720,17 +1719,13 @@ function AdminPanelContent() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-slate-900 dark:text-white truncate">{user.username}</p>
-                          <p className="text-xs text-slate-500">{user.steam_id || t('steam_id_yok')} • {user.provider}</p>
+                          <p className="text-xs text-slate-500">{user.steam_id} • {user.provider}</p>
                         </div>
-                        {isAlreadyAdmin && (
-                          <span className="text-xs bg-green-500 text-white px-2 py-1 rounded-full">{t('zaten_admin')}</span>
-                        )}
-                        {!user.steam_id && (
-                          <span className="text-xs bg-slate-300 text-slate-600 px-2 py-1 rounded-full">{t('steam_yok')}</span>
-                        )}
                       </div>
-                    );
-                  })
+                    ))
+                )}
+                {siteUsers.filter(user => !livechatAdmins.some(a => a.steam_id === user.steam_id) && user.steam_id).length === 0 && (
+                  <p className="text-center py-4 text-slate-500">Tüm kullanıcılar zaten admin</p>
                 )}
               </div>
               {livechatAdminForm.steam_id && (

@@ -42,6 +42,9 @@
     "close": "Kapat",
     "ingame_nick": "Oyun İçi Nickiniz",
     "discord_id": "Discord Kullanıcı Adınız (İsteğe Bağlı)",
-    "optional_note": "Eklemek İstediğiniz Not (İsteğe Bağlı)"
+    "optional_note": "Eklemek İstediğiniz Not (İsteğe Bağlı)",
+    "connect_server": "Sunucuya Bağlan",
+    "connect_teamspeak": "Teamspeak3'e Bağlan",
+    "active_connection": "AKTİF BAĞLANTI"
   }
 }

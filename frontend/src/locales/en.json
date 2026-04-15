@@ -42,6 +42,9 @@
     "close": "Close",
     "ingame_nick": "In-game Nickname",
     "discord_id": "Discord ID / Username (Optional)",
-    "optional_note": "Optional Note"
+    "optional_note": "Optional Note",
+    "connect_server": "Connect to Server",
+    "connect_teamspeak": "Connect to Teamspeak",
+    "active_connection": "ACTIVE CONNECTION"
   }
 }

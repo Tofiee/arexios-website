@@ -98,13 +98,13 @@ export default function Home() {
             className="flex-1 py-4 px-6 bg-orange-600 hover:bg-orange-500 text-white font-bold uppercase tracking-widest rounded border-b-4 border-orange-800 active:border-b-0 active:translate-y-1 transition-all shadow-[0_0_20px_rgba(234,88,12,0.4)] flex items-center justify-center gap-2 group"
           >
             <Server className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            Sunucuya Bağlan
+            {t('connect_server')}
           </button>
           <a
             href="ts3server://spjb?nickname=Websitenizden%20geliyorum"
             className="flex-1 py-4 px-6 bg-[#7289da] hover:bg-[#5b6eae] text-white font-bold uppercase tracking-widest rounded border-b-4 border-[#4a5899] active:border-b-0 active:translate-y-1 transition-all shadow-lg flex items-center justify-center gap-2"
           >
-            Teamspeak3'e Bağlan
+            {t('connect_teamspeak')}
           </a>
         </div>
       </div>
@@ -204,7 +204,7 @@ export default function Home() {
             <div className="col-span-2 bg-slate-50 dark:bg-slate-800/30 p-4 rounded border border-slate-100 dark:border-slate-700/30 flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <div className={`w-3 h-3 rounded-full ${tsStatus.data?.status === 'online' ? 'bg-emerald-500 animate-[pulse_2s_ease-in-out_infinite]' : 'bg-red-500'}`} />
-                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 tracking-wider">AKTİF BAĞLANTI</span>
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 tracking-wider">{t('active_connection')}</span>
               </div>
               <p className="text-3xl font-black text-slate-800 dark:text-white">
                 {tsStatus.data?.status === 'online' ? `${tsStatus.data.players}` : '-'}

@@ -208,7 +208,7 @@ async def user_typing(sid, data):
             'session_id': session_id,
             'user_name': active_sessions.get(sid, {}).get('user_name', 'Misafir'),
             'is_typing': is_typing,
-            'typing_text': typing_text if is_typing else ''
+            'typing_text': typing_text
         }, room='admin_room')
 
 @sio.event

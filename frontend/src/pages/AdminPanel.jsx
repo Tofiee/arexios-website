@@ -1017,7 +1017,7 @@ function AdminPanelContent() {
                           <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}} />
                           <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
                         </div>
-                        <span>{typingUsers[activeSession.id].typing_text || 'Kullanıcı yazıyor...'}</span>
+                        <span>{typingUsers[activeSession.id]?.typing_text || 'Kullanıcı yazıyor...'}</span>
                       </div>
                     )}
                     <div ref={messagesEndRef} />

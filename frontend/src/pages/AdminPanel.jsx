@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 import { MessageCircle, Users, Clock, CheckCircle, XCircle, Send, Bell, BellOff, LogOut, Package, Plus, Edit, Trash2, Tag, Settings, Server, FileText, Megaphone, Upload, Shield, UserPlus } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { PushProvider, usePush } from '../context/PushContext';
@@ -8,6 +9,7 @@ import api from '../api';
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 function AdminPanelContent() {
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const { subscribeToPush, unsubscribeFromPush } = usePush();
   
@@ -375,16 +377,16 @@ function AdminPanelContent() {
     try {
       await api.put('/admin/settings', settingsForm);
       setSettings(settingsForm);
-      alert('Ayarlar kaydedildi!');
+      alert(t('settings_saved'));
     } catch (err) {
       console.error('Failed to save settings:', err);
-      alert('Ayarlar kaydedilirken hata oluştu.');
+      alert(t('error_saving_settings'));
     }
   };
 
   const handleAddLivechatAdmin = async () => {
     if (!livechatAdminForm.steam_id || !livechatAdminForm.username) {
-      alert('Lütfen tüm alanları doldurun.');
+      alert(t('fill_all_fields'));
       return;
     }
     try {
@@ -398,12 +400,12 @@ function AdminPanelContent() {
   };
 
   const handleDeleteLivechatAdmin = async (adminId) => {
-    if (!confirm('Bu admini silmek istediğinize emin misiniz?')) return;
+    if (!confirm(t('confirm_delete'))) return;
     try {
       await api.delete(`/admin/livechat-admins/${adminId}`);
       fetchLivechatAdmins();
     } catch (err) {
-      alert('Silinirken hata oluştu.');
+      alert(t('error_deleting'));
     }
   };
 
@@ -474,13 +476,13 @@ function AdminPanelContent() {
       setSkinForm({ ...skinForm, image_url: `http://127.0.0.1:8000${res.data.url}` });
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('Resim yüklenirken hata oluştu.');
+      alert(t('file_upload_error'));
     }
   };
 
   const handleSaveSkin = async () => {
     if (!skinForm.name || !skinForm.image_url || !skinForm.price) {
-      alert('Lütfen tüm alanları doldurun.');
+      alert(t('fill_all_fields'));
       return;
     }
     try {
@@ -503,13 +505,13 @@ function AdminPanelContent() {
       setShowSkinModal(false);
     } catch (err) {
       console.error('Failed to save skin:', err);
-      alert('Skin kaydedilirken hata oluştu.');
+      alert(t('error_saving_settings'));
     }
   };
 
   const handleSaveCategory = async () => {
     if (!categoryForm.name) {
-      alert('Lütfen kategori adını girin.');
+      alert(t('fill_all_fields'));
       return;
     }
     try {
@@ -524,24 +526,24 @@ function AdminPanelContent() {
   };
 
   const handleDeleteCategory = async (categoryId) => {
-    if (!confirm('Bu kategoriyi silmek istediğinize emin misiniz?')) return;
+    if (!confirm(t('confirm_delete'))) return;
     try {
       await api.delete(`/skins/categories/${categoryId}`);
       fetchCategories();
     } catch (err) {
       console.error('Failed to delete category:', err);
-      alert('Kategori silinirken hata oluştu.');
+      alert(t('error_deleting'));
     }
   };
 
   const handleDeleteSkin = async (skinId) => {
-    if (!confirm('Bu skin\'i silmek istediğinize emin misiniz?')) return;
+    if (!confirm(t('confirm_delete'))) return;
     try {
       await api.delete(`/skins/${skinId}`);
       fetchSkins();
     } catch (err) {
       console.error('Failed to delete skin:', err);
-      alert('Skin silinirken hata oluştu.');
+      alert(t('error_deleting'));
     }
   };
 
@@ -668,7 +670,7 @@ function AdminPanelContent() {
   const handleCloseSession = async () => {
     if (!activeSession) return;
     
-    if (!confirm('Konuşmayı sonlandırmak istediğinize emin misiniz?')) return;
+    if (!confirm(t('confirm_delete'))) return;
     
     const sessionId = activeSession.id;
     
@@ -694,7 +696,7 @@ function AdminPanelContent() {
 
   const handleDeleteSession = async (sessionId, e) => {
     e.stopPropagation();
-    if (!confirm('Bu destek talebini silmek istediğinize emin misiniz?')) return;
+    if (!confirm(t('confirm_delete'))) return;
     
     try {
       await api.delete(`/support/session/${sessionId}`);

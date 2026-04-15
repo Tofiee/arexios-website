@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, useImperativeHandle, forwardRef } from 'react';
 import { io } from 'socket.io-client';
+import { useTranslation } from 'react-i18next';
 import { Send, X, Minimize2, Server, AlertTriangle, Shield, User, Loader2 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api';
@@ -21,6 +22,7 @@ const getStoredSessionId = () => {
 };
 
 const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);

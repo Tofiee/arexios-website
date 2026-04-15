@@ -200,12 +200,8 @@ function AdminPanelContent() {
 
     newSocket.on('session_closed', (data) => {
       const sessionId = Number(data.session_id);
-      console.log('session_closed received:', sessionId, data.closed_by);
       setSessions(prev => {
-        const before = prev.length;
-        const filtered = prev.filter(s => s.id !== sessionId);
-        console.log('Sessions before:', before, 'after:', filtered.length);
-        return filtered;
+        return prev.filter(s => s.id !== sessionId);
       });
       
       if (activeSession?.id === sessionId) {
@@ -267,7 +263,6 @@ function AdminPanelContent() {
 
     newSocket.on('user_location', (data) => {
       const sessionId = Number(data.session_id);
-      console.log('user_location received:', sessionId, data);
       setUserLocations(prev => ({
         ...prev,
         [sessionId]: {
@@ -279,9 +274,7 @@ function AdminPanelContent() {
         }
       }));
       
-      console.log('activeSession id:', activeSession?.id, 'data.session_id:', sessionId);
       if (activeSession?.id === sessionId) {
-        console.log('Updating activeSession with:', data);
         setActiveSession(prev => prev ? {
           ...prev,
           ip_address: data.ip_address,
@@ -1016,7 +1009,17 @@ function AdminPanelContent() {
                           </p>
                         </div>
                       </div>
-                    ))}
+                      ))}
+                    {typingUsers[activeSession.id]?.is_typing && (
+                      <div className="flex items-center gap-2 px-4 py-2 text-sm text-slate-500">
+                        <div className="flex gap-1">
+                          <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" />
+                          <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}} />
+                          <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
+                        </div>
+                        <span>{typingUsers[activeSession.id].typing_text || 'Kullanıcı yazıyor...'}</span>
+                      </div>
+                    )}
                     <div ref={messagesEndRef} />
                   </div>
 

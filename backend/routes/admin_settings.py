@@ -9,7 +9,7 @@ router = APIRouter(prefix="/admin", tags=["admin-settings"])
 class SiteSettingsResponse(BaseModel):
     cs16_server_ip: str | None = None
     cs16_server_port: str | None = None
-    cs16_rcon_password: str | None = None
+    cs16_gametracker_url: str | None = None
     ts3_server_ip: str | None = None
     ts3_server_port: str | None = None
     ts3_query_port: str | None = None
@@ -22,7 +22,7 @@ class SiteSettingsResponse(BaseModel):
 class SiteSettingsUpdate(BaseModel):
     cs16_server_ip: str | None = None
     cs16_server_port: str | None = None
-    cs16_rcon_password: str | None = None
+    cs16_gametracker_url: str | None = None
     ts3_server_ip: str | None = None
     ts3_server_port: str | None = None
     ts3_query_port: str | None = None
@@ -58,7 +58,7 @@ def get_settings(db: Session = Depends(get_db)):
     return SiteSettingsResponse(
         cs16_server_ip=settings.cs16_server_ip,
         cs16_server_port=settings.cs16_server_port,
-        cs16_rcon_password=settings.cs16_rcon_password,
+        cs16_gametracker_url=settings.cs16_gametracker_url,
         ts3_server_ip=settings.ts3_server_ip,
         ts3_server_port=settings.ts3_server_port,
         ts3_query_port=settings.ts3_query_port,
@@ -75,7 +75,7 @@ def update_settings(data: SiteSettingsUpdate, db: Session = Depends(get_db)):
     
     settings.cs16_server_ip = data.cs16_server_ip
     settings.cs16_server_port = data.cs16_server_port
-    settings.cs16_rcon_password = data.cs16_rcon_password
+    settings.cs16_gametracker_url = data.cs16_gametracker_url
     settings.ts3_server_ip = data.ts3_server_ip
     settings.ts3_server_port = data.ts3_server_port
     settings.ts3_query_port = data.ts3_query_port
@@ -91,7 +91,7 @@ def update_settings(data: SiteSettingsUpdate, db: Session = Depends(get_db)):
     return SiteSettingsResponse(
         cs16_server_ip=settings.cs16_server_ip,
         cs16_server_port=settings.cs16_server_port,
-        cs16_rcon_password=settings.cs16_rcon_password,
+        cs16_gametracker_url=settings.cs16_gametracker_url,
         ts3_server_ip=settings.ts3_server_ip,
         ts3_server_port=settings.ts3_server_port,
         ts3_query_port=settings.ts3_query_port,

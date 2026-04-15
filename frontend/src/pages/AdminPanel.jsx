@@ -889,8 +889,8 @@ function AdminPanelContent() {
                     <input type="text" value={settingsForm?.cs16_server_port || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_server_port: e.target.value})} placeholder="27015" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">RCON Şifre</label>
-                    <input type="password" value={settingsForm?.cs16_rcon_password || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_rcon_password: e.target.value})} placeholder="********" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">GameTracker URL</label>
+                    <input type="text" value={settingsForm?.cs16_gametracker_url || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_gametracker_url: e.target.value})} placeholder="https://www.gametracker.com/server/..." className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                 </div>
               </div>

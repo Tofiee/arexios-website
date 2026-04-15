@@ -46,7 +46,7 @@ function AdminPanelContent() {
   const [livechatAdmins, setLivechatAdmins] = useState([]);
   const [siteUsers, setSiteUsers] = useState([]);
   const [showLivechatAdminModal, setShowLivechatAdminModal] = useState(false);
-  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: false, can_skin_management: false, can_view_skins: true });
+  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true });
   const [usersIniEntries, setUsersIniEntries] = useState([]);
   const [syncResult, setSyncResult] = useState(null);
   
@@ -1002,15 +1002,15 @@ function AdminPanelContent() {
                           <div className="grid grid-cols-3 gap-2">
                             <label className="flex items-center gap-2 text-sm">
                               <input type="checkbox" checked={admin.can_livechat || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_livechat', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                              <span className="text-slate-700 dark:text-slate-300">{t('livechat_access')}</span>
+                              <span className="text-slate-700 dark:text-slate-300">{t('livechat_tab')}</span>
                             </label>
                             <label className="flex items-center gap-2 text-sm">
                               <input type="checkbox" checked={admin.can_skin_management || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_skin_management', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                              <span className="text-slate-700 dark:text-slate-300">{t('skin_management_access')}</span>
+                              <span className="text-slate-700 dark:text-slate-300">{t('skin_management_tab')}</span>
                             </label>
                             <label className="flex items-center gap-2 text-sm">
-                              <input type="checkbox" checked={admin.can_view_skins !== false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_view_skins', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                              <span className="text-slate-700 dark:text-slate-300">{t('view_skins_access')}</span>
+                              <input type="checkbox" checked={admin.can_settings || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_settings', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                              <span className="text-slate-700 dark:text-slate-300">{t('settings_tab')}</span>
                             </label>
                           </div>
                         )}
@@ -1701,15 +1701,15 @@ function AdminPanelContent() {
                   <div className="space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={livechatAdminForm.can_livechat || false} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, can_livechat: e.target.checked})} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('livechat_access')}</span>
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('livechat_tab')}</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" checked={livechatAdminForm.can_skin_management || false} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, can_skin_management: e.target.checked})} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('skin_management_access')}</span>
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('skin_management_tab')}</span>
                     </label>
                     <label className="flex items-center gap-2">
-                      <input type="checkbox" checked={livechatAdminForm.can_view_skins !== false} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, can_view_skins: e.target.checked})} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('view_skins_access')}</span>
+                      <input type="checkbox" checked={livechatAdminForm.can_settings || false} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, can_settings: e.target.checked})} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{t('settings_tab')}</span>
                     </label>
                   </div>
                 </div>

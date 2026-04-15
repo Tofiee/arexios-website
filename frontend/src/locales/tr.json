@@ -330,9 +330,9 @@
     "important_notice": "Önemli Bilgi",
     "i_understand": "Anladım",
     "superadmin": "Superadmin",
-    "livechat_access": "Live Chat Erişimi",
-    "skin_management_access": "Skin Yönetimi",
-    "view_skins_access": "Skin Görüntüleme",
+    "livechat_tab": "Live Chat",
+    "skin_management_tab": "Skin Yönetimi",
+    "settings_tab": "Ayarlar",
     "permissions_for": "Yetkiler:",
     "error_updating": "Güncellenirken hata oluştu"
   }

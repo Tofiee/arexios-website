@@ -34,16 +34,16 @@ class LiveChatAdminCreate(BaseModel):
     steam_id: str
     username: str
     is_superadmin: bool = False
-    can_livechat: bool = False
-    can_skin_management: bool = False
-    can_view_skins: bool = True
+    can_livechat: bool = True
+    can_skin_management: bool = True
+    can_settings: bool = True
 
 class LiveChatAdminUpdate(BaseModel):
     username: str | None = None
     is_superadmin: bool | None = None
     can_livechat: bool | None = None
     can_skin_management: bool | None = None
-    can_view_skins: bool | None = None
+    can_settings: bool | None = None
     is_active: bool | None = None
 
 class LiveChatAdminResponse(BaseModel):
@@ -54,7 +54,7 @@ class LiveChatAdminResponse(BaseModel):
     is_superadmin: bool
     can_livechat: bool
     can_skin_management: bool
-    can_view_skins: bool
+    can_settings: bool
     created_at: str
 
 def get_or_create_settings(db: Session) -> models.SiteSettings:
@@ -133,7 +133,7 @@ def get_livechat_admins(db: Session = Depends(get_db)):
             is_superadmin=a.is_superadmin,
             can_livechat=a.can_livechat,
             can_skin_management=a.can_skin_management,
-            can_view_skins=a.can_view_skins,
+            can_settings=a.can_settings,
             created_at=a.created_at.isoformat() if a.created_at else ""
         )
         for a in admins
@@ -153,7 +153,7 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
         existing.is_superadmin = data.is_superadmin
         existing.can_livechat = data.can_livechat
         existing.can_skin_management = data.can_skin_management
-        existing.can_view_skins = data.can_view_skins
+        existing.can_settings = data.can_settings
         db.commit()
         db.refresh(existing)
         return LiveChatAdminResponse(
@@ -164,7 +164,7 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
             is_superadmin=existing.is_superadmin,
             can_livechat=existing.can_livechat,
             can_skin_management=existing.can_skin_management,
-            can_view_skins=existing.can_view_skins,
+            can_settings=existing.can_settings,
             created_at=existing.created_at.isoformat() if existing.created_at else ""
         )
     
@@ -174,7 +174,7 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
         is_superadmin=data.is_superadmin,
         can_livechat=data.can_livechat,
         can_skin_management=data.can_skin_management,
-        can_view_skins=data.can_view_skins
+        can_settings=data.can_settings
     )
     db.add(admin)
     db.commit()
@@ -188,23 +188,18 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
         is_superadmin=admin.is_superadmin,
         can_livechat=admin.can_livechat,
         can_skin_management=admin.can_skin_management,
-        can_view_skins=admin.can_view_skins,
+        can_settings=admin.can_settings,
         created_at=admin.created_at.isoformat() if admin.created_at else ""
     )
 
 @router.put("/livechat-admins/{admin_id}", response_model=LiveChatAdminResponse)
-def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, db: Session = Depends(get_db)):
+def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, current_steam_id: str = None, db: Session = Depends(get_db)):
     admin = db.query(models.LiveChatAdmin).filter(models.LiveChatAdmin.id == admin_id).first()
     if not admin:
         raise HTTPException(status_code=404, detail="Admin bulunamadı")
     
     if admin.is_superadmin:
-        if data.is_superadmin is False:
-            raise HTTPException(status_code=403, detail="Superadmin yetkisi kaldırılamaz")
-        if data.is_active is False:
-            raise HTTPException(status_code=403, detail="Superadmin pasifleştirilemez")
-        if data.steam_id is not None:
-            raise HTTPException(status_code=403, detail="Superadmin bilgileri değiştirilemez")
+        raise HTTPException(status_code=403, detail="Superadmin yetkileri degistirilemez")
     
     if data.username is not None:
         admin.username = data.username
@@ -214,8 +209,8 @@ def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, db: Session 
         admin.can_livechat = data.can_livechat
     if data.can_skin_management is not None:
         admin.can_skin_management = data.can_skin_management
-    if data.can_view_skins is not None:
-        admin.can_view_skins = data.can_view_skins
+    if data.can_settings is not None:
+        admin.can_settings = data.can_settings
     if data.is_active is not None:
         admin.is_active = data.is_active
     
@@ -230,7 +225,7 @@ def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, db: Session 
         is_superadmin=admin.is_superadmin,
         can_livechat=admin.can_livechat,
         can_skin_management=admin.can_skin_management,
-        can_view_skins=admin.can_view_skins,
+        can_settings=admin.can_settings,
         created_at=admin.created_at.isoformat() if admin.created_at else ""
     )
 

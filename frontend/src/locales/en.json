@@ -330,9 +330,9 @@
     "important_notice": "Important Notice",
     "i_understand": "I Understand",
     "superadmin": "Superadmin",
-    "livechat_access": "Live Chat Access",
-    "skin_management_access": "Skin Management",
-    "view_skins_access": "View Skins",
+    "livechat_tab": "Live Chat",
+    "skin_management_tab": "Skin Management",
+    "settings_tab": "Settings",
     "permissions_for": "Permissions for:",
     "error_updating": "Error updating"
   }

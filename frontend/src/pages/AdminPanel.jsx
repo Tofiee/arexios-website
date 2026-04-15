@@ -998,22 +998,38 @@ function AdminPanelContent() {
                             </button>
                           )}
                         </div>
-                        {!admin.is_superadmin && (
-                          <div className="grid grid-cols-3 gap-2">
-                            <label className="flex items-center gap-2 text-sm">
-                              <input type="checkbox" checked={admin.can_livechat || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_livechat', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                              <span className="text-slate-700 dark:text-slate-300">{t('livechat_tab')}</span>
-                            </label>
-                            <label className="flex items-center gap-2 text-sm">
-                              <input type="checkbox" checked={admin.can_skin_management || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_skin_management', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                              <span className="text-slate-700 dark:text-slate-300">{t('skin_management_tab')}</span>
-                            </label>
-                            <label className="flex items-center gap-2 text-sm">
-                              <input type="checkbox" checked={admin.can_settings || false} onChange={(e) => handleUpdateAdminPermission(admin.id, 'can_settings', e.target.checked)} className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                              <span className="text-slate-700 dark:text-slate-300">{t('settings_tab')}</span>
-                            </label>
-                          </div>
-                        )}
+                        <div className="grid grid-cols-3 gap-2">
+                          <label className={`flex items-center gap-2 text-sm ${admin.is_superadmin || admin.steam_id === user?.steam_id ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                            <input 
+                              type="checkbox" 
+                              checked={admin.can_livechat !== false} 
+                              disabled={admin.is_superadmin || admin.steam_id === user?.steam_id}
+                              onChange={(e) => !admin.is_superadmin && admin.steam_id !== user?.steam_id && handleUpdateAdminPermission(admin.id, 'can_livechat', e.target.checked)}
+                              className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" 
+                            />
+                            <span className={`${admin.is_superadmin ? 'text-purple-600 dark:text-purple-400 font-medium' : 'text-slate-700 dark:text-slate-300'}`}>{t('livechat_tab')}</span>
+                          </label>
+                          <label className={`flex items-center gap-2 text-sm ${admin.is_superadmin || admin.steam_id === user?.steam_id ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                            <input 
+                              type="checkbox" 
+                              checked={admin.can_skin_management !== false} 
+                              disabled={admin.is_superadmin || admin.steam_id === user?.steam_id}
+                              onChange={(e) => !admin.is_superadmin && admin.steam_id !== user?.steam_id && handleUpdateAdminPermission(admin.id, 'can_skin_management', e.target.checked)}
+                              className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" 
+                            />
+                            <span className={`${admin.is_superadmin ? 'text-purple-600 dark:text-purple-400 font-medium' : 'text-slate-700 dark:text-slate-300'}`}>{t('skin_management_tab')}</span>
+                          </label>
+                          <label className={`flex items-center gap-2 text-sm ${admin.is_superadmin || admin.steam_id === user?.steam_id ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                            <input 
+                              type="checkbox" 
+                              checked={admin.can_settings !== false} 
+                              disabled={admin.is_superadmin || admin.steam_id === user?.steam_id}
+                              onChange={(e) => !admin.is_superadmin && admin.steam_id !== user?.steam_id && handleUpdateAdminPermission(admin.id, 'can_settings', e.target.checked)}
+                              className="w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500" 
+                            />
+                            <span className={`${admin.is_superadmin ? 'text-purple-600 dark:text-purple-400 font-medium' : 'text-slate-700 dark:text-slate-300'}`}>{t('settings_tab')}</span>
+                          </label>
+                        </div>
                       </div>
                     ))
                   )}

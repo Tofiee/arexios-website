@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import LiveChat from './components/LiveChat';
 import { Routes, Route, useLocation } from 'react-router-dom';
@@ -30,13 +30,15 @@ const GuestRoute = ({ children }) => {
 const AdminRoute = ({ children }) => {
   const { user, loading } = React.useContext(AuthContext);
   const [isAdmin, setIsAdmin] = useState(null);
+  const userRef = useRef(null);
   const location = useLocation();
   
+  userRef.current = user;
+  
   useEffect(() => {
-    console.log('[AdminRoute] useEffect triggered', { user, loading });
-    if (user?.steam_id) {
-      console.log('[AdminRoute] Checking admin for steam_id:', user.steam_id);
-      api.get(`/admins/is-admin?steam_id=${encodeURIComponent(user.steam_id)}`)
+    if (!loading && userRef.current?.steam_id) {
+      console.log('[AdminRoute] Checking admin for steam_id:', userRef.current.steam_id);
+      api.get(`/admins/is-admin?steam_id=${encodeURIComponent(userRef.current.steam_id)}`)
         .then(res => {
           console.log('[AdminRoute] isAdmin API response:', res.data);
           setIsAdmin(res.data.is_admin);
@@ -45,16 +47,12 @@ const AdminRoute = ({ children }) => {
           console.error('[AdminRoute] isAdmin API error:', err);
           setIsAdmin(false);
         });
-    } else {
-      console.log('[AdminRoute] No steam_id, setting isAdmin to false');
+    } else if (!loading && !userRef.current) {
       setIsAdmin(false);
     }
-  }, [user]);
+  }, [loading]);
   
-  console.log('[AdminRoute] Render:', { loading, hasUser: !!user, userSteamId: user?.steam_id, isAdmin });
-  
-  if (loading) {
-    console.log('[AdminRoute] Showing loading spinner (loading=true)');
+  if (loading || isAdmin === null) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0a0c10]">
         <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
@@ -62,26 +60,9 @@ const AdminRoute = ({ children }) => {
     );
   }
   
-  if (!user) {
-    console.log('[AdminRoute] No user, redirecting to /login');
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!isAdmin) return <Navigate to="/" replace />;
   
-  if (isAdmin === null) {
-    console.log('[AdminRoute] isAdmin is null, showing spinner');
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0a0c10]">
-        <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-  
-  if (!isAdmin) {
-    console.log('[AdminRoute] User is not admin, redirecting to /');
-    return <Navigate to="/" replace />;
-  }
-  
-  console.log('[AdminRoute] Rendering children (admin access granted)');
   return children;
 };
 

@@ -241,3 +241,41 @@ def delete_livechat_admin(admin_id: int, db: Session = Depends(get_db)):
     admin.is_active = False
     db.commit()
     return {"message": "Admin silindi"}
+
+@router.post("/migrate")
+def run_migration(db: Session = Depends(get_db)):
+    """Run database migrations for new columns"""
+    results = []
+    
+    try:
+        conn = db.bind
+        inspector = __import__('sqlalchemy').inspect(conn)
+        existing_columns = [c['name'] for c in inspector.get_columns('livechat_admins')]
+        
+        if 'can_view_skins' in existing_columns:
+            try:
+                conn.execute(db.text("ALTER TABLE livechat_admins DROP COLUMN can_view_skins"))
+                results.append("Dropped can_view_skins column")
+            except:
+                results.append("can_view_skins already dropped or error")
+        
+        if 'can_settings' not in existing_columns:
+            try:
+                conn.execute(db.text("ALTER TABLE livechat_admins ADD COLUMN can_settings BOOLEAN DEFAULT TRUE"))
+                results.append("Added can_settings column")
+            except Exception as e:
+                results.append(f"can_settings already exists or error: {str(e)}")
+        
+        for col, default_val in [('can_livechat', True), ('can_skin_management', True)]:
+            if col in existing_columns:
+                try:
+                    conn.execute(db.text(f"ALTER TABLE livechat_admins MODIFY COLUMN {col} BOOLEAN DEFAULT {default_val}"))
+                    results.append(f"Updated {col} default to TRUE")
+                except:
+                    results.append(f"Could not update {col}")
+        
+        db.commit()
+        return {"status": "success", "results": results}
+    except Exception as e:
+        db.commit()
+        return {"status": "error", "message": str(e)}

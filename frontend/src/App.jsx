@@ -33,16 +33,28 @@ const AdminRoute = ({ children }) => {
   const location = useLocation();
   
   useEffect(() => {
+    console.log('[AdminRoute] useEffect triggered', { user, loading });
     if (user?.steam_id) {
+      console.log('[AdminRoute] Checking admin for steam_id:', user.steam_id);
       api.get(`/admins/is-admin?steam_id=${encodeURIComponent(user.steam_id)}`)
-        .then(res => setIsAdmin(res.data.is_admin))
-        .catch(() => setIsAdmin(false));
+        .then(res => {
+          console.log('[AdminRoute] isAdmin API response:', res.data);
+          setIsAdmin(res.data.is_admin);
+        })
+        .catch(err => {
+          console.error('[AdminRoute] isAdmin API error:', err);
+          setIsAdmin(false);
+        });
     } else {
+      console.log('[AdminRoute] No steam_id, setting isAdmin to false');
       setIsAdmin(false);
     }
   }, [user]);
   
+  console.log('[AdminRoute] Render:', { loading, hasUser: !!user, userSteamId: user?.steam_id, isAdmin });
+  
   if (loading) {
+    console.log('[AdminRoute] Showing loading spinner (loading=true)');
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0a0c10]">
         <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
@@ -50,9 +62,13 @@ const AdminRoute = ({ children }) => {
     );
   }
   
-  if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!user) {
+    console.log('[AdminRoute] No user, redirecting to /login');
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
   
   if (isAdmin === null) {
+    console.log('[AdminRoute] isAdmin is null, showing spinner');
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-[#0a0c10]">
         <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
@@ -60,8 +76,12 @@ const AdminRoute = ({ children }) => {
     );
   }
   
-  if (!isAdmin) return <Navigate to="/" replace />;
+  if (!isAdmin) {
+    console.log('[AdminRoute] User is not admin, redirecting to /');
+    return <Navigate to="/" replace />;
+  }
   
+  console.log('[AdminRoute] Rendering children (admin access granted)');
   return children;
 };
 

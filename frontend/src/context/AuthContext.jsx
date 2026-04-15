@@ -20,17 +20,21 @@ export const AuthProvider = ({ children }) => {
     }
 
     const token = localStorage.getItem('access_token');
+    console.log('[AuthContext] checkAuth: token exists:', !!token);
     if (token) {
       try {
         const response = await api.get('/users/me');
+        console.log('[AuthContext] checkAuth: user data:', response.data);
+        console.log('[AuthContext] checkAuth: steam_id:', response.data?.steam_id);
         setUser(response.data);
       } catch (error) {
-        console.error("Token invalid or expired", error);
+        console.error("[AuthContext] Token invalid or expired", error);
         localStorage.removeItem('access_token');
         setUser(null);
       }
     }
     setLoading(false);
+    console.log('[AuthContext] checkAuth: loading set to false, user:', user);
   };
 
   useEffect(() => {

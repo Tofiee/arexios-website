@@ -256,7 +256,6 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
     });
 
     socketRef.current.on('admin_typing', (data) => {
-      console.log('admin_typing received:', data, 'sessionIdRef:', sessionIdRef.current);
       if (Number(data.session_id) === Number(sessionIdRef.current)) {
         setAdminTyping(data.is_typing);
         setAdminTypingName(data.admin_name || 'Admin');

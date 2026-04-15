@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { MessageCircle, Users, Clock, CheckCircle, XCircle, Send, Bell, BellOff, LogOut, Package, Plus, Edit, Trash2, Tag } from 'lucide-react';
+import { MessageCircle, Users, Clock, CheckCircle, XCircle, Send, Bell, BellOff, LogOut, Package, Plus, Edit, Trash2, Tag, Settings, Server, FileText, Megaphone, Upload, Shield, UserPlus } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { PushProvider, usePush } from '../context/PushContext';
 import api from '../api';
@@ -39,6 +39,13 @@ function AdminPanelContent() {
   const [skinForm, setSkinForm] = useState({ name: '', image_url: '', price: '', category_id: '' });
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [categoryForm, setCategoryForm] = useState({ name: '' });
+  const [settings, setSettings] = useState(null);
+  const [settingsForm, setSettingsForm] = useState(null);
+  const [livechatAdmins, setLivechatAdmins] = useState([]);
+  const [showLivechatAdminModal, setShowLivechatAdminModal] = useState(false);
+  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '' });
+  const [usersIniEntries, setUsersIniEntries] = useState([]);
+  const [syncResult, setSyncResult] = useState(null);
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -48,6 +55,8 @@ function AdminPanelContent() {
     fetchAdmins();
     fetchSkins();
     fetchCategories();
+    fetchSettings();
+    fetchLivechatAdmins();
     connectSocket();
     
     const sessionInterval = setInterval(fetchSessions, 5000);
@@ -330,6 +339,98 @@ function AdminPanelContent() {
       setCategories(res.data);
     } catch (err) {
       console.error('Failed to fetch categories:', err);
+    }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const res = await api.get('/admin/settings');
+      setSettings(res.data);
+      setSettingsForm(res.data);
+    } catch (err) {
+      console.error('Failed to fetch settings:', err);
+    }
+  };
+
+  const fetchLivechatAdmins = async () => {
+    try {
+      const res = await api.get('/admin/livechat-admins');
+      setLivechatAdmins(res.data);
+    } catch (err) {
+      console.error('Failed to fetch livechat admins:', err);
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      await api.put('/admin/settings', settingsForm);
+      setSettings(settingsForm);
+      alert('Ayarlar kaydedildi!');
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+      alert('Ayarlar kaydedilirken hata oluştu.');
+    }
+  };
+
+  const handleAddLivechatAdmin = async () => {
+    if (!livechatAdminForm.steam_id || !livechatAdminForm.username) {
+      alert('Lütfen tüm alanları doldurun.');
+      return;
+    }
+    try {
+      await api.post('/admin/livechat-admins', livechatAdminForm);
+      fetchLivechatAdmins();
+      setShowLivechatAdminModal(false);
+      setLivechatAdminForm({ steam_id: '', username: '' });
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Eklenirken hata oluştu.');
+    }
+  };
+
+  const handleDeleteLivechatAdmin = async (adminId) => {
+    if (!confirm('Bu admini silmek istediğinize emin misiniz?')) return;
+    try {
+      await api.delete(`/admin/livechat-admins/${adminId}`);
+      fetchLivechatAdmins();
+    } catch (err) {
+      alert('Silinirken hata oluştu.');
+    }
+  };
+
+  const handleUsersIniUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await api.post('/admin/users-ini/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setUsersIniEntries(res.data.entries);
+      setSyncResult(null);
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Dosya yüklenirken hata oluştu.');
+    }
+  };
+
+  const handleSyncUsersIni = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await api.post('/admin/users-ini/sync', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setSyncResult(res.data);
+      setUsersIniEntries([]);
+      alert(`Senkronizasyon tamamlandı! ${res.data.added_entries} eklendi, ${res.data.skipped_entries} atlandı.`);
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Senkronizasyon sırasında hata oluştu.');
     }
   };
 
@@ -652,11 +753,22 @@ function AdminPanelContent() {
             <Package className="w-4 h-4 inline mr-2" />
             Skin Yönetimi
           </button>
+          <button
+            onClick={() => { setActiveTab('settings'); fetchSettings(); }}
+            className={`px-4 py-3 font-bold text-sm uppercase tracking-wider transition-colors border-b-2 ${
+              activeTab === 'settings'
+                ? 'text-orange-600 border-orange-600'
+                : 'text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300'
+            }`}
+          >
+            <Settings className="w-4 h-4 inline mr-2" />
+            Ayarlar
+          </button>
         </div>
       </div>
 
       <div className="pt-12 h-[calc(100vh-64px)]">
-        {activeTab === 'skins' ? (
+        {activeTab === 'skins' && (
           <div className="p-6 overflow-auto h-full">
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center justify-between mb-4">
@@ -742,7 +854,184 @@ function AdminPanelContent() {
               </div>
             </div>
           </div>
-        ) : (
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="p-6 overflow-auto h-full">
+            <div className="max-w-5xl mx-auto space-y-6">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <Settings className="w-6 h-6" />
+                Ayarlar
+              </h2>
+
+              <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Server className="w-5 h-5 text-blue-500" />
+                  CS 1.6 Sunucu Bilgileri
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sunucu IP</label>
+                    <input type="text" value={settingsForm?.cs16_server_ip || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_server_ip: e.target.value})} placeholder="185.100.68.100" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Port</label>
+                    <input type="text" value={settingsForm?.cs16_server_port || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_server_port: e.target.value})} placeholder="27015" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">RCON Şifre</label>
+                    <input type="password" value={settingsForm?.cs16_rcon_password || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_rcon_password: e.target.value})} placeholder="********" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Server className="w-5 h-5 text-purple-500" />
+                  TeamSpeak 3 Sunucu Bilgileri
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sunucu IP</label>
+                    <input type="text" value={settingsForm?.ts3_server_ip || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_server_ip: e.target.value})} placeholder="185.100.68.100" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sunucu Port</label>
+                    <input type="text" value={settingsForm?.ts3_server_port || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_server_port: e.target.value})} placeholder="9987" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Query Port</label>
+                    <input type="text" value={settingsForm?.ts3_query_port || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_query_port: e.target.value})} placeholder="10011" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Query Kullanıcı</label>
+                    <input type="text" value={settingsForm?.ts3_query_user || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_query_user: e.target.value})} placeholder="serveradmin" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Query Şifre</label>
+                  <input type="password" value={settingsForm?.ts3_query_password || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_query_password: e.target.value})} placeholder="********" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 md:w-1/2" />
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-green-500" />
+                  Live Chat Adminleri
+                </h3>
+                <div className="mb-4 flex justify-between items-center">
+                  <p className="text-sm text-slate-500">Live chat'e erişebilecek adminler</p>
+                  <button onClick={() => { setShowLivechatAdminModal(true); setLivechatAdminForm({ steam_id: '', username: '' }); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
+                    <UserPlus className="w-4 h-4" />
+                    Admin Ekle
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {livechatAdmins.length === 0 ? (
+                    <p className="text-center py-4 text-slate-500">Henüz admin eklenmemiş</p>
+                  ) : (
+                    livechatAdmins.map(admin => (
+                      <div key={admin.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold">{admin.username.charAt(0).toUpperCase()}</div>
+                          <div>
+                            <p className="font-medium text-slate-900 dark:text-white">{admin.username}</p>
+                            <p className="text-xs text-slate-500">{admin.steam_id}</p>
+                          </div>
+                        </div>
+                        <button onClick={() => handleDeleteLivechatAdmin(admin.id)} className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-yellow-500" />
+                  Users.ini Yönetimi
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">1. Dosya Yükle ve Önizle</h4>
+                    <p className="text-sm text-slate-500 mb-3">Admin listesini görmek için users.ini dosyasını yükleyin</p>
+                    <label className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                      <Upload className="w-5 h-5 text-slate-500" />
+                      <span className="font-medium text-slate-700 dark:text-slate-300">Users.ini Seç</span>
+                      <input type="file" accept=".ini" onChange={handleUsersIniUpload} className="hidden" />
+                    </label>
+                    {usersIniEntries.length > 0 && (
+                      <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg max-h-60 overflow-auto">
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{usersIniEntries.length} admin bulundu:</p>
+                        {usersIniEntries.map((entry, idx) => (
+                          <div key={idx} className="text-sm py-1 border-b border-slate-200 dark:border-slate-700 last:border-0">
+                            <span className="font-mono text-orange-600">{entry.steam_id}</span>
+                            <span className="text-slate-400 mx-2">|</span>
+                            <span className="text-slate-600 dark:text-slate-400">{entry.flags}</span>
+                            {entry.name && <span className="text-slate-400 mx-2">| {entry.name}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">2. Adminlist.txt'ye Ekle</h4>
+                    <p className="text-sm text-slate-500 mb-3">Mevcut listeye yeni adminleri ekler (varsa atlar)</p>
+                    <label className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-500 text-white rounded-lg cursor-pointer transition-colors">
+                      <Upload className="w-5 h-5" />
+                      <span className="font-medium">Senkronize Et</span>
+                      <input type="file" accept=".ini" onChange={handleSyncUsersIni} className="hidden" />
+                    </label>
+                    {syncResult && (
+                      <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sonuç:</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          <span className="text-green-600 font-medium">{syncResult.added_entries} eklendi</span>
+                          {syncResult.skipped_entries > 0 && <span className="text-yellow-600 ml-2">{syncResult.skipped_entries} atlandı</span>}
+                        </p>
+                        {syncResult.added_list.length > 0 && <div className="mt-2 text-xs text-slate-500">Eklenenler: {syncResult.added_list.join(', ')}</div>}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Megaphone className="w-5 h-5 text-red-500" />
+                  Site Duyurusu
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Başlık</label>
+                    <input type="text" value={settingsForm?.announcement_title || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_title: e.target.value})} placeholder="Örn: Bakım Duyurusu" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">İçerik</label>
+                    <textarea value={settingsForm?.announcement_content || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_content: e.target.value})} placeholder="Duyuru içeriğini buraya yazın..." rows={4} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 resize-none" />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={settingsForm?.announcement_active || false} onChange={(e) => setSettingsForm({...settingsForm, announcement_active: e.target.checked})} className="w-5 h-5 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Duyuruyu Aktif Et</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button onClick={handleSaveSettings} className="px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5" />
+                  Ayarları Kaydet
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {(activeTab === 'support' || (activeTab !== 'skins' && activeTab !== 'settings')) && (
           <div className="flex h-full">
             <div className="w-80 bg-white dark:bg-[#151822] border-r border-slate-200 dark:border-slate-800 flex flex-col">
               <div className="p-4 border-b border-slate-200 dark:border-slate-800">
@@ -1261,6 +1550,42 @@ function AdminPanelContent() {
                 className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
                 Devret
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLivechatAdminModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div className="bg-green-600 text-white p-4 flex items-center justify-between">
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                <UserPlus className="w-5 h-5" />
+                Live Chat Admin Ekle
+              </h3>
+              <button onClick={() => setShowLivechatAdminModal(false)} className="hover:bg-green-500 p-1 rounded transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Steam ID *</label>
+                <input type="text" value={livechatAdminForm.steam_id} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, steam_id: e.target.value})} placeholder="76561198000000000" className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-green-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Kullanıcı Adı *</label>
+                <input type="text" value={livechatAdminForm.username} onChange={(e) => setLivechatAdminForm({...livechatAdminForm, username: e.target.value})} placeholder="Tofie" className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-green-500" />
+              </div>
+            </div>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3">
+              <button onClick={() => setShowLivechatAdminModal(false)} className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors">
+                İptal
+              </button>
+              <button onClick={handleAddLivechatAdmin} className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
+                Ekle
               </button>
             </div>
           </div>

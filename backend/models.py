@@ -92,3 +92,29 @@ class Skin(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     category = relationship("SkinCategory", back_populates="skins")
 
+class SiteSettings(Base):
+    __tablename__ = "site_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    cs16_server_ip = Column(String(100), nullable=True)
+    cs16_server_port = Column(String(10), nullable=True)
+    cs16_rcon_password = Column(String(100), nullable=True)
+    ts3_server_ip = Column(String(100), nullable=True)
+    ts3_server_port = Column(String(10), nullable=True)
+    ts3_query_port = Column(String(10), nullable=True)
+    ts3_query_user = Column(String(100), nullable=True)
+    ts3_query_password = Column(String(100), nullable=True)
+    announcement_title = Column(String(255), nullable=True)
+    announcement_content = Column(Text, nullable=True)
+    announcement_active = Column(Boolean, default=False)
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+class LiveChatAdmin(Base):
+    __tablename__ = "livechat_admins"
+
+    id = Column(Integer, primary_key=True, index=True)
+    steam_id = Column(String(50), nullable=False, unique=True)
+    username = Column(String(100), nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+

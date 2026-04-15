@@ -77,6 +77,8 @@ async def connect(sid, environ):
     else:
         client_ip = environ.get('REMOTE_ADDR', 'unknown')
     
+    print(f"  IP: {client_ip}, UA: {environ.get('HTTP_USER_AGENT', 'N/A')[:100]}")
+    
     user_agent = environ.get('HTTP_USER_AGENT', 'Bilinmiyor')
     
     active_sessions[sid] = {
@@ -290,6 +292,7 @@ async def send_message(sid, data):
                 'user_agent': user_agent
             }, room='admin_room')
             
+            print(f"[USER_LOCATION] Emitting for session {session_id}: ip={ip_address}, location={location}, ua={user_agent}")
             await sio.emit('user_location', {
                 'session_id': session_id,
                 'ip_address': ip_address,

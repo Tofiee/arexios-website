@@ -1317,20 +1317,27 @@ function AdminPanelContent() {
 
         {(activeTab === 'support' || (activeTab !== 'skins' && activeTab !== 'settings')) && (
           <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between md:hidden bg-white dark:bg-[#151822] z-30">
-              <button 
-                onClick={() => setSidebarCollapsed(false)}
-                className="flex items-center gap-2"
-              >
-                <MessageCircle className="w-5 h-5 text-orange-500" />
-                <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  {t('support_requests')}
-                </h2>
-                <span className="px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
-                  {sessions.length}
-                </span>
-              </button>
-            </div>
+            {!sidebarCollapsed && (
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between md:hidden bg-white dark:bg-[#151822] z-30">
+                <div className="flex items-center gap-2">
+                  <MessageCircle className="w-5 h-5 text-orange-500" />
+                  <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    {t('support_requests')}
+                  </h2>
+                  <span className="px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
+                    {sessions.length}
+                  </span>
+                </div>
+                <button 
+                  onClick={() => setSidebarCollapsed(true)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                >
+                  <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
             
             {!sidebarCollapsed && (
               <div 

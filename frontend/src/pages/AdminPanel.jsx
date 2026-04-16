@@ -898,27 +898,27 @@ function AdminPanelContent() {
             <div className="max-w-5xl mx-auto space-y-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Settings className="w-6 h-6" />
-                Ayarlar
+                {t('settings_tab')}
               </h2>
 
               <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <Server className="w-5 h-5 text-blue-500" />
-                  CS 1.6 Sunucu Bilgileri
+                  {t('cs16_server_info')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sunucu IP</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('server_ip')}</label>
                     <input type="text" value={settingsForm?.cs16_server_ip || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_server_ip: e.target.value})} placeholder="185.100.68.100" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Port</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('port')}</label>
                     <input type="text" value={settingsForm?.cs16_server_port || ''} onChange={(e) => setSettingsForm({...settingsForm, cs16_server_port: e.target.value})} placeholder="27015" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                 </div>
                 {settingsForm?.cs16_server_ip && settingsForm?.cs16_server_port && (
                   <div className="mt-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">GameTracker Entegrasyonu:</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('gametracker_integration')}</p>
                     <div className="flex flex-wrap gap-3">
                       <a
                         href={`https://www.gametracker.com/server_info/${settingsForm.cs16_server_ip}:${settingsForm.cs16_server_port}/`}
@@ -929,7 +929,7 @@ function AdminPanelContent() {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                         </svg>
-                        Sunucuyu Görüntüle
+                        {t('view_server')}
                       </a>
                       <a
                         href={`https://www.gametracker.com/addserver/?query=${settingsForm.cs16_server_ip}:${settingsForm.cs16_server_port}`}
@@ -940,11 +940,11 @@ function AdminPanelContent() {
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        GameTracker'a Ekle
+                        {t('add_to_gametracker')}
                       </a>
                     </div>
                     <p className="text-xs text-slate-500 mt-2">
-                      IP: <span className="font-mono">{settingsForm.cs16_server_ip}:{settingsForm.cs16_server_port}</span>
+                      {t('ip_label')}: <span className="font-mono">{settingsForm.cs16_server_ip}:{settingsForm.cs16_server_port}</span>
                     </p>
                   </div>
                 )}
@@ -953,28 +953,28 @@ function AdminPanelContent() {
               <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <Server className="w-5 h-5 text-purple-500" />
-                  TeamSpeak 3 Sunucu Bilgileri
+                  {t('ts3_server_info')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sunucu IP</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('server_ip')}</label>
                     <input type="text" value={settingsForm?.ts3_server_ip || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_server_ip: e.target.value})} placeholder="185.100.68.100" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sunucu Port</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('server_port')}</label>
                     <input type="text" value={settingsForm?.ts3_server_port || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_server_port: e.target.value})} placeholder="9987" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Query Port</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('query_port')}</label>
                     <input type="text" value={settingsForm?.ts3_query_port || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_query_port: e.target.value})} placeholder="10011" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Query Kullanıcı</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('query_user')}</label>
                     <input type="text" value={settingsForm?.ts3_query_user || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_query_user: e.target.value})} placeholder="serveradmin" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                 </div>
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Query Şifre</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('query_password')}</label>
                   <input type="password" value={settingsForm?.ts3_query_password || ''} onChange={(e) => setSettingsForm({...settingsForm, ts3_query_password: e.target.value})} placeholder="********" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 md:w-1/2" />
                 </div>
               </div>
@@ -982,18 +982,18 @@ function AdminPanelContent() {
               <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <Shield className="w-5 h-5 text-green-500" />
-                  Live Chat Adminleri
+                  {t('livechat_admins')}
                 </h3>
                 <div className="mb-4 flex justify-between items-center">
-                  <p className="text-sm text-slate-500">Live chat'e erişebilecek adminler</p>
-                  <button onClick={() => { fetchSiteUsers(); setShowLivechatAdminModal(true); setLivechatAdminForm({ steam_id: '', username: '', avatar_url: '', provider: '' }); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
+                  <p className="text-sm text-slate-500">{t('livechat_admins_desc')}</p>
+                  <button onClick={() => { fetchSiteUsers(); setShowLivechatAdminModal(true); setLivechatAdminForm({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true }); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
                     <UserPlus className="w-4 h-4" />
-                    Admin Ekle
+                    {t('add_admin')}
                   </button>
                 </div>
                 <div className="space-y-2">
                   {livechatAdmins.length === 0 ? (
-                    <p className="text-center py-4 text-slate-500">Henüz admin eklenmemiş</p>
+                    <p className="text-center py-4 text-slate-500">{t('no_admins')}</p>
                   ) : (
                     livechatAdmins.map(admin => (
                       <div key={admin.id} className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
@@ -1061,20 +1061,20 @@ function AdminPanelContent() {
               <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-yellow-500" />
-                  Users.ini Yönetimi
+                  {t('users_ini_management')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">1. Dosya Yükle ve Önizle</h4>
-                    <p className="text-sm text-slate-500 mb-3">Admin listesini görmek için users.ini dosyasını yükleyin</p>
+                    <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">{t('upload_preview')}</h4>
+                    <p className="text-sm text-slate-500 mb-3">{t('upload_ini_desc')}</p>
                     <label className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
                       <Upload className="w-5 h-5 text-slate-500" />
-                      <span className="font-medium text-slate-700 dark:text-slate-300">Users.ini Seç</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-300">{t('select_ini')}</span>
                       <input type="file" accept=".ini" onChange={handleUsersIniUpload} className="hidden" />
                     </label>
                     {usersIniEntries.length > 0 && (
                       <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg max-h-60 overflow-auto">
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{usersIniEntries.length} admin bulundu:</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{usersIniEntries.length} {t('admins_found')}</p>
                         {usersIniEntries.map((entry, idx) => (
                           <div key={idx} className="text-sm py-1 border-b border-slate-200 dark:border-slate-700 last:border-0">
                             <span className="font-mono text-orange-600">{entry.steam_id}</span>
@@ -1087,21 +1087,21 @@ function AdminPanelContent() {
                     )}
                   </div>
                   <div>
-                    <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">2. Adminlist.txt'ye Ekle</h4>
-                    <p className="text-sm text-slate-500 mb-3">Mevcut listeye yeni adminleri ekler (varsa atlar)</p>
+                    <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">{t('add_to_adminlist')}</h4>
+                    <p className="text-sm text-slate-500 mb-3">{t('add_to_adminlist_desc')}</p>
                     <label className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-500 text-white rounded-lg cursor-pointer transition-colors">
                       <Upload className="w-5 h-5" />
-                      <span className="font-medium">Senkronize Et</span>
+                      <span className="font-medium">{t('sync')}</span>
                       <input type="file" accept=".ini" onChange={handleSyncUsersIni} className="hidden" />
                     </label>
                     {syncResult && (
                       <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sonuç:</p>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('result')}</p>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          <span className="text-green-600 font-medium">{syncResult.added_entries} eklendi</span>
-                          {syncResult.skipped_entries > 0 && <span className="text-yellow-600 ml-2">{syncResult.skipped_entries} atlandı</span>}
+                          <span className="text-green-600 font-medium">{syncResult.added_entries} {t('added')}</span>
+                          {syncResult.skipped_entries > 0 && <span className="text-yellow-600 ml-2">{syncResult.skipped_entries} {t('skipped')}</span>}
                         </p>
-                        {syncResult.added_list.length > 0 && <div className="mt-2 text-xs text-slate-500">Eklenenler: {syncResult.added_list.join(', ')}</div>}
+                        {syncResult.added_list.length > 0 && <div className="mt-2 text-xs text-slate-500">{t('added_list')}: {syncResult.added_list.join(', ')}</div>}
                       </div>
                     )}
                   </div>
@@ -1111,21 +1111,21 @@ function AdminPanelContent() {
               <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <Megaphone className="w-5 h-5 text-red-500" />
-                  Site Duyurusu
+                  {t('site_announcement')}
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Başlık</label>
-                    <input type="text" value={settingsForm?.announcement_title || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_title: e.target.value})} placeholder="Örn: Bakım Duyurusu" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('title')}</label>
+                    <input type="text" value={settingsForm?.announcement_title || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_title: e.target.value})} placeholder={t('announcement_title_placeholder')} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">İçerik</label>
-                    <textarea value={settingsForm?.announcement_content || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_content: e.target.value})} placeholder="Duyuru içeriğini buraya yazın..." rows={4} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 resize-none" />
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('content')}</label>
+                    <textarea value={settingsForm?.announcement_content || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_content: e.target.value})} placeholder={t('announcement_content_placeholder')} rows={4} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 resize-none" />
                   </div>
                   <div className="flex items-center gap-3">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input type="checkbox" checked={settingsForm?.announcement_active || false} onChange={(e) => setSettingsForm({...settingsForm, announcement_active: e.target.checked})} className="w-5 h-5 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Duyuruyu Aktif Et</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('activate_announcement')}</span>
                     </label>
                   </div>
                 </div>
@@ -1134,7 +1134,7 @@ function AdminPanelContent() {
               <div className="flex justify-end">
                 <button onClick={handleSaveSettings} className="px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors flex items-center gap-2">
                   <CheckCircle className="w-5 h-5" />
-                  Ayarları Kaydet
+                  {t('save_settings')}
                 </button>
               </div>
             </div>

@@ -52,6 +52,7 @@ function AdminPanelContent() {
   const [announcements, setAnnouncements] = useState([]);
   const [newAnnouncement, setNewAnnouncement] = useState({ title: '', subtitle: '', content: '', is_active: false });
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -1316,9 +1317,15 @@ function AdminPanelContent() {
 
         {(activeTab === 'support' || (activeTab !== 'skins' && activeTab !== 'settings')) && (
           <div className="flex h-full">
-            <div className="w-80 bg-white dark:bg-[#151822] border-r border-slate-200 dark:border-slate-800 flex flex-col">
-              <div className="p-4 border-b border-slate-200 dark:border-slate-800">
-                <div className="flex items-center justify-between mb-3">
+            {!sidebarCollapsed && (
+              <div 
+                className="fixed inset-0 bg-black/50 z-30 md:hidden"
+                onClick={() => setSidebarCollapsed(true)}
+              />
+            )}
+            <div className={`w-80 bg-white dark:bg-[#151822] border-r border-slate-200 dark:border-slate-800 flex flex-col md:relative fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:transform-none ${sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'}`}>
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
                   <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <MessageCircle className="w-5 h-5 text-orange-500" />
                     {t('support_requests')}
@@ -1327,7 +1334,17 @@ function AdminPanelContent() {
                     {sessions.length}
                   </span>
                 </div>
-                
+                <button
+                  onClick={() => setSidebarCollapsed(true)}
+                  className="md:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                >
+                  <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800">
                 <button
                   onClick={toggleNotifications}
                   className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
@@ -1633,6 +1650,15 @@ function AdminPanelContent() {
                 </div>
               )}
             </div>
+            
+            {sidebarCollapsed && (
+              <button
+                onClick={() => setSidebarCollapsed(false)}
+                className="md:hidden fixed bottom-4 left-4 z-30 w-12 h-12 bg-orange-600 hover:bg-orange-500 text-white rounded-full shadow-lg flex items-center justify-center"
+              >
+                <MessageCircle className="w-6 h-6" />
+              </button>
+            )}
           </div>
         )}
       </div>

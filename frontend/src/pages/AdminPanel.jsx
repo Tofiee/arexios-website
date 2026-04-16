@@ -1324,24 +1324,24 @@ function AdminPanelContent() {
               />
             )}
             <div className={`w-80 bg-white dark:bg-[#151822] border-r border-slate-200 dark:border-slate-800 flex flex-col md:relative fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:transform-none ${sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'}`}>
-                <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      <MessageCircle className="w-5 h-5 text-orange-500" />
-                      {t('support_requests')}
-                    </h2>
-                    <span className="px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
-                      {sessions.length}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => setSidebarCollapsed(true)}
-                    className="md:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
-                  >
-                    <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+              <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5 text-orange-500" />
+                    {t('support_requests')}
+                  </h2>
+                  <span className="px-2 py-1 bg-orange-500 text-white text-xs font-bold rounded-full">
+                    {sessions.length}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSidebarCollapsed(true)}
+                  className="md:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                >
+                  <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
               
               <div className="p-4 border-b border-slate-200 dark:border-slate-800">

@@ -368,6 +368,18 @@
     "activate_announcement": "Activate Announcement",
     "save_settings": "Save Settings",
     "announcement_title_placeholder": "e.g: Maintenance Notice",
-    "announcement_content_placeholder": "Write announcement content here..."
+    "announcement_content_placeholder": "Write announcement content here...",
+    "add_new_announcement": "Add New Announcement",
+    "add_announcement": "Add Announcement",
+    "announcements": "Announcements",
+    "no_announcements": "No announcements yet",
+    "active": "Active",
+    "edit": "Edit",
+    "delete": "Delete",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "edit_announcement": "Edit Announcement",
+    "save": "Save",
+    "confirm_delete": "Are you sure you want to delete this announcement?"
   }
 }

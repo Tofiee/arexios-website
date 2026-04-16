@@ -49,6 +49,9 @@ function AdminPanelContent() {
   const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true });
   const [usersIniEntries, setUsersIniEntries] = useState([]);
   const [syncResult, setSyncResult] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
+  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '', is_active: false });
+  const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -59,6 +62,7 @@ function AdminPanelContent() {
     fetchSkins();
     fetchCategories();
     fetchSettings();
+    fetchAnnouncements();
     fetchLivechatAdmins();
     connectSocket();
     
@@ -352,6 +356,66 @@ function AdminPanelContent() {
       setSettingsForm(res.data);
     } catch (err) {
       console.error('Failed to fetch settings:', err);
+    }
+  };
+
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await api.get('/admin/announcements');
+      setAnnouncements(res.data);
+    } catch (err) {
+      console.error('Failed to fetch announcements:', err);
+    }
+  };
+
+  const handleAddAnnouncement = async () => {
+    if (!newAnnouncement.title || !newAnnouncement.content) return;
+    try {
+      await api.post('/admin/announcements', newAnnouncement);
+      setNewAnnouncement({ title: '', content: '', is_active: false });
+      fetchAnnouncements();
+    } catch (err) {
+      console.error('Failed to add announcement:', err);
+    }
+  };
+
+  const handleEditAnnouncement = (ann) => {
+    setEditingAnnouncement({ ...ann });
+  };
+
+  const handleSaveAnnouncement = async () => {
+    if (!editingAnnouncement || !editingAnnouncement.title || !editingAnnouncement.content) return;
+    try {
+      await api.put(`/admin/announcements/${editingAnnouncement.id}`, {
+        title: editingAnnouncement.title,
+        content: editingAnnouncement.content,
+        is_active: editingAnnouncement.is_active
+      });
+      setEditingAnnouncement(null);
+      fetchAnnouncements();
+    } catch (err) {
+      console.error('Failed to update announcement:', err);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id) => {
+    if (!confirm(t('confirm_delete'))) return;
+    try {
+      await api.delete(`/admin/announcements/${id}`);
+      fetchAnnouncements();
+    } catch (err) {
+      console.error('Failed to delete announcement:', err);
+    }
+  };
+
+  const handleToggleAnnouncement = async (ann) => {
+    try {
+      await api.put(`/admin/announcements/${ann.id}`, {
+        is_active: !ann.is_active
+      });
+      fetchAnnouncements();
+    } catch (err) {
+      console.error('Failed to toggle announcement:', err);
     }
   };
 
@@ -1113,22 +1177,111 @@ function AdminPanelContent() {
                   <Megaphone className="w-5 h-5 text-red-500" />
                   {t('site_announcement')}
                 </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('title')}</label>
-                    <input type="text" value={settingsForm?.announcement_title || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_title: e.target.value})} placeholder={t('announcement_title_placeholder')} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('content')}</label>
-                    <textarea value={settingsForm?.announcement_content || ''} onChange={(e) => setSettingsForm({...settingsForm, announcement_content: e.target.value})} placeholder={t('announcement_content_placeholder')} rows={4} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 resize-none" />
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="checkbox" checked={settingsForm?.announcement_active || false} onChange={(e) => setSettingsForm({...settingsForm, announcement_active: e.target.checked})} className="w-5 h-5 rounded border-slate-300 text-orange-500 focus:ring-orange-500" />
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t('activate_announcement')}</span>
-                    </label>
+                
+                <div className="mb-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                  <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-3">{t('add_new_announcement')}</h4>
+                  <div className="space-y-3">
+                    <input 
+                      type="text" 
+                      value={newAnnouncement.title}
+                      onChange={(e) => setNewAnnouncement({...newAnnouncement, title: e.target.value})}
+                      placeholder={t('title')}
+                      className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
+                    />
+                    <textarea 
+                      value={newAnnouncement.content}
+                      onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
+                      placeholder={t('content')}
+                      rows={3}
+                      className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 resize-none"
+                    />
+                    <button 
+                      onClick={handleAddAnnouncement}
+                      disabled={!newAnnouncement.title || !newAnnouncement.content}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-500 disabled:bg-slate-300 text-white font-medium rounded-lg transition-colors"
+                    >
+                      {t('add_announcement')}
+                    </button>
                   </div>
                 </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-medium text-slate-700 dark:text-slate-300">{t('announcements')}</h4>
+                  {announcements.length === 0 ? (
+                    <p className="text-sm text-slate-500 text-center py-4">{t('no_announcements')}</p>
+                  ) : (
+                    announcements.map(ann => (
+                      <div key={ann.id} className={`p-4 rounded-lg border ${ann.is_active ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'}`}>
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h5 className="font-medium text-slate-900 dark:text-white">{ann.title}</h5>
+                              {ann.is_active && <span className="px-2 py-0.5 text-xs bg-green-500 text-white rounded-full">{t('active')}</span>}
+                            </div>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 line-clamp-2">{ann.content}</p>
+                          </div>
+                          <div className="flex items-center gap-2 ml-4">
+                            <button 
+                              onClick={() => handleEditAnnouncement(ann)}
+                              className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg"
+                              title={t('edit')}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteAnnouncement(ann.id)}
+                              className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg"
+                              title={t('delete')}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleToggleAnnouncement(ann)}
+                              className={`px-3 py-1 text-xs font-medium rounded-lg ${ann.is_active ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-green-500 text-white hover:bg-green-600'}`}
+                            >
+                              {ann.is_active ? t('deactivate') : t('activate')}
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-500">{new Date(ann.created_at).toLocaleDateString()}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {editingAnnouncement && (
+                  <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <h4 className="font-medium text-yellow-800 dark:text-yellow-300 mb-3">{t('edit_announcement')}</h4>
+                    <div className="space-y-3">
+                      <input 
+                        type="text" 
+                        value={editingAnnouncement.title}
+                        onChange={(e) => setEditingAnnouncement({...editingAnnouncement, title: e.target.value})}
+                        className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
+                      />
+                      <textarea 
+                        value={editingAnnouncement.content}
+                        onChange={(e) => setEditingAnnouncement({...editingAnnouncement, content: e.target.value})}
+                        rows={3}
+                        className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500 resize-none"
+                      />
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={handleSaveAnnouncement}
+                          className="px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white font-medium rounded-lg transition-colors"
+                        >
+                          {t('save')}
+                        </button>
+                        <button 
+                          onClick={() => setEditingAnnouncement(null)}
+                          className="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium rounded-lg transition-colors"
+                        >
+                          {t('cancel')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end">

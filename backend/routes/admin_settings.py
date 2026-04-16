@@ -57,6 +57,24 @@ class LiveChatAdminResponse(BaseModel):
     can_settings: bool
     created_at: str
 
+class AnnouncementCreate(BaseModel):
+    title: str
+    content: str
+    is_active: bool = False
+
+class AnnouncementUpdate(BaseModel):
+    title: str | None = None
+    content: str | None = None
+    is_active: bool | None = None
+
+class AnnouncementResponse(BaseModel):
+    id: int
+    title: str
+    content: str
+    is_active: bool
+    created_at: str
+    updated_at: str | None
+
 def get_or_create_settings(db: Session) -> models.SiteSettings:
     settings = db.query(models.SiteSettings).first()
     if not settings:
@@ -241,5 +259,81 @@ def delete_livechat_admin(admin_id: int, db: Session = Depends(get_db)):
     admin.is_active = False
     db.commit()
     return {"message": "Admin silindi"}
+
+@router.get("/announcements", response_model=list[AnnouncementResponse])
+def get_announcements(db: Session = Depends(get_db)):
+    announcements = db.query(models.Announcement).order_by(models.Announcement.created_at.desc()).all()
+    return [
+        AnnouncementResponse(
+            id=a.id,
+            title=a.title,
+            content=a.content,
+            is_active=a.is_active,
+            created_at=a.created_at.isoformat() if a.created_at else "",
+            updated_at=a.updated_at.isoformat() if a.updated_at else None
+        )
+        for a in announcements
+    ]
+
+@router.post("/announcements", response_model=AnnouncementResponse)
+def create_announcement(data: AnnouncementCreate, db: Session = Depends(get_db)):
+    if data.is_active:
+        db.query(models.Announcement).update({models.Announcement.is_active: False})
+    
+    announcement = models.Announcement(
+        title=data.title,
+        content=data.content,
+        is_active=data.is_active
+    )
+    db.add(announcement)
+    db.commit()
+    db.refresh(announcement)
+    
+    return AnnouncementResponse(
+        id=announcement.id,
+        title=announcement.title,
+        content=announcement.content,
+        is_active=announcement.is_active,
+        created_at=announcement.created_at.isoformat() if announcement.created_at else "",
+        updated_at=announcement.updated_at.isoformat() if announcement.updated_at else None
+    )
+
+@router.put("/announcements/{announcement_id}", response_model=AnnouncementResponse)
+def update_announcement(announcement_id: int, data: AnnouncementUpdate, db: Session = Depends(get_db)):
+    announcement = db.query(models.Announcement).filter(models.Announcement.id == announcement_id).first()
+    if not announcement:
+        raise HTTPException(status_code=404, detail="Duyuru bulunamadi")
+    
+    if data.is_active is True:
+        db.query(models.Announcement).update({models.Announcement.is_active: False})
+    
+    if data.title is not None:
+        announcement.title = data.title
+    if data.content is not None:
+        announcement.content = data.content
+    if data.is_active is not None:
+        announcement.is_active = data.is_active
+    
+    db.commit()
+    db.refresh(announcement)
+    
+    return AnnouncementResponse(
+        id=announcement.id,
+        title=announcement.title,
+        content=announcement.content,
+        is_active=announcement.is_active,
+        created_at=announcement.created_at.isoformat() if announcement.created_at else "",
+        updated_at=announcement.updated_at.isoformat() if announcement.updated_at else None
+    )
+
+@router.delete("/announcements/{announcement_id}")
+def delete_announcement(announcement_id: int, db: Session = Depends(get_db)):
+    announcement = db.query(models.Announcement).filter(models.Announcement.id == announcement_id).first()
+    if not announcement:
+        raise HTTPException(status_code=404, detail="Duyuru bulunamadi")
+    
+    db.delete(announcement)
+    db.commit()
+    return {"message": "Duyuru silindi"}
 
 

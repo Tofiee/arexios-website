@@ -368,6 +368,18 @@
     "activate_announcement": "Duyuruyu Aktif Et",
     "save_settings": "Ayarları Kaydet",
     "announcement_title_placeholder": "Örn: Bakım Duyurusu",
-    "announcement_content_placeholder": "Duyuru içeriğini buraya yazın..."
+    "announcement_content_placeholder": "Duyuru içeriğini buraya yazın...",
+    "add_new_announcement": "Yeni Duyuru Ekle",
+    "add_announcement": "Duyuru Ekle",
+    "announcements": "Duyurular",
+    "no_announcements": "Henüz duyuru yok",
+    "active": "Aktif",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "activate": "Aktif Et",
+    "deactivate": "Pasif Et",
+    "edit_announcement": "Duyuruyu Düzenle",
+    "save": "Kaydet",
+    "confirm_delete": "Bu duyuruyu silmek istediğinize emin misiniz?"
   }
 }

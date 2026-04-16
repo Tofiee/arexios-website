@@ -14,17 +14,13 @@ const SiteAnnouncementModal = () => {
     const fetchAnnouncement = async () => {
       try {
         const dismissedId = localStorage.getItem(ANNOUNCEMENT_DISMISSED_KEY);
-        const res = await api.get('/admin/settings');
+        const res = await api.get('/admin/announcements');
         
-        if (res.data?.announcement_active && res.data?.announcement_content) {
-          const contentHash = btoa(res.data.announcement_title + res.data.announcement_content).slice(0, 50);
-          const announcementId = `ann_${contentHash}`;
-          if (dismissedId !== announcementId) {
-            setAnnouncement({
-              id: announcementId,
-              title: res.data.announcement_title,
-              content: res.data.announcement_content
-            });
+        const activeAnnouncement = res.data?.find(a => a.is_active);
+        
+        if (activeAnnouncement) {
+          if (dismissedId !== String(activeAnnouncement.id)) {
+            setAnnouncement(activeAnnouncement);
             setShowModal(true);
           }
         }
@@ -39,7 +35,7 @@ const SiteAnnouncementModal = () => {
   const handleDismiss = () => {
     setShowModal(false);
     if (announcement?.id) {
-      localStorage.setItem(ANNOUNCEMENT_DISMISSED_KEY, announcement.id);
+      localStorage.setItem(ANNOUNCEMENT_DISMISSED_KEY, String(announcement.id));
     }
   };
 

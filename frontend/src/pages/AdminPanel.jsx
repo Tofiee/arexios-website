@@ -1323,7 +1323,7 @@ function AdminPanelContent() {
                 onClick={() => setSidebarCollapsed(true)}
               />
             )}
-            <div className={`w-80 bg-white dark:bg-[#151822] border-r border-slate-200 dark:border-slate-800 flex flex-col md:relative fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:transform-none ${sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'} inset-y-28 md:inset-y-0`}>
+            <div className={`w-80 bg-white dark:bg-[#151822] border-r border-slate-200 dark:border-slate-800 flex flex-col md:relative fixed inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out md:transform-none ${sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'} top-28 md:top-0`}>
               <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">

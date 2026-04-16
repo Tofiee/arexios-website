@@ -1725,7 +1725,7 @@ function AdminPanelContent() {
                     ))
                 )}
                 {siteUsers.filter(user => !livechatAdmins.some(a => a.steam_id === user.steam_id) && user.steam_id).length === 0 && (
-                  <p className="text-center py-4 text-slate-500">Tüm kullanıcılar zaten admin</p>
+                  <p className="text-center py-4 text-slate-500">{t('user_not_found')}</p>
                 )}
               </div>
               {livechatAdminForm.steam_id && (

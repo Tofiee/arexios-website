@@ -62,7 +62,7 @@ const SiteAnnouncementModal = () => {
             </div>
             <div>
               <h3 className="font-bold text-white text-lg">{announcement.title || t('site_announcement')}</h3>
-              <p className="text-orange-100 text-xs">{t('important_notice')}</p>
+              {announcement.subtitle && <p className="text-orange-100 text-xs">{announcement.subtitle}</p>}
             </div>
           </div>
           <button

@@ -59,17 +59,20 @@ class LiveChatAdminResponse(BaseModel):
 
 class AnnouncementCreate(BaseModel):
     title: str
+    subtitle: str | None = None
     content: str
     is_active: bool = False
 
 class AnnouncementUpdate(BaseModel):
     title: str | None = None
+    subtitle: str | None = None
     content: str | None = None
     is_active: bool | None = None
 
 class AnnouncementResponse(BaseModel):
     id: int
     title: str
+    subtitle: str | None
     content: str
     is_active: bool
     created_at: str
@@ -267,6 +270,7 @@ def get_announcements(db: Session = Depends(get_db)):
         AnnouncementResponse(
             id=a.id,
             title=a.title,
+            subtitle=a.subtitle,
             content=a.content,
             is_active=a.is_active,
             created_at=a.created_at.isoformat() if a.created_at else "",
@@ -282,6 +286,7 @@ def create_announcement(data: AnnouncementCreate, db: Session = Depends(get_db))
     
     announcement = models.Announcement(
         title=data.title,
+        subtitle=data.subtitle,
         content=data.content,
         is_active=data.is_active
     )
@@ -292,6 +297,7 @@ def create_announcement(data: AnnouncementCreate, db: Session = Depends(get_db))
     return AnnouncementResponse(
         id=announcement.id,
         title=announcement.title,
+        subtitle=announcement.subtitle,
         content=announcement.content,
         is_active=announcement.is_active,
         created_at=announcement.created_at.isoformat() if announcement.created_at else "",
@@ -309,6 +315,8 @@ def update_announcement(announcement_id: int, data: AnnouncementUpdate, db: Sess
     
     if data.title is not None:
         announcement.title = data.title
+    if data.subtitle is not None:
+        announcement.subtitle = data.subtitle
     if data.content is not None:
         announcement.content = data.content
     if data.is_active is not None:
@@ -320,6 +328,7 @@ def update_announcement(announcement_id: int, data: AnnouncementUpdate, db: Sess
     return AnnouncementResponse(
         id=announcement.id,
         title=announcement.title,
+        subtitle=announcement.subtitle,
         content=announcement.content,
         is_active=announcement.is_active,
         created_at=announcement.created_at.isoformat() if announcement.created_at else "",

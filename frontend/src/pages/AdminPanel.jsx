@@ -50,7 +50,7 @@ function AdminPanelContent() {
   const [usersIniEntries, setUsersIniEntries] = useState([]);
   const [syncResult, setSyncResult] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
-  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '', is_active: false });
+  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', subtitle: '', content: '', is_active: false });
   const [editingAnnouncement, setEditingAnnouncement] = useState(null);
   
   const messagesEndRef = useRef(null);
@@ -371,8 +371,13 @@ function AdminPanelContent() {
   const handleAddAnnouncement = async () => {
     if (!newAnnouncement.title || !newAnnouncement.content) return;
     try {
-      await api.post('/admin/announcements', newAnnouncement);
-      setNewAnnouncement({ title: '', content: '', is_active: false });
+      await api.post('/admin/announcements', {
+        title: newAnnouncement.title,
+        subtitle: newAnnouncement.subtitle || null,
+        content: newAnnouncement.content,
+        is_active: newAnnouncement.is_active
+      });
+      setNewAnnouncement({ title: '', subtitle: '', content: '', is_active: false });
       fetchAnnouncements();
     } catch (err) {
       console.error('Failed to add announcement:', err);
@@ -388,6 +393,7 @@ function AdminPanelContent() {
     try {
       await api.put(`/admin/announcements/${editingAnnouncement.id}`, {
         title: editingAnnouncement.title,
+        subtitle: editingAnnouncement.subtitle || null,
         content: editingAnnouncement.content,
         is_active: editingAnnouncement.is_active
       });
@@ -1188,6 +1194,13 @@ function AdminPanelContent() {
                       placeholder={t('title')}
                       className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
                     />
+                    <input 
+                      type="text" 
+                      value={newAnnouncement.subtitle || ''}
+                      onChange={(e) => setNewAnnouncement({...newAnnouncement, subtitle: e.target.value})}
+                      placeholder={t('subtitle_optional')}
+                      className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
+                    />
                     <textarea 
                       value={newAnnouncement.content}
                       onChange={(e) => setNewAnnouncement({...newAnnouncement, content: e.target.value})}
@@ -1257,6 +1270,13 @@ function AdminPanelContent() {
                         type="text" 
                         value={editingAnnouncement.title}
                         onChange={(e) => setEditingAnnouncement({...editingAnnouncement, title: e.target.value})}
+                        className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
+                      />
+                      <input 
+                        type="text" 
+                        value={editingAnnouncement.subtitle || ''}
+                        onChange={(e) => setEditingAnnouncement({...editingAnnouncement, subtitle: e.target.value})}
+                        placeholder={t('subtitle_optional')}
                         className="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
                       />
                       <textarea 

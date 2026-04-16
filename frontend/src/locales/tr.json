@@ -380,6 +380,7 @@
     "deactivate": "Pasif Et",
     "edit_announcement": "Duyuruyu Düzenle",
     "save": "Kaydet",
-    "confirm_delete": "Bu duyuruyu silmek istediğinize emin misiniz?"
+    "confirm_delete": "Bu duyuruyu silmek istediğinize emin misiniz?",
+    "subtitle_optional": "Alt başlık (Opsiyonel)"
   }
 }

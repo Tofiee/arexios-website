@@ -380,6 +380,7 @@
     "deactivate": "Deactivate",
     "edit_announcement": "Edit Announcement",
     "save": "Save",
-    "confirm_delete": "Are you sure you want to delete this announcement?"
+    "confirm_delete": "Are you sure you want to delete this announcement?",
+    "subtitle_optional": "Subtitle (Optional)"
   }
 }

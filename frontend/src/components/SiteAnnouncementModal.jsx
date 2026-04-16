@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../api';
 
 const ANNOUNCEMENT_DISMISSED_KEY = 'announcement_dismissed';
+const DISMISS_COOLDOWN_MS = 2 * 60 * 60 * 1000;
 
 const SiteAnnouncementModal = () => {
   const { t } = useTranslation();
@@ -13,16 +14,24 @@ const SiteAnnouncementModal = () => {
   useEffect(() => {
     const fetchAnnouncement = async () => {
       try {
-        const dismissedId = localStorage.getItem(ANNOUNCEMENT_DISMISSED_KEY);
+        const dismissedData = localStorage.getItem(ANNOUNCEMENT_DISMISSED_KEY);
         const res = await api.get('/admin/announcements');
         
         const activeAnnouncement = res.data?.find(a => a.is_active);
         
         if (activeAnnouncement) {
-          if (dismissedId !== String(activeAnnouncement.id)) {
-            setAnnouncement(activeAnnouncement);
-            setShowModal(true);
+          const dismissedObj = dismissedData ? JSON.parse(dismissedData) : null;
+          const now = Date.now();
+          
+          if (dismissedObj && dismissedObj.id === activeAnnouncement.id) {
+            const timeSinceDismiss = now - dismissedObj.timestamp;
+            if (timeSinceDismiss < DISMISS_COOLDOWN_MS) {
+              return;
+            }
           }
+          
+          setAnnouncement(activeAnnouncement);
+          setShowModal(true);
         }
       } catch (err) {
         console.error('Failed to fetch announcement:', err);
@@ -35,7 +44,10 @@ const SiteAnnouncementModal = () => {
   const handleDismiss = () => {
     setShowModal(false);
     if (announcement?.id) {
-      localStorage.setItem(ANNOUNCEMENT_DISMISSED_KEY, String(announcement.id));
+      localStorage.setItem(ANNOUNCEMENT_DISMISSED_KEY, JSON.stringify({
+        id: announcement.id,
+        timestamp: Date.now()
+      }));
     }
   };
 

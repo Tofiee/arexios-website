@@ -38,10 +38,12 @@ export default function Home() {
     });
 
     socket.on('connect', () => {
-      socket.emit('join_room', 'server_room');
+      console.log('Socket connected, joining server_room...');
+      socket.emit('join_room', { room: 'server_room' });
     });
 
     socket.on('server_status', (data) => {
+      console.log('Received server_status:', data);
       setCsStatus({
         loading: false,
         data: {
@@ -53,6 +55,25 @@ export default function Home() {
         }
       });
     });
+
+    api.get('/gametracker/server-info')
+      .then(res => {
+        if (res.data.status === 'success') {
+          setCsStatus({ 
+            loading: false, 
+            data: { 
+              status: 'online', 
+              map: res.data.map,
+              players: res.data.players,
+              max_players: res.data.max_players,
+              admin_online: res.data.admin_online || 0
+            } 
+          });
+        } else {
+          setCsStatus({ loading: false, data: { status: 'offline' } });
+        }
+      })
+      .catch(() => setCsStatus({ loading: false, data: { status: 'offline' } }));
 
     api.get('/servers/ts')
       .then(res => setTsStatus({ loading: false, data: res.data }))

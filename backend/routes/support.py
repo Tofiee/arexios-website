@@ -113,7 +113,7 @@ def get_all_sessions(status: Optional[str] = None, db: Session = Depends(get_db)
         if s.status in ['closed', 'user_closed']:
             last_msg = last_any_msg
         
-        if not last_msg and s.status not in ['closed', 'user_closed', 'waiting']:
+        if not last_msg and s.status not in ['closed', 'user_closed']:
             continue
         
         result.append(SessionResponse(

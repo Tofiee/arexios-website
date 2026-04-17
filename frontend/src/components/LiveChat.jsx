@@ -248,7 +248,12 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
     });
 
     socketRef.current.on('new_message', (data) => {
-      setMessages(prev => [...prev, data]);
+      setMessages(prev => {
+        if (prev.some(m => m.id === data.id)) {
+          return prev;
+        }
+        return [...prev, data];
+      });
       setAdminTyping(false);
       
       if (data.sender_type === 'admin') {
@@ -347,14 +352,6 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
       sender_type: 'user',
       sender_name: user?.username || 'Misafir'
     });
-
-    setMessages(prev => [...prev, {
-      id: Date.now(),
-      sender_type: 'user',
-      sender_name: user?.username || 'Misafir',
-      message: message,
-      created_at: new Date().toISOString()
-    }]);
 
     setWaitingForAdmin(true);
   };

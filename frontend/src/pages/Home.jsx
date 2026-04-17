@@ -4,9 +4,6 @@ import { Link } from 'react-router-dom';
 import api from '../api';
 import { Server, Users, Map as MapIcon, Copy, Target, Wifi, WifiOff, Check, Shield } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-import { io } from 'socket.io-client';
-
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -30,56 +27,34 @@ export default function Home() {
   const TS_IP = "ts3.arxcs.com";
 
   useEffect(() => {
-    const socket = io(SOCKET_URL, {
-      transports: ['polling', 'websocket'],
-      reconnection: true,
-      reconnectionAttempts: 3,
-      reconnectionDelay: 1000,
-    });
+    const fetchStatus = () => {
+      api.get('/gametracker/server-info')
+        .then(res => {
+          if (res.data.status === 'success') {
+            setCsStatus({ 
+              loading: false, 
+              data: { 
+                status: 'online', 
+                map: res.data.map,
+                players: res.data.players,
+                max_players: res.data.max_players,
+                admin_online: res.data.admin_online || 0
+              } 
+            });
+          } else {
+            setCsStatus({ loading: false, data: { status: 'offline' } });
+          }
+        })
+        .catch(() => setCsStatus({ loading: false, data: { status: 'offline' } }));
 
-    socket.on('connect', () => {
-      socket.emit('join_room', { room: 'server_room' });
-    });
-
-    socket.on('server_status', (data) => {
-      setCsStatus({
-        loading: false,
-        data: {
-          status: data.status,
-          map: data.map,
-          players: data.players,
-          max_players: data.max_players,
-          admin_online: 0
-        }
-      });
-    });
-
-    api.get('/gametracker/server-info')
-      .then(res => {
-        if (res.data.status === 'success') {
-          setCsStatus({ 
-            loading: false, 
-            data: { 
-              status: 'online', 
-              map: res.data.map,
-              players: res.data.players,
-              max_players: res.data.max_players,
-              admin_online: res.data.admin_online || 0
-            } 
-          });
-        } else {
-          setCsStatus({ loading: false, data: { status: 'offline' } });
-        }
-      })
-      .catch(() => setCsStatus({ loading: false, data: { status: 'offline' } }));
-
-    api.get('/servers/ts')
-      .then(res => setTsStatus({ loading: false, data: res.data }))
-      .catch(() => setTsStatus({ loading: false, data: { status: 'offline' } }));
-
-    return () => {
-      socket.disconnect();
+      api.get('/servers/ts')
+        .then(res => setTsStatus({ loading: false, data: res.data }))
+        .catch(() => setTsStatus({ loading: false, data: { status: 'offline' } }));
     };
+
+    fetchStatus();
+    const interval = setInterval(fetchStatus, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const copyIp = () => {

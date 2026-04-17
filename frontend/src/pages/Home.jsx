@@ -38,12 +38,10 @@ export default function Home() {
     });
 
     socket.on('connect', () => {
-      console.log('Socket connected, joining server_room...');
       socket.emit('join_room', { room: 'server_room' });
     });
 
     socket.on('server_status', (data) => {
-      console.log('Received server_status:', data);
       setCsStatus({
         loading: false,
         data: {

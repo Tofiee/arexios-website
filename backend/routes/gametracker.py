@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import re
 import os
+import html
 
 router = APIRouter(prefix="/gametracker", tags=["GameTracker"])
 
@@ -126,11 +127,11 @@ async def get_server_info_from_oyun_tracker():
                 "map_image": assets.get("map_image", ""),
                 "players_list": [
                     {
-                        "name": p.get("name", ""),
+                        "name": html.unescape(p.get("name", "")),
                         "score": p.get("score", "0"),
                         "time": p.get("time", "00:00:00")
                     }
-                    for p in players if not any(bot.lower() in p.get("name", "").lower() for bot in BOT_NAMES)
+                    for p in players if not any(bot.lower() in html.unescape(p.get("name", "")).lower() for bot in BOT_NAMES)
                 ]
             }
     except Exception as e:

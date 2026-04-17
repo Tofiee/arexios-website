@@ -5,9 +5,15 @@ from database import SessionLocal
 import models
 import os
 import httpx
+import requests
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
 VERCEL_URL = os.getenv("VERCEL_URL", "https://arexios-website.vercel.app")
+
+CS_IP = "95.173.173.24"
+CS_PORT = 27015
+OYUN_TRACKER_API = "https://tracker.oyunyoneticisi.com/api.php"
+SERVER_CHECK_INTERVAL = 10
 
 async def get_location_from_ip(ip_address):
     if not ip_address or ip_address in ['127.0.0.1', 'localhost', '::1']:
@@ -64,6 +70,33 @@ try:
 except ImportError:
     PUSH_ENABLED = False
     def broadcast_to_all_admins(title, body, data): pass
+
+async def check_server_status():
+    try:
+        url = f"{OYUN_TRACKER_API}?ip={CS_IP}&port={CS_PORT}"
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        
+        if data.get("success"):
+            server = data.get("server", {})
+            players = data.get("players", [])
+            
+            await sio.emit('server_status', {
+                'status': server.get('status', 'offline'),
+                'name': server.get('name', 'Unknown'),
+                'map': server.get('map', 'Unknown'),
+                'players': server.get('players', 0),
+                'max_players': server.get('playersmax', 32),
+                'player_count': len(players),
+                'timestamp': datetime.now().isoformat()
+            }, room='server_room')
+    except Exception as e:
+        print(f"Server status check error: {e}")
+
+async def start_server_monitor():
+    while True:
+        await check_server_status()
+        await asyncio.sleep(SERVER_CHECK_INTERVAL)
 
 @sio.event
 async def connect(sid, environ):
@@ -796,3 +829,10 @@ async def typing(sid, data):
         await sio.emit('user_typing', {'session_id': session_id, 'is_typing': is_typing}, room='admin_room')
     else:
         await sio.emit('admin_typing', {'session_id': session_id, 'is_typing': is_typing}, room=f"session_{session_id}")
+
+@sio.event
+async def join_room(sid, data):
+    room = data.get('room')
+    if room:
+        await sio.enter_room(sid, room)
+        print(f"Client {sid} joined room: {room}")

@@ -6,7 +6,7 @@ import socketio
 import asyncio
 from database import engine, Base
 from routes import google, steam, users, servers, stats, discord, discord_auth, admins, complaints, gametracker, support, push, skins, skin_categories, import_data, migrate, admin_settings, users_ini
-from routes.socket_handler import sio, admin_status_scheduler, session_cleanup_scheduler
+from routes.socket_handler import sio, admin_status_scheduler, session_cleanup_scheduler, start_server_monitor
 import security
 import os
 from dotenv import load_dotenv
@@ -56,6 +56,7 @@ app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 async def startup_event():
     asyncio.create_task(admin_status_scheduler())
     asyncio.create_task(session_cleanup_scheduler())
+    asyncio.create_task(start_server_monitor())
 
 @app.get("/")
 def read_root():

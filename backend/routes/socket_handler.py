@@ -241,6 +241,63 @@ async def send_message(sid, data):
     if session_id:
         user_sessions[session_id] = sid
         await sio.enter_room(sid, f"session_{session_id}")
+        
+        db = SessionLocal()
+        try:
+            msg = models.SupportMessage(
+                session_id=session_id,
+                sender_type=sender_type,
+                sender_name=sender_name,
+                message=message.strip()
+            )
+            db.add(msg)
+            db.commit()
+            db.refresh(msg)
+            
+            message_data = {
+                'id': msg.id,
+                'session_id': session_id,
+                'sender_type': sender_type,
+                'sender_name': sender_name,
+                'message': message,
+                'created_at': msg.created_at.isoformat()
+            }
+            
+            await sio.emit('new_message', message_data, room=f"session_{session_id}")
+            await sio.emit('new_message', message_data, room='admin_room')
+            
+            user_info = active_sessions.get(sid, {})
+            ip_address = user_info.get('ip_address', 'unknown')
+            location = user_info.get('location', 'Bilinmiyor')
+            user_agent = user_info.get('user_agent', 'Bilinmiyor')
+            
+            await sio.emit('admin_notification', {
+                'type': 'new_message',
+                'user_name': sender_name,
+                'session_id': session_id,
+                'message_preview': message[:50],
+                'timestamp': datetime.now().isoformat(),
+                'ip_address': ip_address,
+                'location': location,
+                'user_agent': user_agent
+            }, room='admin_room')
+            
+            if PUSH_ENABLED and online_admins:
+                broadcast_to_all_admins(
+                    f"📩 {sender_name}",
+                    message[:100] + ("..." if len(message) > 100 else ""),
+                    {"type": "new_message", "session_id": session_id, "user_name": sender_name}
+                )
+            
+            if TEAMSPEAK_ENABLED:
+                try:
+                    loop = asyncio.get_event_loop()
+                    await loop.run_in_executor(None, notify_support_message, sender_name, message[:200])
+                except:
+                    pass
+            
+        finally:
+            db.close()
 
 @sio.event
 async def admin_message(sid, data):

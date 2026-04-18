@@ -15,8 +15,9 @@ router = APIRouter(prefix="/servers", tags=["Servers"])
 CS_IP = "95.173.173.24"
 CS_PORT = 27015
 
-TS_IP = "voice.teamspeak.com"
+TS_HOST = "ts3.arxcs.com"
 TS_PORT = 10011
+TS_QUERY_PORT = 45123
 
 TS3_PROXY_URL = None
 
@@ -71,7 +72,7 @@ def _fetch_ts3_direct():
         return {"status": "offline", "error": "ts3 module not available"}
     
     try:
-        with ts3.query.TS3Connection(f"telnet://{TS_IP}:{TS_PORT}", timeout=2.0) as ts3conn:
+        with ts3.query.TS3Connection(f"telnet://{TS_HOST}:{TS_QUERY_PORT}", timeout=2.0) as ts3conn:
             ts3conn.exec_("use", sid=1)
             info_response = ts3conn.exec_("serverinfo")
             info = info_response[0]

@@ -69,10 +69,12 @@ async def get_cs_status():
 
 def _fetch_ts3_direct():
     if not TS3_AVAILABLE:
+        print("[TS3] Module not available")
         return {"status": "offline", "error": "ts3 module not available"}
     
     try:
-        with ts3.query.TS3Connection(f"telnet://{TS_HOST}:{TS_QUERY_PORT}", timeout=2.0) as ts3conn:
+        print(f"[TS3] Connecting to {TS_HOST}:{TS_QUERY_PORT}...")
+        with ts3.query.TS3Connection(f"telnet://{TS_HOST}:{TS_QUERY_PORT}") as ts3conn:
             ts3conn.exec_("use", sid=1)
             info_response = ts3conn.exec_("serverinfo")
             info = info_response[0]
@@ -88,6 +90,7 @@ def _fetch_ts3_direct():
                 client_count = int(info.get("virtualserver_clientsonline", 0))
                 if client_count > 0: client_count -= 1 
 
+            print(f"[TS3] Connected: {server_name}, {client_count} clients")
             return {
                 "status": "online",
                 "name": server_name,
@@ -95,6 +98,7 @@ def _fetch_ts3_direct():
                 "max_players": max_clients
             }
     except Exception as e:
+        print(f"[TS3] Error: {e}")
         return {"status": "offline", "error": str(e)}
 
 def _fetch_ts3_proxy():

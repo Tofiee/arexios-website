@@ -16,3 +16,4 @@ python-socketio
 email-validator
 pydantic[email]
 python-multipart
+ts3

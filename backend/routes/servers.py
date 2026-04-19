@@ -3,6 +3,8 @@ import a2s
 import httpx
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+import socket
+import socket
 
 try:
     import ts3
@@ -22,6 +24,16 @@ TS_QUERY_PORT = 45123
 TS3_PROXY_URL = None
 
 DEMO_ON_FAIL = True
+
+def _check_port_open(host, port, timeout=3):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(timeout)
+    try:
+        result = sock.connect_ex((host, port))
+        sock.close()
+        return result == 0
+    except:
+        return False
 
 def _fetch_cs_sync():
     try:
@@ -68,12 +80,16 @@ async def get_cs_status():
             return {"status": "offline", "error": "timeout"}
 
 def _fetch_ts3_direct():
-    if not TS3_AVAILABLE:
-        print("[TS3] Module not available")
-        return {"status": "offline", "error": "ts3 module not available"}
+    print(f"[TS3] TS3_AVAILABLE: {TS3_AVAILABLE}")
+    print(f"[TS3] Testing port {TS_HOST}:{TS_QUERY_PORT}...")
     
-    try:
-        print(f"[TS3] Connecting to {TS_HOST}:{TS_QUERY_PORT}...")
+    if not _check_port_open(TS_HOST, TS_QUERY_PORT, 3):
+        print(f"[TS3] Port {TS_QUERY_PORT} is not reachable")
+        return {"status": "offline", "error": "Port not reachable"}
+    
+    if not TS3_AVAILABLE:
+        print(f"[TS3] Module still not available despite package")
+        return {"status": "offline", "error": "ts3 module not available"}
         with ts3.query.TS3Connection(f"telnet://{TS_HOST}:{TS_QUERY_PORT}") as ts3conn:
             ts3conn.exec_("use", sid=1)
             info_response = ts3conn.exec_("serverinfo")

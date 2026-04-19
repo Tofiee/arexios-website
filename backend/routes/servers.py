@@ -17,9 +17,11 @@ router = APIRouter(prefix="/servers", tags=["Servers"])
 CS_IP = "95.173.173.24"
 CS_PORT = 27015
 
-TS_HOST = "spyurtdisi"
-TS_PORT = 9987
-TS_QUERY_PORT = 45123
+TS_HOST = "ts3.arxcs.com"
+TS_SERVER_PORT = 9987
+TS_QUERY_PORT = 9987
+
+TS3_SERVER_NICKNAME = "spyurtdisi"
 
 TS3_PROXY_URL = None
 
@@ -92,8 +94,9 @@ def _fetch_ts3_direct():
         return {"status": "offline", "error": "ts3 module not available"}
     
     try:
+        print(f"[TS3] Connecting to {TS_HOST}:{TS_QUERY_PORT} with server nickname {TS3_SERVER_NICKNAME}...")
         with ts3.query.TS3Connection(f"telnet://{TS_HOST}:{TS_QUERY_PORT}") as ts3conn:
-            ts3conn.exec_("use", sid=1)
+            ts3conn.exec_("use", virtualserver_nickname=TS3_SERVER_NICKNAME)
             info_response = ts3conn.exec_("serverinfo")
             info = info_response[0]
             

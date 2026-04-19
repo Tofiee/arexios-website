@@ -88,8 +88,10 @@ def _fetch_ts3_direct():
         return {"status": "offline", "error": "Port not reachable"}
     
     if not TS3_AVAILABLE:
-        print(f"[TS3] Module still not available despite package")
+        print(f"[TS3] Module not available")
         return {"status": "offline", "error": "ts3 module not available"}
+    
+    try:
         with ts3.query.TS3Connection(f"telnet://{TS_HOST}:{TS_QUERY_PORT}") as ts3conn:
             ts3conn.exec_("use", sid=1)
             info_response = ts3conn.exec_("serverinfo")

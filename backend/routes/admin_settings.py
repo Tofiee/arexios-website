@@ -31,7 +31,8 @@ class SiteSettingsUpdate(BaseModel):
     announcement_active: bool = False
 
 class LiveChatAdminCreate(BaseModel):
-    steam_id: str
+    steam_id: str | None = None
+    user_id: int | None = None
     username: str
     is_superadmin: bool = False
     can_livechat: bool = True
@@ -162,9 +163,18 @@ def get_livechat_admins(db: Session = Depends(get_db)):
 
 @router.post("/livechat-admins", response_model=LiveChatAdminResponse)
 def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db)):
-    existing = db.query(models.LiveChatAdmin).filter(
-        models.LiveChatAdmin.steam_id == data.steam_id
-    ).first()
+    print(f"[DEBUG] add_livechat_admin received: steam_id={data.steam_id}, user_id={data.user_id}, username={data.username}")
+    
+    if data.steam_id:
+        existing = db.query(models.LiveChatAdmin).filter(
+            models.LiveChatAdmin.steam_id == data.steam_id
+        ).first()
+    elif data.user_id:
+        existing = db.query(models.LiveChatAdmin).filter(
+            models.LiveChatAdmin.user_id == data.user_id
+        ).first()
+    else:
+        raise HTTPException(status_code=400, detail="steam_id veya user_id gereklidir")
     
     if existing:
         if existing.is_active:
@@ -191,6 +201,7 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
     
     admin = models.LiveChatAdmin(
         steam_id=data.steam_id,
+        user_id=data.user_id,
         username=data.username,
         is_superadmin=data.is_superadmin,
         can_livechat=data.can_livechat,

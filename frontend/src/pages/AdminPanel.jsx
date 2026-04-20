@@ -46,7 +46,7 @@ function AdminPanelContent() {
   const [livechatAdmins, setLivechatAdmins] = useState([]);
   const [siteUsers, setSiteUsers] = useState([]);
   const [showLivechatAdminModal, setShowLivechatAdminModal] = useState(false);
-  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true });
+  const [livechatAdminForm, setLivechatAdminForm] = useState({ steam_id: '', user_id: null, username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true });
   const [usersIniEntries, setUsersIniEntries] = useState([]);
   const [syncResult, setSyncResult] = useState(null);
   const [announcements, setAnnouncements] = useState([]);
@@ -472,15 +472,22 @@ function AdminPanelContent() {
   };
 
   const handleAddLivechatAdmin = async () => {
-    if (!livechatAdminForm.steam_id || !livechatAdminForm.username) {
+    if ((!livechatAdminForm.steam_id && !livechatAdminForm.user_id) || !livechatAdminForm.username) {
       alert(t('fill_all_fields'));
       return;
     }
     try {
-      await api.post('/admin/livechat-admins', livechatAdminForm);
+      await api.post('/admin/livechat-admins', {
+        steam_id: livechatAdminForm.steam_id || null,
+        user_id: livechatAdminForm.user_id || null,
+        username: livechatAdminForm.username,
+        can_livechat: true,
+        can_skin_management: true,
+        can_settings: true
+      });
       fetchLivechatAdmins();
       setShowLivechatAdminModal(false);
-      setLivechatAdminForm({ steam_id: '', username: '' });
+      setLivechatAdminForm({ steam_id: '', user_id: null, username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true });
     } catch (err) {
       alert(err.response?.data?.detail || 'Eklenirken hata oluştu.');
     }
@@ -1057,7 +1064,7 @@ function AdminPanelContent() {
                 </h3>
                 <div className="mb-4 flex justify-between items-center">
                   <p className="text-sm text-slate-500">{t('livechat_admins_desc')}</p>
-                  <button onClick={() => { fetchSiteUsers(); setShowLivechatAdminModal(true); setLivechatAdminForm({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true }); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
+                  <button onClick={() => { fetchSiteUsers(); setShowLivechatAdminModal(true); setLivechatAdminForm({ steam_id: '', user_id: null, username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true }); }} className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors">
                     <UserPlus className="w-4 h-4" />
                     {t('add_admin')}
                   </button>
@@ -1887,15 +1894,16 @@ function AdminPanelContent() {
                 ) : (
                   siteUsers
                     .filter(user => {
-                      const isAlreadyAdmin = livechatAdmins.some(a => a.steam_id === user.steam_id);
-                      return !isAlreadyAdmin && user.steam_id;
+                      const isAlreadyAdmin = livechatAdmins.some(a => a.steam_id === user.steam_id || a.user_id === user.id);
+                      return !isAlreadyAdmin;
                     })
                     .map(user => (
                       <div
                         key={user.id}
                         onClick={() => {
                           setLivechatAdminForm({
-                            steam_id: user.steam_id,
+                            steam_id: user.steam_id || '',
+                            user_id: user.id,
                             username: user.username,
                             avatar_url: user.avatar_url,
                             provider: user.provider
@@ -1948,7 +1956,7 @@ function AdminPanelContent() {
               )}
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3 flex-shrink-0">
-              <button onClick={() => { setShowLivechatAdminModal(false); setLivechatAdminForm({ steam_id: '', username: '', avatar_url: '', provider: '', can_livechat: false, can_skin_management: false, can_view_skins: true }); }} className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors">
+              <button onClick={() => { setShowLivechatAdminModal(false); setLivechatAdminForm({ steam_id: '', user_id: null, username: '', avatar_url: '', provider: '', can_livechat: true, can_skin_management: true, can_settings: true }); }} className="flex-1 py-2 px-4 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 font-bold rounded-lg transition-colors">
                 {t('cancel')}
               </button>
               <button

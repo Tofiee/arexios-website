@@ -113,7 +113,8 @@ class LiveChatAdmin(Base):
     __tablename__ = "livechat_admins"
 
     id = Column(Integer, primary_key=True, index=True)
-    steam_id = Column(String(50), nullable=False, unique=True)
+    steam_id = Column(String(50), nullable=True, unique=True)
+    user_id = Column(Integer, nullable=True, unique=True)
     username = Column(String(100), nullable=False)
     is_active = Column(Boolean, default=True)
     is_superadmin = Column(Boolean, default=False)

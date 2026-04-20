@@ -49,7 +49,8 @@ class LiveChatAdminUpdate(BaseModel):
 
 class LiveChatAdminResponse(BaseModel):
     id: int
-    steam_id: str
+    steam_id: str | None = None
+    user_id: int | None = None
     username: str
     is_active: bool
     is_superadmin: bool
@@ -150,6 +151,7 @@ def get_livechat_admins(db: Session = Depends(get_db)):
         LiveChatAdminResponse(
             id=a.id,
             steam_id=a.steam_id,
+            user_id=a.user_id,
             username=a.username,
             is_active=a.is_active,
             is_superadmin=a.is_superadmin,
@@ -192,6 +194,7 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
         return LiveChatAdminResponse(
             id=existing.id,
             steam_id=existing.steam_id,
+            user_id=existing.user_id,
             username=existing.username,
             is_active=existing.is_active,
             is_superadmin=existing.is_superadmin,
@@ -217,6 +220,7 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
     return LiveChatAdminResponse(
         id=admin.id,
         steam_id=admin.steam_id,
+        user_id=admin.user_id,
         username=admin.username,
         is_active=admin.is_active,
         is_superadmin=admin.is_superadmin,
@@ -254,6 +258,7 @@ def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, current_stea
     return LiveChatAdminResponse(
         id=admin.id,
         steam_id=admin.steam_id,
+        user_id=admin.user_id,
         username=admin.username,
         is_active=admin.is_active,
         is_superadmin=admin.is_superadmin,

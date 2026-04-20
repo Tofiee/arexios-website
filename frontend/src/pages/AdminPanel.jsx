@@ -1931,11 +1931,11 @@ function AdminPanelContent() {
                       </div>
                     ))
                 )}
-                {siteUsers.filter(user => !livechatAdmins.some(a => a.steam_id === user.steam_id) && user.steam_id).length === 0 && (
+                {siteUsers.filter(user => !livechatAdmins.some(a => a.steam_id === user.steam_id || a.user_id === user.id)).length === 0 && (
                   <p className="text-center py-4 text-slate-500">{t('user_not_found')}</p>
                 )}
               </div>
-              {livechatAdminForm.steam_id && (
+              {(livechatAdminForm.steam_id || livechatAdminForm.user_id) && (
                 <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                   <p className="text-sm font-medium text-green-800 dark:text-green-300 mb-3">{t('permissions_for')} {livechatAdminForm.username}:</p>
                   <div className="space-y-2">
@@ -1961,7 +1961,7 @@ function AdminPanelContent() {
               </button>
               <button
                 onClick={handleAddLivechatAdmin}
-                disabled={!livechatAdminForm.steam_id}
+                disabled={!livechatAdminForm.steam_id && !livechatAdminForm.user_id}
                 className="flex-1 py-2 px-4 bg-green-600 hover:bg-green-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
               >
                 {t('add')}

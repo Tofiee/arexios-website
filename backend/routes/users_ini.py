@@ -38,28 +38,25 @@ def parse_users_ini(content: str) -> list[UsersIniEntry]:
             if end_quote > 0:
                 name = line[1:end_quote]
         
+        # Skip if it's a STEAM ID
+        if name and name.startswith('STEAM'):
+            continue
+        
         parts = line.split()
         if len(parts) >= 3:
             auth_type = parts[0].upper()
             steam_id = parts[1]
             flags = parts[2]
             
-            # Extract identity if present
-            identity = None
-            for i, part in enumerate(parts[3:], start=3):
-                if part.startswith('"') and not part.endswith('"'):
-                    identity = part
-                    for j in range(i + 1, len(parts)):
-                        if parts[j].endswith('"'):
-                            identity += ' ' + parts[j]
-                            break
-                    break
+            # Skip STEAM entries
+            if auth_type in ['STEAM', 'STEAM_ID', 'SID']:
+                continue
             
             entries.append(UsersIniEntry(
                 auth_type=auth_type,
                 steam_id=steam_id,
                 flags=flags,
-                identity=identity,
+                identity=None,
                 name=name
             ))
     

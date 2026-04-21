@@ -28,19 +28,24 @@ def parse_users_ini(content: str) -> list[UsersIniEntry]:
     
     for line in lines:
         line = line.strip()
-        if not line or line.startswith('"') or line.startswith('//') or line.startswith('#'):
+        if not line or line.startswith(';'):
             continue
-        if line.startswith(';') and '----' in line:
-            continue
+        
+        # Extract name from quotes if present at start
+        name = None
+        if line.startswith('"'):
+            end_quote = line.find('"', 1)
+            if end_quote > 0:
+                name = line[1:end_quote]
         
         parts = line.split()
         if len(parts) >= 3:
-            auth_type = parts[0]
+            auth_type = parts[0].upper()
             steam_id = parts[1]
             flags = parts[2]
             
+            # Extract identity if present
             identity = None
-            name = None
             for i, part in enumerate(parts[3:], start=3):
                 if part.startswith('"') and not part.endswith('"'):
                     identity = part
@@ -48,11 +53,6 @@ def parse_users_ini(content: str) -> list[UsersIniEntry]:
                         if parts[j].endswith('"'):
                             identity += ' ' + parts[j]
                             break
-                    break
-            
-            for part in parts:
-                if part.startswith('"') and part.endswith('"'):
-                    name = part.strip('"')
                     break
             
             entries.append(UsersIniEntry(
@@ -72,7 +72,7 @@ def get_existing_adminlist(path: str) -> set[str]:
             content = f.read()
             for line in content.strip().split('\n'):
                 line = line.strip()
-                if line.startswith('"') or line.startswith('//') or line.startswith('#'):
+                if not line or line.startswith('"') or line.startswith('//') or line.startswith('#'):
                     continue
                 if line.startswith(';') and '----' in line:
                     continue
@@ -81,12 +81,13 @@ def get_existing_adminlist(path: str) -> set[str]:
                     steam_ids.add(parts[1])
     return steam_ids
 
-def write_adminlist_entry(path: str, entry: UsersIniEntry):
-    with open(path, 'a') as f:
-        if entry.name:
-            f.write(f'"{entry.steam_id}" "{entry.flags}" // {entry.name}\n')
-        else:
-            f.write(f'"{entry.steam_id}" "{entry.flags}"\n')
+def write_adminlist_entries(path: str, entries: list[UsersIniEntry]):
+    with open(path, 'w') as f:
+        for entry in entries:
+            if entry.name:
+                f.write(f'"{entry.name}"\n')
+            elif entry.steam_id.startswith('STEAM'):
+                f.write(f'"{entry.steam_id}"\n')
 
 @router.post("/users-ini/upload")
 async def upload_users_ini(
@@ -148,30 +149,14 @@ async def sync_users_ini(
     
     os.makedirs(os.path.dirname(adminlist_path), exist_ok=True)
     
-    if not os.path.exists(adminlist_path):
-        with open(adminlist_path, 'w') as f:
-            f.write('')
-    
-    existing_ids = get_existing_adminlist(adminlist_path)
-    
-    added_entries = []
-    skipped_entries = []
-    
-    for entry in entries:
-        if entry.auth_type.upper() in ['STEAM', 'STEAM_ID', 'SID']:
-            if entry.steam_id in existing_ids:
-                skipped_entries.append(entry.steam_id)
-            else:
-                write_adminlist_entry(adminlist_path, entry)
-                existing_ids.add(entry.steam_id)
-                added_entries.append(entry.steam_id)
+    write_adminlist_entries(adminlist_path, entries)
     
     return UsersIniSyncResult(
         total_entries=len(entries),
-        added_entries=len(added_entries),
-        skipped_entries=len(skipped_entries),
-        added_list=added_entries,
-        skipped_list=skipped_entries
+        added_entries=len(entries),
+        skipped_entries=0,
+        added_list=[e.name or e.steam_id for e in entries],
+        skipped_list=[]
     )
 
 @router.get("/users-ini/template")

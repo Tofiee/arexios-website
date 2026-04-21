@@ -121,9 +121,11 @@ async def connect(sid, environ):
 async def disconnect(sid):
     if sid in online_admins:
         admin_info = online_admins.pop(sid)
+        admin_name = admin_info.get('admin_name', 'Unknown')
         admin_steam = admin_info.get('admin_steam_id', '')
         if admin_steam in admin_sessions:
             del admin_sessions[admin_steam]
+        print(f"[ADMIN] {admin_name} disconnected. Total: {len(online_admins)}")
         await sio.emit('admin_offline', {
             'admin_id': admin_info['admin_id'], 
             'admin_name': admin_info['admin_name'],
@@ -496,6 +498,7 @@ async def admin_login(sid, data):
     
     await sio.enter_room(sid, 'admin_room')
     
+    print(f"[ADMIN] {admin_name} (ID:{admin_id}) online. Total: {len(online_admins)}")
     await broadcast_admin_list()
     await sio.emit('admin_online', {
         'admin_id': admin_id, 
@@ -573,6 +576,10 @@ async def broadcast_admin_list():
             'status': status,
             'sessions_handled': admin.get('sessions_handled', 0)
         })
+    
+    admin_names = [a['admin_name'] for a in admins_list]
+    print(f"[ADMIN] Broadcasting: {admin_names}")
+    
     await sio.emit('admin_list', {'admins': admins_list})
     
     status_info = await send_admin_status_info()

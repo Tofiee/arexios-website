@@ -59,6 +59,7 @@ async def get_server_info_with_admin():
             
             admin_names = get_admin_list()
             admin_count = 0
+            online_admins = []
             
             for player in players:
                 player_name = html.unescape(player.get("name", "")).strip()
@@ -66,7 +67,10 @@ async def get_server_info_with_admin():
                     for admin_name in admin_names:
                         if admin_name.lower() == player_name.lower():
                             admin_count += 1
+                            online_admins.append(admin_name)
                             break
+            
+            print(f"[SERVER] Online admins: {online_admins} ({admin_count} total)")
             
             server_data = {
                 "status": "success",
@@ -79,6 +83,7 @@ async def get_server_info_with_admin():
                 "max_players": server.get("playersmax", 32),
                 "map_image": assets.get("map_image", ""),
                 "admin_online": admin_count,
+                "admin_online_names": online_admins,
                 "players_list": [
                     {
                         "name": html.unescape(p.get("name", "")),

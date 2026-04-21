@@ -156,7 +156,6 @@ async def get_ts_status():
     loop = asyncio.get_event_loop()
     with ThreadPoolExecutor() as pool:
         try:
-            # Force timeout to prevent TCP Telnet hangs
             result = await asyncio.wait_for(loop.run_in_executor(pool, _fetch_ts3_sync), timeout=2.5)
             return result
         except asyncio.TimeoutError:
@@ -168,3 +167,15 @@ async def get_ts_status():
                     "max_players": 512
                 }
             return {"status": "offline", "error": "timeout"}
+
+@router.get("/ts/check-ports")
+async def check_ts_ports():
+    ports_to_check = [10011, 45123, 30033, 10022]
+    host = "185.137.98.127"
+    results = {}
+    
+    for port in ports_to_check:
+        is_open = _check_port_open(host, port, 2)
+        results[port] = "open" if is_open else "closed"
+    
+    return {"host": host, "ports": results}

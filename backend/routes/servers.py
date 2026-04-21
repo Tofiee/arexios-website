@@ -170,12 +170,13 @@ async def get_ts_status():
 
 @router.get("/ts/check-ports")
 async def check_ts_ports():
-    ports_to_check = [10011, 45123, 30033, 10022]
+    ports_to_check = list(range(10000, 10050)) + list(range(45000, 45150)) + list(range(30000, 30100))
     host = "185.137.98.127"
     results = {}
     
     for port in ports_to_check:
-        is_open = _check_port_open(host, port, 2)
-        results[port] = "open" if is_open else "closed"
+        is_open = _check_port_open(host, port, 1)
+        if is_open:
+            results[port] = "open"
     
-    return {"host": host, "ports": results}
+    return {"host": host, "open_ports": results}

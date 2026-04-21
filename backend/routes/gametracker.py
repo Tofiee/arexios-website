@@ -101,21 +101,32 @@ def get_online_admin_count():
         print(f"[DEBUG] A2S players timeout, trying OyunYoneticisi API...")
         return get_online_admin_count_from_oyun_tracker()
 
-async def get_server_info_from_oyun_tracker():
+async def get_server_info_with_admin():
     try:
         url = f"{OYUN_TRACKER_API}?ip={CS_IP}&port={CS_PORT}"
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=8.0) as client:
             response = await client.get(url)
             data = response.json()
             
             if not data.get("success"):
-                return None
+                return None, 0
             
             server = data.get("server", {})
             players = data.get("players", [])
             assets = data.get("assets", {})
             
-            return {
+            admin_names = get_admin_list()
+            admin_count = 0
+            
+            for player in players:
+                player_name = html.unescape(player.get("name", "")).strip()
+                if player_name and not any(bot.lower() in player_name.lower() for bot in BOT_NAMES):
+                    for admin_name in admin_names:
+                        if admin_name.lower() == player_name.lower():
+                            admin_count += 1
+                            break
+            
+            server_data = {
                 "status": "success",
                 "source": "oyunyoneticisi",
                 "ip": CS_IP,
@@ -125,6 +136,7 @@ async def get_server_info_from_oyun_tracker():
                 "players": server.get("players", 0),
                 "max_players": server.get("playersmax", 32),
                 "map_image": assets.get("map_image", ""),
+                "admin_online": admin_count,
                 "players_list": [
                     {
                         "name": html.unescape(p.get("name", "")),
@@ -134,9 +146,10 @@ async def get_server_info_from_oyun_tracker():
                     for p in players if not any(bot.lower() in html.unescape(p.get("name", "")).lower() for bot in BOT_NAMES)
                 ]
             }
+            return server_data, admin_count
     except Exception as e:
         print(f"[DEBUG] OyunYoneticisi API error: {e}")
-        return None
+        return None, 0
 
 @router.get("/players")
 async def get_players():
@@ -160,35 +173,27 @@ async def get_players():
 @router.get("/server-info")
 async def get_server_info():
     print(f"[SERVER-INFO] Starting request")
-    admin_count = 0
     
-    try:
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, get_online_admin_count)
-        print(f"[SERVER-INFO] get_online_admin_count result: {result}")
-        
-        if result == -1:
-            print(f"[SERVER-INFO] Direct query failed, trying OyunYoneticisi API...")
-            result = await loop.run_in_executor(None, get_online_admin_count_from_oyun_tracker)
-            print(f"[SERVER-INFO] OyunYoneticisi admin count result: {result}")
-        
-        admin_count = result if result > 0 else 0
-        print(f"[SERVER-INFO] Final admin_count: {admin_count}")
-    except Exception as e:
-        print(f"[SERVER-INFO] Admin count error: {e}")
-        import traceback
-        traceback.print_exc()
-        admin_count = 0
+    server_data, admin_count = await get_server_info_with_admin()
     
-    data = await get_server_info_from_oyun_tracker()
-    
-    if data and data.get("status") == "success":
-        data["admin_online"] = admin_count
-        return data
+    if server_data and server_data.get("status") == "success":
+        print(f"[SERVER-INFO] OyunYoneticisi success: {server_data.get('name')}, admins: {admin_count}")
+        return server_data
     
     try:
         address = (CS_IP, CS_PORT)
         info = a2s.info(address, timeout=3.0)
+        players = a2s.players(address, timeout=2.0)
+        
+        admin_names = get_admin_list()
+        admin_online = 0
+        for player in players:
+            if player.name.strip() and not any(bot.lower() in player.name.lower() for bot in BOT_NAMES):
+                for admin_name in admin_names:
+                    if admin_name.lower() == player.name.strip().lower():
+                        admin_online += 1
+                        break
+        
         return {
             "status": "success",
             "source": "a2s",
@@ -198,10 +203,15 @@ async def get_server_info():
             "map": info.map_name,
             "players": info.player_count,
             "max_players": info.max_players,
-            "admin_online": admin_count
+            "map_image": "",
+            "admin_online": admin_online,
+            "players_list": [
+                {"name": p.name, "score": str(p.score), "time": str(p.duration)}
+                for p in players if p.name.strip() and not any(bot.lower() in p.name.lower() for bot in BOT_NAMES)
+            ]
         }
     except Exception as e:
-        print(f"[DEBUG] A2S fallback error: {e}")
+        print(f"[SERVER-INFO] All methods failed: {e}")
         return {
             "status": "error",
             "message": str(e)

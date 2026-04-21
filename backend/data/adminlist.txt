@@ -1,7 +1,7 @@
 ;-------------------- Yönetici ------------------------ [bdemijnopq]  
-"Tofie" "" "bcdefghijklmnopq" "ce" // ANIL.
-"POLOOOOO" "" "bcdefghijklmnopq" "ce" // POLOOOOO;
-"KillerYou" "" "bcdefghijklmnopq" "ce" // KİLLERYOU
+"STEAM_0:1:78302719" "" "bcdefghijklmnopq" "ce" // ANIL.
+"STEAM_0:1:644454788" "" "bcdefghijklmnopq" "ce" // POLOOOOO;
+"STEAM_0:1:869692472" "" "bcdefghijklmnopq" "ce" // KİLLERYOU
 
 
 
@@ -28,26 +28,28 @@
 
 
 ;-------------------- Admin --------------------------- [ bdmijnopqt ]  
-"AREXIOS ` HIRTZ" "460560" "bdmijnopqt" "a" // KİLLERYOU
+"AREXIOS ` JAMBI" "460560" "bdmijnopqt" "a" // KİLLERYOU
 "AREXIOS ` SARA" "345sarehh90qw" "bdmijnopqt" "a" // KİLLERYOU
 "AREXIOS ` Oshimen" "123456o" "bdmijnopqt" "a" // Anil
 "AREXIOS ` CanBey" "Can414182" "bdmijnoqpt" "a" // Montana
+"AREXIOS ` does not live" "does1324" "bdminoqpt" "a" // KOSOVALI
+"AREXIOS ` NIOJIOJUUAK" "niojio123" "bdmijnoqpt" "a" // KİLLERYOU
 ;-------------------- Top15 Admini -------------------- [ bmijnos ]  
 
 
 
 
 
-
 ;-------------------- Uye ----------------------------- [ bmiw ] 
-"ARX ` does not live" "does1324" "bmiw" "a" // KOSOVALI
 "ARX ` FAKO*" "fakobaba321" "bmiw" "a" // KOSOVALI
+"ARX ` DarkFedile" "senafenasena" "bmiw" "a" // KOSOVALI
 "ARX ` Torres" "shafdjhAS" "bmiw" "a" // KİLLERYOU 
 "ARX ` PANTER" "BAYRAMANKARA06" "bmiw" "a" // KİLLERYOU       
-"ARX ` SARA" "345sarehh90qw" "bmiw" "a" // KİLLERYOU   
-"ARX ` fern" "1234fern" "bmiw" "a" // KİLLERYOU
 "ARX ` XRX8_EXE" "legend11" "bmiw" "a" // KİLLERYOU
-"ARX ` ahmtcnakn" "3210465" "bmiw" "a" // KİLLERYOU
-"ARX ` CanBey" "Can414182" "bmiw" "a" // Montana
+"STEAM_0:1:485590493" "" "bmiw" "ce" // makedonya kralı
 "ARX ` MrPsyKophTT" "xum1unx5s" "bmiw" "a" // KİLLERYOU
 "ARX ` melih36" "melih1907" "bmiw" "a" // KİLLERYOU
+"ARX ` tanker necla" "159753" "bmiw" "a" // KİLLERYOU
+"ARX ` Redkit" "red8080" "bmiw" "a" // KİLLERYOU
+"ARX ` M1tozz" "halit1831clshtyycsknr" "bmiw" "a" // KİLLERYOU
+"ARX ` SARSILMAZ" "170303As." "bmiw" "a" // KİLLERYOU

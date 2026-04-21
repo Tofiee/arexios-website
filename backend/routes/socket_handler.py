@@ -29,8 +29,7 @@ async def get_location_from_ip(ip_address):
                     return f"{city}, {country}"
                 return country
             return ip_address
-    except Exception as e:
-        print(f"IP lookup error: {e}")
+    except Exception:
         return ip_address
 
 sio = socketio.AsyncServer(
@@ -90,8 +89,8 @@ async def check_server_status():
                 'player_count': len(players),
                 'timestamp': datetime.now().isoformat()
             }, room='server_room')
-    except Exception as e:
-        print(f"Server status check error: {e}")
+    except Exception:
+        pass
 
 async def start_server_monitor():
     while True:
@@ -100,9 +99,6 @@ async def start_server_monitor():
 
 @sio.event
 async def connect(sid, environ):
-    print(f"Client connected: {sid}")
-    print(f"  environ path: {environ.get('PATH_INFO', 'N/A')}")
-    
     remote_addr = environ.get('HTTP_X_FORWARDED_FOR', environ.get('REMOTE_ADDR', ''))
     if remote_addr:
         ip_list = remote_addr.split(',')
@@ -123,8 +119,6 @@ async def connect(sid, environ):
 
 @sio.event
 async def disconnect(sid):
-    print(f"Client disconnected: {sid}")
-    
     if sid in online_admins:
         admin_info = online_admins.pop(sid)
         admin_steam = admin_info.get('admin_steam_id', '')
@@ -644,8 +638,7 @@ async def close_inactive_sessions():
             db.delete(session)
             db.commit()
             
-    except Exception as e:
-        print(f"Error closing inactive sessions: {e}")
+    except Exception:
         db.rollback()
     finally:
         db.close()
@@ -724,9 +717,6 @@ async def close_session(sid, data):
     admin_id = data.get('admin_id')
     reason = data.get('reason', 'manual')
     
-    print(f"[CLOSE_SESSION] sid={sid}, session_id={session_id}, admin_id={admin_id}, reason={reason}")
-    print(f"[CLOSE_SESSION] user_sessions keys: {list(user_sessions.keys())}")
-    
     await sio.enter_room(sid, f"session_{session_id}")
     
     if session_id in taken_sessions and taken_sessions[session_id] == admin_id:
@@ -759,7 +749,6 @@ async def close_session(sid, data):
                 db.delete(session)
                 db.commit()
             else:
-                print(f"Admin closing session {session_id}, user_sessions contains: {session_id in user_sessions}")
                 await sio.emit('session_closed', {
                     'session_id': session_id,
                     'reason': reason,
@@ -835,4 +824,3 @@ async def join_room(sid, data):
     room = data.get('room')
     if room:
         await sio.enter_room(sid, room)
-        print(f"Client {sid} joined room: {room}")

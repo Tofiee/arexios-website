@@ -9,11 +9,7 @@ import socket
 try:
     import ts3
     TS3_AVAILABLE = True
-except ImportError as e:
-    print(f"[TS3] Import error: {e}")
-    TS3_AVAILABLE = False
-except Exception as e:
-    print(f"[TS3] Unexpected error: {e}")
+except ImportError:
     TS3_AVAILABLE = False
 
 router = APIRouter(prefix="/servers", tags=["Servers"])
@@ -86,19 +82,13 @@ async def get_cs_status():
             return {"status": "offline", "error": "timeout"}
 
 def _fetch_ts3_direct():
-    print(f"[TS3] TS3_AVAILABLE: {TS3_AVAILABLE}")
-    print(f"[TS3] Testing port {TS_HOST}:{TS_QUERY_PORT}...")
-    
     if not _check_port_open(TS_HOST, TS_QUERY_PORT, 3):
-        print(f"[TS3] Port {TS_QUERY_PORT} is not reachable")
         return {"status": "offline", "error": "Port not reachable"}
     
     if not TS3_AVAILABLE:
-        print(f"[TS3] Module not available")
         return {"status": "offline", "error": "ts3 module not available"}
     
     try:
-        print(f"[TS3] Connecting to {TS_HOST}:{TS_QUERY_PORT} with server nickname {TS3_SERVER_NICKNAME}...")
         with ts3.query.TS3Connection(f"telnet://{TS_HOST}:{TS_QUERY_PORT}") as ts3conn:
             ts3conn.exec_("use", virtualserver_nickname=TS3_SERVER_NICKNAME)
             info_response = ts3conn.exec_("serverinfo")
@@ -115,7 +105,6 @@ def _fetch_ts3_direct():
                 client_count = int(info.get("virtualserver_clientsonline", 0))
                 if client_count > 0: client_count -= 1 
 
-            print(f"[TS3] Connected: {server_name}, {client_count} clients")
             return {
                 "status": "online",
                 "name": server_name,
@@ -123,7 +112,6 @@ def _fetch_ts3_direct():
                 "max_players": max_clients
             }
     except Exception as e:
-        print(f"[TS3] Error: {e}")
         return {"status": "offline", "error": str(e)}
 
 def _fetch_ts3_proxy():

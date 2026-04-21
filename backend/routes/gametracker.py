@@ -27,8 +27,8 @@ def parse_adminlist_file(file_path):
                 if match:
                     admin_name = match.group(1)
                     admins.append(admin_name)
-    except Exception as e:
-        print(f"Error parsing adminlist: {e}")
+    except Exception:
+        pass
     return admins
 
 def get_admin_list():
@@ -40,66 +40,8 @@ def get_admin_list():
     
     for path in possible_paths:
         if os.path.exists(path):
-            print(f"[DEBUG] Found adminlist at: {path}")
             return parse_adminlist_file(path)
-    print("[DEBUG] No adminlist file found!")
     return []
-
-def get_online_admin_count_from_oyun_tracker():
-    try:
-        url = f"{OYUN_TRACKER_API}?ip={CS_IP}&port={CS_PORT}"
-        response = requests.get(url, timeout=10)
-        data = response.json()
-        
-        if not data.get("success"):
-            return -1
-        
-        players = data.get("players", [])
-        admin_names = get_admin_list()
-        
-        print(f"[DEBUG] Admin names from file: {admin_names}")
-        print(f"[DEBUG] Online players: {[p['name'] for p in players]}")
-        
-        admin_count = 0
-        for player in players:
-            player_name = player.get("name", "").strip()
-            if player_name and not any(bot.lower() in player_name.lower() for bot in BOT_NAMES):
-                for admin_name in admin_names:
-                    if admin_name.lower() == player_name.lower():
-                        admin_count += 1
-                        print(f"[DEBUG] MATCH! Admin found: {admin_name}")
-                        break
-        
-        print(f"[DEBUG] Total online admins from OyunYoneticisi: {admin_count}")
-        return admin_count
-    except Exception as e:
-        print(f"[DEBUG] OyunYoneticisi API error: {e}")
-        return -1
-
-def get_online_admin_count():
-    try:
-        address = (CS_IP, CS_PORT)
-        players = a2s.players(address, timeout=2.0)
-        admin_names = get_admin_list()
-        
-        print(f"[DEBUG] Admin names from file: {admin_names}")
-        print(f"[DEBUG] Online players: {[p.name for p in players]}")
-        
-        admin_count = 0
-        for player in players:
-            player_name = player.name.strip()
-            if player_name and not any(bot.lower() in player_name.lower() for bot in BOT_NAMES):
-                for admin_name in admin_names:
-                    if admin_name.lower() == player_name.lower():
-                        admin_count += 1
-                        print(f"[DEBUG] MATCH! Admin found: {admin_name}")
-                        break
-        
-        print(f"[DEBUG] Total online admins: {admin_count}")
-        return admin_count
-    except Exception as e:
-        print(f"[DEBUG] A2S players timeout, trying OyunYoneticisi API...")
-        return get_online_admin_count_from_oyun_tracker()
 
 async def get_server_info_with_admin():
     try:
@@ -148,19 +90,18 @@ async def get_server_info_with_admin():
             }
             return server_data, admin_count
     except Exception as e:
-        print(f"[DEBUG] OyunYoneticisi API error: {e}")
         return None, 0
 
 @router.get("/players")
 async def get_players():
-    data = await get_server_info_from_oyun_tracker()
+    server_data, _ = await get_server_info_with_admin()
     
-    if data and data.get("status") == "success":
+    if server_data and server_data.get("status") == "success":
         return {
             "status": "success",
             "server": f"{CS_IP}:{CS_PORT}",
-            "players": data.get("players_list", []),
-            "count": len(data.get("players_list", []))
+            "players": server_data.get("players_list", []),
+            "count": len(server_data.get("players_list", []))
         }
     
     return {
@@ -172,12 +113,9 @@ async def get_players():
 
 @router.get("/server-info")
 async def get_server_info():
-    print(f"[SERVER-INFO] Starting request")
-    
     server_data, admin_count = await get_server_info_with_admin()
     
     if server_data and server_data.get("status") == "success":
-        print(f"[SERVER-INFO] OyunYoneticisi success: {server_data.get('name')}, admins: {admin_count}")
         return server_data
     
     try:
@@ -211,7 +149,6 @@ async def get_server_info():
             ]
         }
     except Exception as e:
-        print(f"[SERVER-INFO] All methods failed: {e}")
         return {
             "status": "error",
             "message": str(e)

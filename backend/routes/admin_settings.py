@@ -165,10 +165,6 @@ def get_livechat_admins(db: Session = Depends(get_db)):
 
 @router.post("/livechat-admins", response_model=LiveChatAdminResponse)
 def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db)):
-    import traceback
-    print(f"[DEBUG] add_livechat_admin received: steam_id={data.steam_id}, user_id={data.user_id}, username={data.username}")
-    print(f"[DEBUG] LiveChatAdmin attrs: {[c.name for c in models.LiveChatAdmin.__table__.columns]}")
-    
     if data.steam_id:
         existing = db.query(models.LiveChatAdmin).filter(
             models.LiveChatAdmin.steam_id == data.steam_id

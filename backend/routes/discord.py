@@ -28,8 +28,6 @@ class SupportRequest(BaseModel):
 async def send_market_log(request: MarketRequest):
     MARKET_WEBHOOK, _ = get_discord_webhooks()
     if not MARKET_WEBHOOK:
-        # Webhook henüz tanımlanmamış, sadece test olarak logla
-        print(f"[DEMO MARKET LOG] Player: {request.player_nick} wants {request.package_name}")
         return {"status": "success", "message": "Demo mode: Siparişiniz simüle edildi."}
         
     embed = {
@@ -56,7 +54,6 @@ async def send_market_log(request: MarketRequest):
 async def send_support_log(request: SupportRequest):
     _, SUPPORT_WEBHOOK = get_discord_webhooks()
     if not SUPPORT_WEBHOOK:
-        print(f"[DEMO TICKET LOG] {request.player_nick}: [{request.category}] {request.message}")
         return {"status": "success", "message": "Demo mode: Biletiniz sisteme işlendi."}
         
     embed = {
@@ -90,7 +87,6 @@ class SkinPurchaseRequest(BaseModel):
 async def send_skin_purchase(request: SkinPurchaseRequest):
     MARKET_WEBHOOK, _ = get_discord_webhooks()
     if not MARKET_WEBHOOK:
-        print(f"[DEMO SKIN PURCHASE] Player: {request.player_nick} wants {request.skin_name} (ID: {request.skin_id}) for {request.price} TL")
         return {"status": "success", "message": "Demo mode: Siparişiniz simüle edildi."}
         
     embed = {

@@ -65,8 +65,7 @@ async def callback(request: Request, db: Session = Depends(get_db)):
                 player_data = res.json().get("response", {}).get("players", [])[0]
                 username = player_data.get("personaname", username)
                 avatar_url = player_data.get("avatarfull", avatar_url)
-        except Exception as e:
-            print("Steam API exception:", e)
+        except Exception:
             pass
             
     # Handle linking versus new user
@@ -84,8 +83,7 @@ async def callback(request: Request, db: Session = Depends(get_db)):
                 db.refresh(existing_user)
                 # Redirect back to profile
                 return RedirectResponse(url=f"{FRONTEND_URL}/profile?msg=linked")
-        except Exception as e:
-            print("Link exception:", e)
+        except Exception:
             return RedirectResponse(url=f"{FRONTEND_URL}/profile?error=link_failed")
 
     # Regular login flow (Find or Create Steam User)

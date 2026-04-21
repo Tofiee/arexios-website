@@ -89,8 +89,7 @@ async def discord_callback(request: Request, code: str = None, state: str = None
                     existing_user.discord_username = discord_username
                     db.commit()
                     return RedirectResponse(f"{FRONTEND_URL}/profile?success=discord_linked")
-            except Exception as e:
-                print("Discord Link Exception:", e)
+            except Exception:
                 return RedirectResponse(f"{FRONTEND_URL}/profile?error=link_failed")
         
     return RedirectResponse(f"{FRONTEND_URL}/login?error=discord_only_for_linking")

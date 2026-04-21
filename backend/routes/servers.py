@@ -17,9 +17,9 @@ router = APIRouter(prefix="/servers", tags=["Servers"])
 CS_IP = "95.173.173.24"
 CS_PORT = 27015
 
-TS_HOST = "spyurtdisi"
+TS_HOST = "185.137.98.127"
 TS_SERVER_PORT = 9987
-TS_QUERY_PORT = 45123
+TS_QUERY_PORT = 10011
 
 TS3_SERVER_NICKNAME = "spyurtdisi"
 

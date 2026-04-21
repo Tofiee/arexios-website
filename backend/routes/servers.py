@@ -9,7 +9,11 @@ import socket
 try:
     import ts3
     TS3_AVAILABLE = True
-except ImportError:
+except ImportError as e:
+    print(f"[TS3] Import error: {e}")
+    TS3_AVAILABLE = False
+except Exception as e:
+    print(f"[TS3] Unexpected error: {e}")
     TS3_AVAILABLE = False
 
 router = APIRouter(prefix="/servers", tags=["Servers"])

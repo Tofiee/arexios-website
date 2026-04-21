@@ -30,6 +30,8 @@ def parse_users_ini(content: str) -> list[UsersIniEntry]:
         line = line.strip()
         if not line or line.startswith('"') or line.startswith('//') or line.startswith('#'):
             continue
+        if line.startswith(';') and '----' in line:
+            continue
         
         parts = line.split()
         if len(parts) >= 3:
@@ -71,6 +73,8 @@ def get_existing_adminlist(path: str) -> set[str]:
             for line in content.strip().split('\n'):
                 line = line.strip()
                 if line.startswith('"') or line.startswith('//') or line.startswith('#'):
+                    continue
+                if line.startswith(';') and '----' in line:
                     continue
                 parts = line.split()
                 if len(parts) >= 2 and parts[0] == 'STEAM':

@@ -215,12 +215,9 @@ export default function SkinMarket({ liveChatRef }) {
         </div>
 
         <div className="flex justify-center mb-8">
-          <button onClick={() => setSelectedSkin({ name: selectedTier === 'premium_plus' ? 'Premium+ Paket' : 'Premium Paket', tier: selectedTier, image_url: '/placeholder.png' })} className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl shadow-lg flex items-center gap-3">
+          <button onClick={() => setSelectedSkin({ name: selectedTier === 'premium_plus' ? 'Premium+ Paket' : 'Premium Paket', tier: selectedTier, image_url: '/placeholder.png' })} className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl shadow-lg flex items-center gap-2">
             <ShoppingCart className="w-5 h-5" />
             Paketi Satın Al
-            {selectedTier === 'premium_plus' 
-              ? (tierPrices.premium_plus || 0) 
-              : (tierPrices.premium || 0)} TL
           </button>
         </div>
 
@@ -299,6 +296,13 @@ export default function SkinMarket({ liveChatRef }) {
                       {selectedSkin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}
                     </p>
                   )}
+                  {selectedSkin.tier && (
+                    <p className="text-2xl font-black text-orange-600 mt-1">
+                      {selectedSkin.tier === 'premium_plus' 
+                        ? (tierPrices.premium_plus || 0) 
+                        : (tierPrices.premium || 0)} TL
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -356,15 +360,9 @@ export default function SkinMarket({ liveChatRef }) {
               <button
                 type="submit"
                 disabled={purchasing}
-                className={`w-full py-3 rounded-lg font-bold text-white shadow-lg uppercase tracking-wider text-sm transition-all flex items-center justify-center gap-2 ${purchasing ? 'bg-slate-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-500 active:scale-95'}`}
+                className={`w-full py-3 rounded-lg font-bold text-white shadow-lg uppercase tracking-wider text-sm transition-all ${purchasing ? 'bg-slate-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-500 active:scale-95'}`}
               >
-                {purchasing ? t('sending') : (
-                  <>
-                    {t('place_order')} - {selectedSkin.tier === 'premium_plus' 
-                      ? (tierPrices.premium_plus || 0) 
-                      : (tierPrices.premium || 0)} TL
-                  </>
-                )}
+                {purchasing ? t('sending') : t('place_order')}
               </button>
 
               {message && (

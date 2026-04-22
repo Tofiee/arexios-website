@@ -136,8 +136,8 @@ export default function SkinMarket({ liveChatRef }) {
   };
 
   const tiers = [
-    { id: 'premium', name: 'Premium', icon: Crown, color: 'from-yellow-500 to-amber-600', bgColor: 'from-yellow-500/20 to-amber-600/20' },
-    { id: 'premium_plus', name: 'Premium', suffix: '+', icon: Sparkles, color: 'from-purple-600 via-pink-500 to-red-500', bgColor: 'from-purple-600/20 via-pink-500/20 to-red-500/20', animated: true }
+    { id: 'premium', name: 'Premium', icon: Crown, animatedGradient: false },
+    { id: 'premium_plus', name: 'Premium', suffix: '+', icon: Sparkles, animatedGradient: true }
   ];
 
   if (loading) {
@@ -176,25 +176,21 @@ export default function SkinMarket({ liveChatRef }) {
             const Icon = tier.icon;
             const isSelected = selectedTier === tier.id;
             return (
-<button
+              <button
                 key={tier.id}
                 onClick={() => setSelectedTier(isSelected ? null : tier.id)}
-                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 ${
-                  isSelected ? 'text-white shadow-lg' : 'text-slate-700 dark:text-slate-300'
-                }`}
-                style={tier.animated ? {
+                className="px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 text-white shadow-lg"
+                style={tier.animatedGradient ? {
                   background: 'linear-gradient(-45deg, #9333ea, #ec4899, #ef4444, #f97316, #9333ea)',
                   backgroundSize: '400% 400%',
                   animation: 'premiumGradient 4s ease infinite'
-                } : isSelected ? { background: 'linear-gradient(to right, #f59e0b, #d97706)' } : { background: 'rgba(251, 191, 36, 0.2)' }}
+                } : {
+                  background: 'linear-gradient(to right, #f59e0b, #d97706)'
+                }}
               >
                 <Icon className="w-4 h-4" />
                 {tier.name}
-                {tier.suffix && <span className={`font-black ${isSelected ? 'text-yellow-300' : 'text-yellow-600'}`}>{tier.suffix}</span>}
-              </button>
-              </button>
-                <Icon className="w-4 h-4" />
-                {tier.name}
+                {tier.suffix && <span className="font-black text-yellow-300">{tier.suffix}</span>}
               </button>
             );
           })}

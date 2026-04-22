@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
-import { ShoppingBag, ShoppingCart, Info, X, Crown, Star, Sparkles } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, Info, X, Crown, Sparkles } from 'lucide-react';
 
 export default function SkinMarket({ liveChatRef }) {
   const { t } = useTranslation();
@@ -135,7 +135,7 @@ export default function SkinMarket({ liveChatRef }) {
 
   const tiers = [
     { id: 'premium', name: 'Premium', icon: Crown, color: 'from-yellow-500 to-amber-600', bgColor: 'from-yellow-500/20 to-amber-600/20' },
-    { id: 'premium_plus', name: 'Premium+', icon: Sparkles, color: 'from-purple-600 via-pink-500 to-red-500', bgColor: 'from-purple-600/20 via-pink-500/20 to-red-500/20' }
+    { id: 'premium_plus', name: 'Premium+', icon: Sparkles, color: 'from-purple-600 via-pink-500 to-red-500', bgColor: 'from-purple-600/20 via-pink-500/20 to-red-500/20', animated: true }
   ];
 
   if (loading) {
@@ -170,26 +170,18 @@ export default function SkinMarket({ liveChatRef }) {
         )}
 
         <div className="flex flex-wrap justify-center gap-4">
-          <button
-            onClick={() => setSelectedTier(null)}
-            className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
-              selectedTier === null
-                ? 'bg-orange-600 text-white shadow-lg'
-                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
-            }`}
-          >
-            <Star className="w-4 h-4 inline mr-1" />
-            {t('all')}
-          </button>
           {tiers.map(tier => {
             const Icon = tier.icon;
+            const isSelected = selectedTier === tier.id;
             return (
               <button
                 key={tier.id}
-                onClick={() => setSelectedTier(tier.id)}
+                onClick={() => setSelectedTier(isSelected ? null : tier.id)}
                 className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
-                  selectedTier === tier.id
-                    ? `bg-gradient-to-r ${tier.color} text-white shadow-lg`
+                  isSelected
+                    ? tier.animated
+                      ? 'text-white shadow-lg premium-plus-animated'
+                      : `bg-gradient-to-r ${tier.color} text-white shadow-lg`
                     : `bg-gradient-to-r ${tier.bgColor} text-slate-700 dark:text-slate-300 hover:scale-105`
                 }`}
               >

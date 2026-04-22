@@ -217,10 +217,10 @@ function AdminPanelContent() {
 
     newSocket.on('session_closed', (data) => {
       const sessionId = Number(data.session_id);
-      setSessions(prev => {
-        return prev.filter(s => s.id !== sessionId);
-      });
-      
+      setSessions(prev => prev.map(s =>
+        s.id === sessionId ? { ...s, status: data.closed_by === 'user' ? 'user_closed' : 'closed' } : s
+      ));
+
       if (activeSession?.id === sessionId) {
         if (data.closed_by === 'admin') {
           setMessages(prev => [...prev, {
@@ -658,7 +658,7 @@ function AdminPanelContent() {
 
   const handleTakeSession = (session) => {
     setActiveSession(session);
-    newSocket.emit('admin_subscribe_to_session', { session_id: session.id });
+    socket?.emit('admin_subscribe_to_session', { session_id: session.id });
     fetchSessionMessages(session.id);
     fetchSessionInfo(session.id);
   };

@@ -1711,6 +1711,18 @@ function AdminPanelContent() {
             </div>
             <div className="p-6 space-y-4">
               <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Üst Kategori</label>
+                <select
+                  value={skinForm.tier}
+                  onChange={(e) => setSkinForm({ ...skinForm, tier: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
+                >
+                  <option value="">Yok</option>
+                  <option value="premium">Premium</option>
+                  <option value="premium_plus">Premium+</option>
+                </select>
+              </div>
+              <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('kategori')}</label>
                 <select
                   value={skinForm.category_id}
@@ -1721,18 +1733,6 @@ function AdminPanelContent() {
                   {categories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Tier (Opsiyonel)</label>
-                <select
-                  value={skinForm.tier}
-                  onChange={(e) => setSkinForm({ ...skinForm, tier: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
-                >
-                  <option value="">Yok</option>
-                  <option value="premium">Premium</option>
-                  <option value="premium_plus">Premium+</option>
                 </select>
               </div>
               <div>
@@ -1764,8 +1764,8 @@ function AdminPanelContent() {
                   </label>
                 </div>
                 {skinForm.image_url && (
-                  <div className="mt-2 w-full h-32 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
-                    <img src={skinForm.image_url} alt="Preview" className="w-full h-full object-cover" />
+                  <div className="mt-2 w-full h-48 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img src={skinForm.image_url} alt="Preview" className="max-w-full max-h-full object-contain" />
                   </div>
                 )}
               </div>
@@ -1823,7 +1823,7 @@ function AdminPanelContent() {
                 <p className="text-xs text-slate-500 mt-1">{t('category_desc')}</p>
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Tier (Opsiyonel)</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Üst Kategori</label>
                 <select
                   value={categoryForm.tier}
                   onChange={(e) => setCategoryForm({ ...categoryForm, tier: e.target.value })}

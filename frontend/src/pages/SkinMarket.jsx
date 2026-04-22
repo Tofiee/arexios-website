@@ -97,10 +97,11 @@ const handlePurchase = async (e) => {
     const chatMessage = `🎮 SKIN PAKET SATIN ALMA TALEBİ\n\n📦 Paket: ${selectedSkin.name}\n⭐ Tier: ${tierDisplay}\n💰 Fiyat: ${price} TL\n👤 Oyuncu: ${playerNick}\n💬 Discord: ${discordId || 'Belirtilmedi'}\n📝 Not: ${optionalNote || 'Yok'}`;
     
     if (socketRef.current?.connected) {
-      socketRef.current.emit('admin_message', {
+      socketRef.current.emit('user_message', {
         message: chatMessage,
         sender_name: user?.username || 'User',
-        sender_type: 'user'
+        sender_type: 'user',
+        is_skin_purchase: true
       });
       setMessage({ type: 'success', text: 'Talebiniz adminlere iletildi!' });
       setSelectedSkin(null);

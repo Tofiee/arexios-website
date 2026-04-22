@@ -323,11 +323,61 @@ async def send_message(sid, data):
                 except:
                     pass
             
+finally:
+            db.close()
+    
+    @sio.event
+    async def user_message(sid, data):
+        message = data.get('message')
+        sender_name = data.get('sender_name', 'Kullanıcı')
+        sender_type = data.get('sender_type', 'user')
+        is_skin_purchase = data.get('is_skin_purchase', False)
+        
+        if not message or not message.strip():
+            return
+        
+        db = SessionLocal()
+        try:
+            message_data = {
+                'id': 0,
+                'session_id': 0,
+                'sender_type': sender_type,
+                'sender_name': sender_name,
+                'message': message,
+                'created_at': datetime.now().isoformat(),
+                'is_skin_purchase': is_skin_purchase
+            }
+            
+            await sio.emit('new_message', message_data, room='admin_room')
+            
+            user_info = active_sessions.get(sid, {})
+            ip_address = user_info.get('ip_address', 'unknown')
+            location = user_info.get('location', 'Bilinmiyor')
+            
+            await sio.emit('admin_notification', {
+                'type': 'skin_purchase' if is_skin_purchase else 'new_message',
+                'user_name': sender_name,
+                'session_id': 0,
+                'message_preview': message[:50],
+                'timestamp': datetime.now().isoformat(),
+                'ip_address': ip_address,
+                'location': location,
+                'is_skin_purchase': is_skin_purchase
+            }, room='admin_room')
+            
+            if PUSH_ENABLED and online_admins:
+                icon = "🎮" if is_skin_purchase else "📩"
+                broadcast_to_all_admins(
+                    f"{icon} {sender_name}",
+                    message[:100] + ("..." if len(message) > 100 else ""),
+                    {"type": "skin_purchase" if is_skin_purchase else "new_message", "session_id": 0}
+                )
+        
         finally:
             db.close()
-
-@sio.event
-async def admin_message(sid, data):
+    
+    @sio.event
+    async def admin_message(sid, data):
     session_id = data.get('session_id')
     message = data.get('message')
     sender_name = data.get('sender_name', 'Admin')

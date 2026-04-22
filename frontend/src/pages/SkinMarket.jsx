@@ -18,6 +18,11 @@ export default function SkinMarket({ liveChatRef }) {
   const [optionalNote, setOptionalNote] = useState('');
   const [purchasing, setPurchasing] = useState(false);
   const [message, setMessage] = useState(null);
+  const [tierPrices, setTierPrices] = useState({ premium: 0, premium_plus: 0 });
+
+  useEffect(() => {
+    fetchTierPrices();
+  }, []);
 
   useEffect(() => {
     fetchCategories();
@@ -34,6 +39,18 @@ export default function SkinMarket({ liveChatRef }) {
       setCategories(res.data);
     } catch (err) {
       console.error('Failed to fetch categories:', err);
+    }
+  };
+
+  const fetchTierPrices = async () => {
+    try {
+      const res = await api.get('/admin/settings');
+      setTierPrices({
+        premium: res.data.tier_premium_price || 0,
+        premium_plus: res.data.tier_premium_plus_price || 0
+      });
+    } catch (err) {
+      console.error('Failed to fetch tier prices:', err);
     }
   };
 
@@ -145,6 +162,7 @@ export default function SkinMarket({ liveChatRef }) {
 <div className="flex flex-wrap justify-center gap-4 mb-8">
           {tiers.map(tier => {
             const isSelected = selectedTier === tier.id;
+            const price = tierPrices[tier.id] || 0;
             return (
               <button
                 key={tier.id}
@@ -165,6 +183,7 @@ export default function SkinMarket({ liveChatRef }) {
                   {tier.name}
                   {tier.suffix && <span className="absolute text-yellow-300 font-black text-lg leading-none" style={{ top: '-0.375rem', right: '-0.520rem' }}>+</span>}
                 </span>
+                {price > 0 && <span className="text-xs opacity-75">| {price} TL</span>}
               </button>
             );
           })}
@@ -227,9 +246,9 @@ export default function SkinMarket({ liveChatRef }) {
                   />
                   {(skin.tier || skin.category_tier) && (
                     <div className="absolute top-2 right-2">
-                      <span className={`px-2 py-1 rounded text-xs font-bold ${
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         (skin.tier || skin.category_tier) === 'premium_plus'
-                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
+                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white animate-pulse'
                           : 'bg-purple-600 text-white'
                       }`}>
                         {(skin.tier || skin.category_tier) === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}

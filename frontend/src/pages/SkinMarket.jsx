@@ -104,7 +104,7 @@ export default function SkinMarket({ liveChatRef }) {
           <Sparkles className="w-3 h-3" />
           <span className="relative">
             Premium
-            <span className="absolute -top-1.5 -right-1.5 text-yellow-300 font-black text-lg leading-none">+</span>
+            <span className="absolute text-yellow-300 font-black text-lg leading-none" style={{ top: '-0.375rem', right: '-0.520rem' }}>+</span>
           </span>
         </span>
       );
@@ -123,7 +123,7 @@ export default function SkinMarket({ liveChatRef }) {
           <Sparkles className="w-3 h-3" />
           <span className="relative">
             Premium
-            <span className="absolute -top-1.5 -right-1.5 text-yellow-300 font-black text-lg leading-none">+</span>
+            <span className="absolute text-yellow-300 font-black text-lg leading-none" style={{ top: '-0.375rem', right: '-0.520rem' }}>+</span>
           </span>
         </span>
       );
@@ -197,7 +197,7 @@ export default function SkinMarket({ liveChatRef }) {
                 <Icon className="w-4 h-4" />
                 <span className="relative">
                   {tier.name}
-                  {tier.suffix && <span className="absolute -top-1.5 -right-1.5 text-yellow-300 font-black text-lg leading-none">+</span>}
+                  {tier.suffix && <span className="absolute text-yellow-300 font-black text-lg leading-none" style={{ top: '-0.375rem', right: '-0.520rem' }}>+</span>}
                 </span>
               </button>
             );

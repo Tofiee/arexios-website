@@ -228,9 +228,9 @@ const handlePurchase = (e) => {
         </div>
 
         <div className="flex justify-center mb-8">
-          <button onClick={() => setSelectedSkin({ name: selectedTier === 'premium_plus' ? 'Premium+ Paket' : 'Premium Paket', tier: selectedTier, image_url: '/placeholder.png' })} className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl shadow-lg flex items-center gap-2">
+          <button onClick={() => setSelectedSkin({ name: selectedTier === 'premium_plus' ? `Premium+ ${t('package')}` : `Premium ${t('package')}`, tier: selectedTier, image_url: '/placeholder.png' })} className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl shadow-lg flex items-center gap-2">
             <ShoppingCart className="w-5 h-5" />
-            Paketi Satın Al
+            {t('purchase')}
           </button>
         </div>
 

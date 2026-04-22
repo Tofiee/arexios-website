@@ -1685,8 +1685,8 @@ function AdminPanelContent() {
       </div>
 
       {showSkinModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowSkinModal(false)}>
+          <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="bg-orange-600 text-white p-4 flex items-center justify-between">
               <h3 className="font-bold text-lg">{editingSkin ? t('edit_skin') : t('add_new_skin')}</h3>
               <button onClick={() => setShowSkinModal(false)} className="hover:bg-orange-500 p-1 rounded transition-colors">
@@ -1755,17 +1755,6 @@ function AdminPanelContent() {
                   </div>
                 )}
               </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('fiyat_tl')}</label>
-                <input
-                  type="number"
-                  value={skinForm.price}
-                  onChange={(e) => setSkinForm({ ...skinForm, price: e.target.value })}
-                  placeholder={t('price_placeholder')}
-                  min="1"
-                  className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
-                />
-              </div>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3">
               <button
@@ -1786,8 +1775,8 @@ function AdminPanelContent() {
       )}
 
       {showCategoryModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowCategoryModal(false)}>
+          <div className="bg-white dark:bg-[#151822] rounded-2xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="bg-purple-600 text-white p-4 flex items-center justify-between">
               <h3 className="font-bold text-lg">{t('add_new_category')}</h3>
               <button onClick={() => setShowCategoryModal(false)} className="hover:bg-purple-500 p-1 rounded transition-colors">

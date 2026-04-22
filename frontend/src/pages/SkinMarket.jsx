@@ -82,45 +82,50 @@ export default function SkinMarket({ liveChatRef }) {
     setLoading(false);
   };
 
-  const handlePurchase = async (e) => {
+const handlePurchase = async (e) => {
     e.preventDefault();
     if (!playerNick) return;
 
     setPurchasing(true);
     setMessage(null);
-    try {
-      const payload = {
-        skin_name: selectedSkin.name,
-        skin_id: selectedSkin.id || null,
-        tier: selectedSkin.tier,
-        player_nick: playerNick,
-        discord_id: discordId,
-        optional_note: optionalNote
-      };
+    
+    const tierDisplay = selectedSkin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM';
+    const price = selectedSkin.tier === 'premium_plus' 
+      ? (tierPrices.premium_plus || 0) 
+      : (tierPrices.premium || 0);
+    
+    const chatMessage = `🎮 SKIN PAKET SATIN ALMA TALEBİ\n\n📦 Paket: ${selectedSkin.name}\n⭐ Tier: ${tierDisplay}\n💰 Fiyat: ${price} TL\n👤 Oyuncu: ${playerNick}\n💬 Discord: ${discordId || 'Belirtilmedi'}\n📝 Not: ${optionalNote || 'Yok'}`;
+    
+    if (socketRef.current?.connected) {
+      socketRef.current.emit('admin_message', {
+        message: chatMessage,
+        sender_name: user?.username || 'User',
+        sender_type: 'user'
+      });
+      setMessage({ type: 'success', text: 'Talebiniz adminlere iletildi!' });
+      setSelectedSkin(null);
+      setPlayerNick('');
+      setDiscordId('');
+      setOptionalNote('');
+    } else {
+      setMessage({ type: 'error', text: 'Sunucuya bağlanılamadı. Lütfen sayfayı yenileyin.' });
+    }
+    
+    setPurchasing(false);
+  };
 
       const res = await api.post('/discord/skin-purchase', payload);
       setMessage({ type: res.data.status === 'success' ? 'success' : 'error', text: res.data.message });
       
       if (res.data.status === 'success') {
-        const skinInfo = {
-          skinName: selectedSkin.name,
-          tier: selectedSkin.tier,
-          playerNick: playerNick,
-          discordId: discordId,
-          optionalNote: optionalNote
-        };
-        
-        if (liveChatRef?.current?.sendSkinPurchase) {
-          liveChatRef.current.sendSkinPurchase(skinInfo);
-        } else if (socketRef.current?.connected) {
-          const tierDisplay = selectedSkin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM';
-          const chatMessage = `🎮 SKIN PAKET SATIN ALMA TALEBİ\n\n📦 Paket: ${selectedSkin.name}\n⭐ Tier: ${tierDisplay}\n👤 ${t('ingame_nick')}: ${playerNick}\n💬 Discord: ${discordId || 'Belirtilmedi'}\n📝 Not: ${optionalNote || 'Yok'}`;
-          socketRef.current.emit('admin_message', {
-            message: chatMessage,
-            sender_name: user?.username || 'User',
-            sender_type: 'user'
-          });
-        }
+        setMessage({ type: 'success', text: res.data.message });
+        setSelectedSkin(null);
+        setPlayerNick('');
+        setDiscordId('');
+        setOptionalNote('');
+      } else {
+        setMessage({ type: 'error', text: res.data.message || t('error_occurred') });
+      }
         
         setSelectedSkin(null);
         setPlayerNick('');

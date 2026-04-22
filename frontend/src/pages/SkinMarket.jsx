@@ -97,8 +97,9 @@ export default function SkinMarket({ liveChatRef }) {
     return skin.name;
   };
 
-  const getTierBadge = (tier) => {
-    if (tier === 'premium_plus' || skin?.tier === 'premium_plus') {
+  const getTierBadge = (skin) => {
+    const tier = skin?.tier || skin?.category_tier;
+    if (tier === 'premium_plus') {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
           <Sparkles className="w-3 h-3" />
@@ -109,26 +110,7 @@ export default function SkinMarket({ liveChatRef }) {
         </span>
       );
     }
-    if (tier === 'premium' || skin?.tier === 'premium') {
-      return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-          <Crown className="w-3 h-3 mr-1" />
-          Premium
-        </span>
-      );
-    }
-    if (skin?.category_tier === 'premium_plus') {
-      return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
-          <Sparkles className="w-3 h-3" />
-          <span className="relative">
-            Premium
-            <span className="absolute text-yellow-300 font-black text-lg leading-none" style={{ top: '-0.375rem', right: '-0.520rem' }}>+</span>
-          </span>
-        </span>
-      );
-    }
-    if (skin?.category_tier === 'premium') {
+    if (tier === 'premium') {
       return (
         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
           <Crown className="w-3 h-3 mr-1" />
@@ -235,7 +217,7 @@ export default function SkinMarket({ liveChatRef }) {
                   <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-2 truncate">
                     {getSkinDisplayName(skin)}
                   </h3>
-                  {getTierBadge(skin.tier || skin.category_tier)}
+                  {getTierBadge(skin)}
                   <button
                     onClick={() => setSelectedSkin(skin)}
                     className="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg mt-3"

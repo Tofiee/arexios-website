@@ -165,8 +165,8 @@ async def user_join(sid, data):
             'session_id': session_id,
             'ip_address': ip_address,
             'location': location,
-            'user_name': user_name,
-            'user_agent': user_agent
+            'user_agent': user_agent,
+            'user_name': user_name
         }, room='admin_room')
     
     await send_admin_status_info(sid)
@@ -242,17 +242,21 @@ async def user_typing(sid, data):
 async def user_location(sid, data):
     session_id = data.get('session_id')
     page_url = data.get('page_url', '')
-    page_title = data.get('page_title', '')
-    
+    page_name = data.get('page_name', '')
+
     if sid in active_sessions:
         active_sessions[sid]['current_page'] = page_url
-        active_sessions[sid]['page_title'] = page_title
-    
+        active_sessions[sid]['page_title'] = page_name
+
     if session_id:
+        user_info = active_sessions.get(sid, {})
         await sio.emit('user_location', {
             'session_id': session_id,
             'page_url': page_url,
-            'page_title': page_title
+            'page_name': page_name,
+            'ip_address': user_info.get('ip_address', 'unknown'),
+            'location': user_info.get('location', 'Bilinmiyor'),
+            'user_agent': user_info.get('user_agent', 'Bilinmiyor')
         }, room='admin_room')
 
 @sio.event

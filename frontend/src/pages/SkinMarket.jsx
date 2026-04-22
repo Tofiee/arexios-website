@@ -102,7 +102,8 @@ export default function SkinMarket({ liveChatRef }) {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
           <Sparkles className="w-3 h-3" />
-          Premium+
+          Premium
+          <span className="font-black text-yellow-300">+</span>
         </span>
       );
     }
@@ -118,7 +119,8 @@ export default function SkinMarket({ liveChatRef }) {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
           <Sparkles className="w-3 h-3" />
-          Premium+
+          Premium
+          <span className="font-black text-yellow-300">+</span>
         </span>
       );
     }
@@ -135,7 +137,7 @@ export default function SkinMarket({ liveChatRef }) {
 
   const tiers = [
     { id: 'premium', name: 'Premium', icon: Crown, color: 'from-yellow-500 to-amber-600', bgColor: 'from-yellow-500/20 to-amber-600/20' },
-    { id: 'premium_plus', name: 'Premium+', icon: Sparkles, color: 'from-purple-600 via-pink-500 to-red-500', bgColor: 'from-purple-600/20 via-pink-500/20 to-red-500/20', animated: true }
+    { id: 'premium_plus', name: 'Premium', suffix: '+', icon: Sparkles, color: 'from-purple-600 via-pink-500 to-red-500', bgColor: 'from-purple-600/20 via-pink-500/20 to-red-500/20', animated: true }
   ];
 
   if (loading) {
@@ -178,14 +180,19 @@ export default function SkinMarket({ liveChatRef }) {
                 key={tier.id}
                 onClick={() => setSelectedTier(isSelected ? null : tier.id)}
                 className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 ${
-                  isSelected ? 'text-white shadow-lg' : `bg-gradient-to-r ${tier.bgColor} text-slate-700 dark:text-slate-300`
+                  isSelected ? 'text-white shadow-lg' : 'text-slate-700 dark:text-slate-300'
                 }`}
-                style={isSelected && tier.animated ? {
+                style={tier.animated ? {
                   background: 'linear-gradient(-45deg, #9333ea, #ec4899, #ef4444, #f97316, #9333ea)',
                   backgroundSize: '400% 400%',
                   animation: 'premiumGradient 4s ease infinite'
-                } : isSelected && !tier.animated ? { background: 'linear-gradient(to right, #f59e0b, #d97706)' } : undefined}
+                } : isSelected ? { background: 'linear-gradient(to right, #f59e0b, #d97706)' } : { background: 'rgba(251, 191, 36, 0.2)' }}
               >
+                <Icon className="w-4 h-4" />
+                {tier.name}
+                {tier.suffix && <span className={`font-black ${isSelected ? 'text-yellow-300' : 'text-yellow-600'}`}>{tier.suffix}</span>}
+              </button>
+              </button>
                 <Icon className="w-4 h-4" />
                 {tier.name}
               </button>

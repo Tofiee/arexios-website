@@ -104,15 +104,15 @@ export default function SkinMarket({ liveChatRef }) {
           <Sparkles className="w-3 h-3" />
           <span className="relative">
             Premium
-            <span className="absolute -top-1.5 -right-2.5 text-yellow-300 font-black text-sm leading-none">+</span>
+            <span className="absolute -top-1.5 -right-1.5 text-yellow-300 font-black text-lg leading-none">+</span>
           </span>
         </span>
       );
     }
     if (tier === 'premium' || skin?.tier === 'premium') {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-500 to-amber-600 text-white">
-          <Crown className="w-3 h-3" />
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+          <Crown className="w-3 h-3 mr-1" />
           Premium
         </span>
       );
@@ -123,15 +123,15 @@ export default function SkinMarket({ liveChatRef }) {
           <Sparkles className="w-3 h-3" />
           <span className="relative">
             Premium
-            <span className="absolute -top-1.5 -right-2.5 text-yellow-300 font-black text-sm leading-none">+</span>
+            <span className="absolute -top-1.5 -right-1.5 text-yellow-300 font-black text-lg leading-none">+</span>
           </span>
         </span>
       );
     }
     if (skin?.category_tier === 'premium') {
       return (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-500 to-amber-600 text-white">
-          <Crown className="w-3 h-3" />
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+          <Crown className="w-3 h-3 mr-1" />
           Premium
         </span>
       );
@@ -184,7 +184,7 @@ export default function SkinMarket({ liveChatRef }) {
                 key={tier.id}
                 onClick={() => setSelectedTier(isSelected ? null : tier.id)}
                 className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 shadow-lg ${
-                  isSelected ? 'text-white' : tier.animatedGradient ? 'text-white' : 'bg-yellow-100 text-yellow-700 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-amber-600 hover:text-white'
+                  isSelected ? 'text-white' : tier.animatedGradient ? 'text-white' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-amber-600 hover:text-white'
                 }`}
                 style={tier.animatedGradient ? {
                   background: 'linear-gradient(-45deg, #9333ea, #ec4899, #ef4444, #f97316, #9333ea)',
@@ -197,7 +197,7 @@ export default function SkinMarket({ liveChatRef }) {
                 <Icon className="w-4 h-4" />
                 <span className="relative">
                   {tier.name}
-                  {tier.suffix && <span className="absolute -top-1.5 -right-2.5 text-yellow-300 font-black text-sm leading-none">+</span>}
+                  {tier.suffix && <span className="absolute -top-1.5 -right-1.5 text-yellow-300 font-black text-lg leading-none">+</span>}
                 </span>
               </button>
             );

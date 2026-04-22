@@ -7,7 +7,7 @@ import { ShoppingBag, ShoppingCart, Info, X, Crown } from 'lucide-react';
 
 const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
-export default function SkinMarket({ liveChatRef }) {
+export default function PremiumMarket({ liveChatRef }) {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const [skins, setSkins] = useState([]);

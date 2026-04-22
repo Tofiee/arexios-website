@@ -42,8 +42,8 @@ export default function Navbar() {
             <Link to="/market" className="text-gray-600 dark:text-gray-300 font-bold hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors uppercase tracking-wider text-sm">
               {t('market')}
             </Link>
-            <Link to="/skin-market" className="text-orange-600 dark:text-orange-400 font-bold hover:text-orange-500 dark:hover:text-orange-300 transition-colors uppercase tracking-wider text-sm">
-              Skin Market
+            <Link to="/premium-market" className="text-orange-600 dark:text-orange-400 font-bold hover:text-orange-500 dark:hover:text-orange-300 transition-colors uppercase tracking-wider text-sm">
+              Premium Market
             </Link>
             
             <div className="relative">
@@ -108,7 +108,7 @@ export default function Navbar() {
             <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-center font-bold text-gray-700 dark:text-gray-200 py-2 border-b border-gray-100 dark:border-gray-800 uppercase tracking-widest">{t('home')}</Link>
             <Link to="/stats" onClick={() => setIsMobileMenuOpen(false)} className="text-center font-bold text-gray-700 dark:text-gray-200 py-2 border-b border-gray-100 dark:border-gray-800 uppercase tracking-widest">{t('stats')}</Link>
             <Link to="/market" onClick={() => setIsMobileMenuOpen(false)} className="text-center font-bold text-gray-700 dark:text-gray-200 py-2 border-b border-gray-100 dark:border-gray-800 uppercase tracking-widest">{t('market')}</Link>
-            <Link to="/skin-market" onClick={() => setIsMobileMenuOpen(false)} className="text-center font-bold text-orange-600 dark:text-orange-400 py-2 border-b border-gray-100 dark:border-gray-800 uppercase tracking-widest">Skin Market</Link>
+            <Link to="/premium-market" onClick={() => setIsMobileMenuOpen(false)} className="text-center font-bold text-orange-600 dark:text-orange-400 py-2 border-b border-gray-100 dark:border-gray-800 uppercase tracking-widest">Premium Market</Link>
             
             <div className="flex gap-2 p-1 rounded-xl bg-gray-100 dark:bg-gray-800 mt-2">
               <button 

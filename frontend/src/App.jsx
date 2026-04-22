@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Stats from './pages/Stats';
 import Market from './pages/Market';
-import SkinMarket from './pages/SkinMarket';
+import PremiumMarket from './pages/PremiumMarket';
 import AdminPanel from './pages/AdminPanel';
 import { AuthContext } from './context/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -81,7 +81,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/market" element={<Market />} />
-          <Route path="/skin-market" element={<SkinMarket liveChatRef={chatRef} />} />
+          <Route path="/premium-market" element={<PremiumMarket liveChatRef={chatRef} />} />
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminPanel /></AdminRoute>} />

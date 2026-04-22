@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { io } from 'socket.io-client';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 import { ShoppingBag, ShoppingCart, Info, X, Crown } from 'lucide-react';
+
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 export default function SkinMarket({ liveChatRef }) {
   const { t } = useTranslation();
@@ -19,6 +22,16 @@ export default function SkinMarket({ liveChatRef }) {
   const [purchasing, setPurchasing] = useState(false);
   const [message, setMessage] = useState(null);
   const [tierPrices, setTierPrices] = useState({ premium: 0, premium_plus: 0 });
+  const socketRef = useRef(null);
+
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(SOCKET_URL, {
+        transports: ['polling', 'websocket'],
+        reconnection: true,
+      });
+    }
+  }, []);
 
   useEffect(() => {
     fetchTierPrices();
@@ -99,6 +112,14 @@ export default function SkinMarket({ liveChatRef }) {
         
         if (liveChatRef?.current?.sendSkinPurchase) {
           liveChatRef.current.sendSkinPurchase(skinInfo);
+        } else if (socketRef.current?.connected) {
+          const tierDisplay = selectedSkin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM';
+          const chatMessage = `🎮 SKIN PAKET SATIN ALMA TALEBİ\n\n📦 Paket: ${selectedSkin.name}\n⭐ Tier: ${tierDisplay}\n👤 ${t('ingame_nick')}: ${playerNick}\n💬 Discord: ${discordId || 'Belirtilmedi'}\n📝 Not: ${optionalNote || 'Yok'}`;
+          socketRef.current.emit('admin_message', {
+            message: chatMessage,
+            sender_name: user?.username || 'User',
+            sender_type: 'user'
+          });
         }
         
         setSelectedSkin(null);

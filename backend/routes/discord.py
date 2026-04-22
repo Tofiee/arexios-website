@@ -86,9 +86,7 @@ class SkinPurchaseRequest(BaseModel):
 @router.post("/skin-purchase")
 async def send_skin_purchase(request: SkinPurchaseRequest):
     MARKET_WEBHOOK, _ = get_discord_webhooks()
-    if not MARKET_WEBHOOK:
-        return {"status": "success", "message": "Demo mode: Siparişiniz simüle edildi."}
-        
+    
     tier_display = "PREMIUM+" if request.tier == "premium_plus" else "PREMIUM" if request.tier else "Bilinmeyen"
     
     embed = {
@@ -103,6 +101,9 @@ async def send_skin_purchase(request: SkinPurchaseRequest):
         ],
         "footer": {"text": "Arexios Portal Skin Market Otomasyonu"}
     }
+    
+    if not MARKET_WEBHOOK:
+        return {"status": "success", "message": "Talebiniz alındı! Admin panelinden onay bekleniyor."}
     
     try:
         async with httpx.AsyncClient() as client:

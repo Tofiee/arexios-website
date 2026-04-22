@@ -26,24 +26,6 @@
 .target-move-x { animation: aimX 7s ease-in-out infinite alternate; }
 .target-move-y { animation: aimY 6s ease-in-out infinite alternate; }
 
-@keyframes premiumGradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes aimX {
-  0% { transform: translateX(-35vw); }
-  100% { transform: translateX(25vw); }
-}
-@keyframes aimY {
-  0% { transform: translateY(-25vh); }
-  100% { transform: translateY(20vh); }
-}
-
-.target-move-x { animation: aimX 7s ease-in-out infinite alternate; }
-.target-move-y { animation: aimY 6s ease-in-out infinite alternate; }
-
 .cursor-crosshair {
   cursor: crosshair !important;
 }

@@ -38,9 +38,9 @@ function AdminPanelContent() {
   const [categories, setCategories] = useState([]);
   const [showSkinModal, setShowSkinModal] = useState(false);
   const [editingSkin, setEditingSkin] = useState(null);
-  const [skinForm, setSkinForm] = useState({ name: '', image_url: '', price: '', category_id: '' });
+  const [skinForm, setSkinForm] = useState({ name: '', image_url: '', price: '', category_id: '', tier: '' });
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [categoryForm, setCategoryForm] = useState({ name: '' });
+  const [categoryForm, setCategoryForm] = useState({ name: '', tier: '' });
   const [settings, setSettings] = useState(null);
   const [settingsForm, setSettingsForm] = useState(null);
   const [livechatAdmins, setLivechatAdmins] = useState([]);
@@ -556,11 +556,12 @@ function AdminPanelContent() {
         name: skin.name, 
         image_url: skin.image_url, 
         price: skin.price.toString(),
-        category_id: skin.category_id ? skin.category_id.toString() : ''
+        category_id: skin.category_id ? skin.category_id.toString() : '',
+        tier: skin.tier || ''
       });
     } else {
       setEditingSkin(null);
-      setSkinForm({ name: '', image_url: '', price: '', category_id: '' });
+      setSkinForm({ name: '', image_url: '', price: '', category_id: '', tier: '' });
     }
     setShowSkinModal(true);
   };
@@ -594,14 +595,16 @@ function AdminPanelContent() {
           name: skinForm.name,
           image_url: skinForm.image_url,
           price: parseInt(skinForm.price),
-          category_id: skinForm.category_id ? parseInt(skinForm.category_id) : null
+          category_id: skinForm.category_id ? parseInt(skinForm.category_id) : null,
+          tier: skinForm.tier || null
         });
       } else {
         await api.post('/skins/', {
           name: skinForm.name,
           image_url: skinForm.image_url,
           price: parseInt(skinForm.price),
-          category_id: skinForm.category_id ? parseInt(skinForm.category_id) : null
+          category_id: skinForm.category_id ? parseInt(skinForm.category_id) : null,
+          tier: skinForm.tier || null
         });
       }
       fetchSkins();
@@ -618,10 +621,13 @@ function AdminPanelContent() {
       return;
     }
     try {
-      await api.post('/skins/categories/', { name: categoryForm.name });
+      await api.post('/skins/categories/', { 
+        name: categoryForm.name,
+        tier: categoryForm.tier || null
+      });
       fetchCategories();
       setShowCategoryModal(false);
-      setCategoryForm({ name: '' });
+      setCategoryForm({ name: '', tier: '' });
     } catch (err) {
       console.error('Failed to save category:', err);
       alert(err.response?.data?.detail || 'Kategori kaydedilirken hata oluştu.');
@@ -911,9 +917,20 @@ function AdminPanelContent() {
                   <h3 className="font-bold text-slate-800 dark:text-white mb-3">{t('categories')}</h3>
                   <div className="flex flex-wrap gap-2">
                     {categories.map(cat => (
-                      <div key={cat.id} className="flex items-center gap-1 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">
+                      <div key={cat.id} className="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">
                         <Tag className="w-3 h-3 text-purple-500" />
                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{cat.name}</span>
+                        {cat.tier && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                            cat.tier === 'premium_plus' 
+                              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' 
+                              : cat.tier === 'premium'
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-slate-400 text-white'
+                          }`}>
+                            {cat.tier === 'premium_plus' ? 'PREMIUM+' : cat.tier?.toUpperCase()}
+                          </span>
+                        )}
                         <button
                           onClick={() => handleDeleteCategory(cat.id)}
                           className="ml-1 text-slate-400 hover:text-red-500 transition-colors"
@@ -931,6 +948,17 @@ function AdminPanelContent() {
                   <div key={skin.id} className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="aspect-video bg-slate-100 dark:bg-slate-800 relative">
                       <img src={skin.image_url} alt={skin.name} className="w-full h-full object-cover" />
+                      {skin.tier && (
+                        <div className="absolute top-2 right-2">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                            skin.tier === 'premium_plus' 
+                              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' 
+                              : 'bg-purple-600 text-white'
+                          }`}>
+                            {skin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}
+                          </span>
+                        </div>
+                      )}
                       {!skin.is_active && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                           <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">{t('pasif')}</span>
@@ -1696,6 +1724,18 @@ function AdminPanelContent() {
                 </select>
               </div>
               <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Tier (Opsiyonel)</label>
+                <select
+                  value={skinForm.tier}
+                  onChange={(e) => setSkinForm({ ...skinForm, tier: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500"
+                >
+                  <option value="">Yok</option>
+                  <option value="premium">Premium</option>
+                  <option value="premium_plus">Premium+</option>
+                </select>
+              </div>
+              <div>
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('skin_name_required')}</label>
                 <input
                   type="text"
@@ -1776,11 +1816,23 @@ function AdminPanelContent() {
                 <input
                   type="text"
                   value={categoryForm.name}
-                  onChange={(e) => setCategoryForm({ name: e.target.value })}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
                   placeholder={t('example_category')}
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-purple-500"
                 />
                 <p className="text-xs text-slate-500 mt-1">{t('category_desc')}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Tier (Opsiyonel)</label>
+                <select
+                  value={categoryForm.tier}
+                  onChange={(e) => setCategoryForm({ ...categoryForm, tier: e.target.value })}
+                  className="w-full px-4 py-2 bg-slate-100 dark:bg-[#0a0c10] border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-purple-500"
+                >
+                  <option value="">Yok</option>
+                  <option value="premium">Premium</option>
+                  <option value="premium_plus">Premium+</option>
+                </select>
               </div>
             </div>
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex gap-3">

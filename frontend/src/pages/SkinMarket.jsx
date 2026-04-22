@@ -104,7 +104,7 @@ export default function SkinMarket({ liveChatRef }) {
           <Sparkles className="w-3 h-3" />
           <span className="relative">
             Premium
-            <span className="absolute -top-1 -right-2 text-yellow-300 font-black text-[10px] leading-none">+</span>
+            <span className="absolute -top-1.5 -right-2.5 text-yellow-300 font-black text-sm leading-none">+</span>
           </span>
         </span>
       );
@@ -123,7 +123,7 @@ export default function SkinMarket({ liveChatRef }) {
           <Sparkles className="w-3 h-3" />
           <span className="relative">
             Premium
-            <span className="absolute -top-1 -right-2 text-yellow-300 font-black text-[10px] leading-none">+</span>
+            <span className="absolute -top-1.5 -right-2.5 text-yellow-300 font-black text-sm leading-none">+</span>
           </span>
         </span>
       );
@@ -175,7 +175,7 @@ export default function SkinMarket({ liveChatRef }) {
           </div>
         )}
 
-        <div className="flex flex-wrap justify-center gap-4">
+<div className="flex flex-wrap justify-center gap-4">
           {tiers.map(tier => {
             const Icon = tier.icon;
             const isSelected = selectedTier === tier.id;
@@ -183,19 +183,21 @@ export default function SkinMarket({ liveChatRef }) {
               <button
                 key={tier.id}
                 onClick={() => setSelectedTier(isSelected ? null : tier.id)}
-                className="px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 text-white shadow-lg"
+                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 shadow-lg ${
+                  isSelected ? 'text-white' : tier.animatedGradient ? 'text-white' : 'bg-yellow-100 text-yellow-700 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-amber-600 hover:text-white'
+                }`}
                 style={tier.animatedGradient ? {
                   background: 'linear-gradient(-45deg, #9333ea, #ec4899, #ef4444, #f97316, #9333ea)',
                   backgroundSize: '400% 400%',
                   animation: 'premiumGradient 4s ease infinite'
-                } : {
+                } : isSelected ? {
                   background: 'linear-gradient(to right, #f59e0b, #d97706)'
-                }}
+                } : undefined}
               >
                 <Icon className="w-4 h-4" />
                 <span className="relative">
                   {tier.name}
-                  {tier.suffix && <span className="absolute -top-1 -right-2 text-yellow-300 font-black text-xs leading-none">{tier.suffix}</span>}
+                  {tier.suffix && <span className="absolute -top-1.5 -right-2.5 text-yellow-300 font-black text-sm leading-none">+</span>}
                 </span>
               </button>
             );

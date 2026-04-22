@@ -17,15 +17,18 @@ def slugify(text):
 
 class CategoryCreate(BaseModel):
     name: str
+    tier: Optional[str] = None
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
+    tier: Optional[str] = None
     is_active: Optional[bool] = None
 
 class CategoryResponse(BaseModel):
     id: int
     name: str
     slug: str
+    tier: Optional[str] = None
     is_active: bool
 
     class Config:
@@ -48,7 +51,7 @@ def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Bu kategori zaten mevcut")
     
     slug = slugify(category.name)
-    db_category = SkinCategory(name=category.name, slug=slug)
+    db_category = SkinCategory(name=category.name, slug=slug, tier=category.tier)
     db.add(db_category)
     db.commit()
     db.refresh(db_category)
@@ -66,6 +69,8 @@ def update_category(category_id: int, category_update: CategoryUpdate, db: Sessi
     if category_update.name is not None:
         db_category.name = category_update.name
         db_category.slug = slugify(category_update.name)
+    if category_update.tier is not None:
+        db_category.tier = category_update.tier
     if category_update.is_active is not None:
         db_category.is_active = category_update.is_active
     

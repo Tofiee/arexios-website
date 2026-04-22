@@ -19,12 +19,14 @@ class SkinCreate(BaseModel):
     image_url: str
     price: int
     category_id: Optional[int] = None
+    tier: Optional[str] = None
 
 class SkinUpdate(BaseModel):
     name: Optional[str] = None
     image_url: Optional[str] = None
     price: Optional[int] = None
     category_id: Optional[int] = None
+    tier: Optional[str] = None
     is_active: Optional[bool] = None
 
 class SkinResponse(BaseModel):
@@ -33,29 +35,36 @@ class SkinResponse(BaseModel):
     image_url: str
     price: int
     category_id: Optional[int] = None
+    tier: Optional[str] = None
     is_active: bool
     category_name: Optional[str] = None
+    category_tier: Optional[str] = None
     created_at: Optional[str] = None
 
     class Config:
         from_attributes = True
 
 @router.get("/", response_model=List[SkinResponse])
-def get_skins(category: Optional[int] = None, db: Session = Depends(get_db)):
+def get_skins(category: Optional[int] = None, tier: Optional[str] = None, db: Session = Depends(get_db)):
     query = db.query(Skin).filter(Skin.is_active == True)
     
     if category:
         query = query.filter(Skin.category_id == category)
+    
+    if tier:
+        query = query.filter(Skin.tier == tier)
     
     skins = query.order_by(Skin.created_at.desc()).all()
     
     result = []
     for skin in skins:
         category_name = None
+        category_tier = None
         if skin.category_id:
             cat = db.query(SkinCategory).filter(SkinCategory.id == skin.category_id).first()
             if cat:
                 category_name = cat.name
+                category_tier = cat.tier
         
         result.append(SkinResponse(
             id=skin.id,
@@ -63,8 +72,10 @@ def get_skins(category: Optional[int] = None, db: Session = Depends(get_db)):
             image_url=skin.image_url,
             price=skin.price,
             category_id=skin.category_id,
+            tier=skin.tier,
             is_active=skin.is_active,
             category_name=category_name,
+            category_tier=category_tier,
             created_at=str(skin.created_at) if skin.created_at else None
         ))
     return result
@@ -76,10 +87,12 @@ def get_all_skins(db: Session = Depends(get_db)):
     result = []
     for skin in skins:
         category_name = None
+        category_tier = None
         if skin.category_id:
             cat = db.query(SkinCategory).filter(SkinCategory.id == skin.category_id).first()
             if cat:
                 category_name = cat.name
+                category_tier = cat.tier
         
         result.append(SkinResponse(
             id=skin.id,
@@ -87,8 +100,10 @@ def get_all_skins(db: Session = Depends(get_db)):
             image_url=skin.image_url,
             price=skin.price,
             category_id=skin.category_id,
+            tier=skin.tier,
             is_active=skin.is_active,
             category_name=category_name,
+            category_tier=category_tier,
             created_at=str(skin.created_at) if skin.created_at else None
         ))
     return result
@@ -104,11 +119,20 @@ def create_skin(skin: SkinCreate, db: Session = Depends(get_db)):
         name=skin.name,
         image_url=skin.image_url,
         price=skin.price,
-        category_id=skin.category_id
+        category_id=skin.category_id,
+        tier=skin.tier
     )
     db.add(db_skin)
     db.commit()
     db.refresh(db_skin)
+    
+    category_name = None
+    category_tier = None
+    if db_skin.category_id:
+        cat = db.query(SkinCategory).filter(SkinCategory.id == db_skin.category_id).first()
+        if cat:
+            category_name = cat.name
+            category_tier = cat.tier
     
     return SkinResponse(
         id=db_skin.id,
@@ -116,8 +140,10 @@ def create_skin(skin: SkinCreate, db: Session = Depends(get_db)):
         image_url=db_skin.image_url,
         price=db_skin.price,
         category_id=db_skin.category_id,
+        tier=db_skin.tier,
         is_active=db_skin.is_active,
-        category_name=db_skin.category.name if db_skin.category else None,
+        category_name=category_name,
+        category_tier=category_tier,
         created_at=str(db_skin.created_at) if db_skin.created_at else None
     )
 
@@ -135,11 +161,21 @@ def update_skin(skin_id: int, skin_update: SkinUpdate, db: Session = Depends(get
         db_skin.price = skin_update.price
     if skin_update.category_id is not None:
         db_skin.category_id = skin_update.category_id
+    if skin_update.tier is not None:
+        db_skin.tier = skin_update.tier
     if skin_update.is_active is not None:
         db_skin.is_active = skin_update.is_active
     
     db.commit()
     db.refresh(db_skin)
+    
+    category_name = None
+    category_tier = None
+    if db_skin.category_id:
+        cat = db.query(SkinCategory).filter(SkinCategory.id == db_skin.category_id).first()
+        if cat:
+            category_name = cat.name
+            category_tier = cat.tier
     
     return SkinResponse(
         id=db_skin.id,
@@ -147,8 +183,10 @@ def update_skin(skin_id: int, skin_update: SkinUpdate, db: Session = Depends(get
         image_url=db_skin.image_url,
         price=db_skin.price,
         category_id=db_skin.category_id,
+        tier=db_skin.tier,
         is_active=db_skin.is_active,
-        category_name=db_skin.category.name if db_skin.category else None,
+        category_name=category_name,
+        category_tier=category_tier,
         created_at=str(db_skin.created_at) if db_skin.created_at else None
     )
 

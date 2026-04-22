@@ -75,6 +75,7 @@ class SkinCategory(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False, unique=True)
     slug = Column(String(100), nullable=False, unique=True)
+    tier = Column(String(20), nullable=True)  # "premium", "premium_plus"
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     skins = relationship("Skin", back_populates="category")
@@ -87,6 +88,7 @@ class Skin(Base):
     image_url = Column(String(500), nullable=False)
     price = Column(Integer, nullable=False)
     category_id = Column(Integer, ForeignKey("skin_categories.id"), nullable=True)
+    tier = Column(String(20), nullable=True)  # "premium", "premium_plus"
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

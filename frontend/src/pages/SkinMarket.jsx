@@ -2,14 +2,14 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
-import { ShoppingBag, ShoppingCart, Info, X, Crown } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, Info, X, Crown, Star, Sparkles } from 'lucide-react';
 
 export default function SkinMarket({ liveChatRef }) {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const [skins, setSkins] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedTier, setSelectedTier] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSkin, setSelectedSkin] = useState(null);
   const [playerNick, setPlayerNick] = useState('');
@@ -24,8 +24,8 @@ export default function SkinMarket({ liveChatRef }) {
   }, []);
 
   useEffect(() => {
-    fetchSkins(selectedCategory);
-  }, [selectedCategory]);
+    fetchSkins(selectedTier);
+  }, [selectedTier]);
 
   const fetchCategories = async () => {
     try {
@@ -36,9 +36,9 @@ export default function SkinMarket({ liveChatRef }) {
     }
   };
 
-  const fetchSkins = async (categoryId = null) => {
+  const fetchSkins = async (tier = null) => {
     try {
-      const url = categoryId ? `/skins/?category=${categoryId}` : '/skins/';
+      const url = tier ? `/skins/?tier=${tier}` : '/skins/';
       const res = await api.get(url);
       setSkins(res.data);
     } catch (err) {
@@ -97,6 +97,47 @@ export default function SkinMarket({ liveChatRef }) {
     return skin.name;
   };
 
+  const getTierBadge = (tier) => {
+    if (tier === 'premium_plus' || skin?.tier === 'premium_plus') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
+          <Sparkles className="w-3 h-3" />
+          Premium+
+        </span>
+      );
+    }
+    if (tier === 'premium' || skin?.tier === 'premium') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-500 to-amber-600 text-white">
+          <Crown className="w-3 h-3" />
+          Premium
+        </span>
+      );
+    }
+    if (skin?.category_tier === 'premium_plus') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
+          <Sparkles className="w-3 h-3" />
+          Premium+
+        </span>
+      );
+    }
+    if (skin?.category_tier === 'premium') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-500 to-amber-600 text-white">
+          <Crown className="w-3 h-3" />
+          Premium
+        </span>
+      );
+    }
+    return null;
+  };
+
+  const tiers = [
+    { id: 'premium', name: 'Premium', icon: Crown, color: 'from-yellow-500 to-amber-600', bgColor: 'from-yellow-500/20 to-amber-600/20' },
+    { id: 'premium_plus', name: 'Premium+', icon: Sparkles, color: 'from-purple-600 via-pink-500 to-red-500', bgColor: 'from-purple-600/20 via-pink-500/20 to-red-500/20' }
+  ];
+
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-slate-50 dark:bg-[#0a0c10]">
@@ -128,33 +169,36 @@ export default function SkinMarket({ liveChatRef }) {
           </div>
         )}
 
-        {categories.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-2">
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-full font-bold text-sm transition-colors ${
-                selectedCategory === null
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
-              }`}
-            >
-              {t('all')}
-            </button>
-            {categories.map(cat => (
+        <div className="flex flex-wrap justify-center gap-4">
+          <button
+            onClick={() => setSelectedTier(null)}
+            className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${
+              selectedTier === null
+                ? 'bg-orange-600 text-white shadow-lg'
+                : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
+            }`}
+          >
+            <Star className="w-4 h-4 inline mr-1" />
+            {t('all')}
+          </button>
+          {tiers.map(tier => {
+            const Icon = tier.icon;
+            return (
               <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2 rounded-full font-bold text-sm transition-colors ${
-                  selectedCategory === cat.id
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
+                key={tier.id}
+                onClick={() => setSelectedTier(tier.id)}
+                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                  selectedTier === tier.id
+                    ? `bg-gradient-to-r ${tier.color} text-white shadow-lg`
+                    : `bg-gradient-to-r ${tier.bgColor} text-slate-700 dark:text-slate-300 hover:scale-105`
                 }`}
               >
-                {cat.name}
+                <Icon className="w-4 h-4" />
+                {tier.name}
               </button>
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
 
         {skins.length === 0 ? (
           <div className="text-center py-20">
@@ -169,6 +213,7 @@ export default function SkinMarket({ liveChatRef }) {
                 className="bg-white dark:bg-[#151822] rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:scale-[1.02] transition-all duration-300 group"
               >
                 <div className="aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-800 relative flex items-center justify-center">
+                  {getTierBadge(skin)}
                   <img
                     src={skin.image_url}
                     alt={getSkinDisplayName(skin)}
@@ -183,12 +228,13 @@ export default function SkinMarket({ liveChatRef }) {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-3 truncate">
+                  <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-2 truncate">
                     {getSkinDisplayName(skin)}
                   </h3>
+                  {getTierBadge(skin.tier || skin.category_tier)}
                   <button
                     onClick={() => setSelectedSkin(skin)}
-                    className="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg"
+                    className="w-full py-2.5 px-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg mt-3"
                   >
                     <ShoppingCart className="w-4 h-4" />
                     {t('purchase')}

@@ -250,14 +250,16 @@ async def user_location(sid, data):
 
     if session_id:
         user_info = active_sessions.get(sid, {})
-        await sio.emit('user_location', {
+        payload = {
             'session_id': session_id,
             'page_url': page_url,
             'page_name': page_name,
             'ip_address': user_info.get('ip_address', 'unknown'),
             'location': user_info.get('location', 'Bilinmiyor'),
             'user_agent': user_info.get('user_agent', 'Bilinmiyor')
-        }, room='admin_room')
+        }
+        await sio.emit('user_location', payload, room='admin_room')
+        await sio.emit('user_location', payload, room=f'session_{session_id}')
 
 @sio.event
 async def send_message(sid, data):

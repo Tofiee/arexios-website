@@ -589,10 +589,10 @@ async def close_inactive_sessions():
             SupportSession.status.in_(['waiting', 'active']),
             SupportSession.updated_at < timeout_threshold
         ).all()
-        
+
         for session in inactive_sessions:
             session_id = session.id
-            
+
             msg = SupportMessage(
                 session_id=session_id,
                 sender_type='system',
@@ -602,7 +602,7 @@ async def close_inactive_sessions():
             db.add(msg)
             session.status = 'closed'
             db.commit()
-            
+
             if session_id in user_sessions:
                 await sio.emit('session_closed', {
                     'session_id': session_id,
@@ -610,15 +610,12 @@ async def close_inactive_sessions():
                     'closed_by': 'system'
                 }, room=f"session_{session_id}")
                 del user_sessions[session_id]
-            
+
             await sio.emit('session_closed', {
                 'session_id': session_id,
                 'reason': 'timeout',
                 'closed_by': 'system'
             }, room='admin_room')
-            
-            db.delete(session)
-            db.commit()
             
     except Exception:
         db.rollback()
@@ -722,29 +719,23 @@ async def close_session(sid, data):
                         'reason': reason,
                         'closed_by': 'user'
                     }, to=user_sid)
-                
+
                 await sio.emit('user_session_closed', {
                     'session_id': session_id,
                     'user_name': session.user_name
                 }, room='admin_room')
-                
-                db.delete(session)
-                db.commit()
             else:
                 await sio.emit('session_closed', {
                     'session_id': session_id,
                     'reason': reason,
                     'closed_by': 'admin'
                 }, room=f"session_{session_id}")
-                
+
                 await sio.emit('session_closed', {
                     'session_id': session_id,
                     'reason': reason,
                     'closed_by': 'admin'
                 }, room='admin_room')
-                
-                db.delete(session)
-                db.commit()
             
             if session_id in user_sessions:
                 del user_sessions[session_id]

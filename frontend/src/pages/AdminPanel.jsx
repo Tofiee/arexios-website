@@ -1560,21 +1560,16 @@ function AdminPanelContent() {
                           ⏱ {formatDuration(sessionDuration)}
                         </span>
                       </p>
-                      {(userLocations[activeSession.id]?.ip_address || userLocations[activeSession.id]?.location || userLocations[activeSession.id]?.user_agent) && (
+                      {(sessionInfo?.ip_address || sessionInfo?.location) && (
                         <div className="flex flex-wrap items-center gap-3 mt-1 text-xs">
-                          {userLocations[activeSession.id]?.location && (
+                          {sessionInfo?.location && (
                             <span className="text-slate-400">
-                              🌐 {userLocations[activeSession.id].location}
+                              🌐 {sessionInfo.location}
                             </span>
                           )}
-                          {userLocations[activeSession.id]?.ip_address && userLocations[activeSession.id].ip_address !== 'unknown' && (
+                          {sessionInfo?.ip_address && sessionInfo.ip_address !== 'unknown' && (
                             <span className="text-slate-400">
-                              📍 {userLocations[activeSession.id].ip_address}
-                            </span>
-                          )}
-                          {userLocations[activeSession.id]?.user_agent && userLocations[activeSession.id].user_agent !== 'Bilinmiyor' && (
-                            <span className="text-slate-400" title={userLocations[activeSession.id].user_agent}>
-                              {getDeviceIcon(userLocations[activeSession.id].user_agent)} {getDeviceName(userLocations[activeSession.id].user_agent)}
+                              📍 {sessionInfo.ip_address}
                             </span>
                           )}
                         </div>

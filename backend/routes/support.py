@@ -214,6 +214,8 @@ def get_session_info(session_id: int, db: Session = Depends(get_db)):
         "created_at": session.created_at.isoformat(),
         "status": session.status,
         "assigned_admin": session.assigned_admin_name,
+        "ip_address": session.ip_address or None,
+        "location": session.location or None,
         "previous_sessions": previous_session_summaries,
         "total_previous_sessions": len(previous_session_summaries)
     }

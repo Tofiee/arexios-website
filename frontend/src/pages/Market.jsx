@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
-import { ShoppingCart, Crown, Shield, Star, CheckCircle, X, Info } from 'lucide-react';
+import { ShoppingCart, Crown, Shield, Star, CheckCircle, X } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
@@ -139,11 +139,6 @@ export default function Market() {
             </div>
 
             <form onSubmit={handlePurchase} className="p-6 space-y-4">
-              <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-3 rounded text-xs font-medium flex gap-2">
-                <Info className="w-4 h-4 shrink-0" />
-                Siparişinizi onayladığınız an talebiniz Discord kanalımıza loglanacaktır. Yetkililerimiz sizinle oyun içinden veya DM yoluyla iletişime geçecektir.
-              </div>
-
               <div>
                 <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1">{t('ingame_nick')} *</label>
                 <input

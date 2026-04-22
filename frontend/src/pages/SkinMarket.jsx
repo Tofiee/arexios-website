@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
-import { ShoppingBag, ShoppingCart, Info, X, Crown, Sparkles } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, Info, X, Crown } from 'lucide-react';
 
 export default function SkinMarket({ liveChatRef }) {
   const { t } = useTranslation();
@@ -279,18 +279,29 @@ export default function SkinMarket({ liveChatRef }) {
 
             <div className="p-4 border-b border-slate-200 dark:border-slate-700">
               <div className="flex gap-4">
-                <div className="w-24 h-18 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden shrink-0">
-                  <img src={selectedSkin.image_url} alt={getSkinDisplayName(selectedSkin)} className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
+                <div className="w-24 h-18 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                  {selectedSkin.image_url !== '/placeholder.png' && selectedSkin.image_url ? (
+                    <img src={selectedSkin.image_url} alt={getSkinDisplayName(selectedSkin)} className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
+                  ) : (
+                    <Crown className="w-8 h-8 text-yellow-500" />
+                  )}
                 </div>
                 <div>
                   <h4 className="font-bold text-slate-800 dark:text-white">{getSkinDisplayName(selectedSkin)}</h4>
                   {selectedSkin.tier && (
-                    <p className={`text-2xl font-black mt-1 ${
+                    <p className={`text-lg font-black mt-1 ${
                       selectedSkin.tier === 'premium_plus'
                         ? 'bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent'
                         : 'text-purple-600'
                     }`}>
                       {selectedSkin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}
+                    </p>
+                  )}
+                  {selectedSkin.tier && (
+                    <p className="text-xl font-black text-orange-600 mt-1">
+                      {selectedSkin.tier === 'premium_plus' 
+                        ? (tierPrices.premium_plus || 0) 
+                        : (tierPrices.premium || 0)} TL
                     </p>
                   )}
                 </div>

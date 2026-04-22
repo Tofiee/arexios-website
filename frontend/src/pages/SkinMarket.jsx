@@ -174,16 +174,15 @@ export default function SkinMarket({ liveChatRef }) {
             const Icon = tier.icon;
             const isSelected = selectedTier === tier.id;
             return (
-              <button
+<button
                 key={tier.id}
                 onClick={() => setSelectedTier(isSelected ? null : tier.id)}
-                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 ${
                   isSelected
-                    ? tier.animated
-                      ? 'text-white shadow-lg premium-plus-animated'
-                      : `bg-gradient-to-r ${tier.color} text-white shadow-lg`
-                    : `bg-gradient-to-r ${tier.bgColor} text-slate-700 dark:text-slate-300 hover:scale-105`
+                    ? 'text-white shadow-lg ' + (tier.animated ? 'premium-plus-animated' : `bg-gradient-to-r ${tier.color}`)
+                    : `bg-gradient-to-r ${tier.bgColor} text-slate-700 dark:text-slate-300`
                 }`}
+                style={isSelected && !tier.animated ? { background: `linear-gradient(to right, #f59e0b, #d97706)` } : undefined}
               >
                 <Icon className="w-4 h-4" />
                 {tier.name}

@@ -225,20 +225,22 @@ export default function SkinMarket({ liveChatRef }) {
                       e.target.parentNode.innerHTML = '<div class="w-full h-full flex items-center justify-center text-slate-400"><svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>';
                     }}
                   />
+                  {(skin.tier || skin.category_tier) && (
+                    <div className="absolute top-2 right-2">
+                      <span className={`px-2 py-1 rounded text-xs font-bold ${
+                        (skin.tier || skin.category_tier) === 'premium_plus'
+                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
+                          : 'bg-purple-600 text-white'
+                      }`}>
+                        {(skin.tier || skin.category_tier) === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-4">
-                  <h3 className="font-bold text-lg text-slate-800 dark:text-white mb-2 truncate">
+                  <h3 className="font-bold text-lg text-slate-800 dark:text-white truncate">
                     {getSkinDisplayName(skin)}
                   </h3>
-                  {(skin.tier || skin.category_tier) && (
-                    <p className={`text-lg font-black ${
-                      (skin.tier || skin.category_tier) === 'premium_plus'
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent'
-                        : 'text-purple-600'
-                    }`}>
-                      {(skin.tier || skin.category_tier) === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}
-                    </p>
-                  )}
                 </div>
               </div>
             ))}

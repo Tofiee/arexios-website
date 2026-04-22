@@ -937,6 +937,17 @@ function AdminPanelContent() {
                   <div key={skin.id} className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                     <div className="aspect-video bg-slate-100 dark:bg-slate-800 relative">
                       <img src={skin.image_url} alt={skin.name} className="w-full h-full object-cover" />
+                      {skin.tier && (
+                        <div className="absolute top-2 right-2">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                            skin.tier === 'premium_plus'
+                              ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white'
+                              : 'bg-purple-600 text-white'
+                          }`}>
+                            {skin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}
+                          </span>
+                        </div>
+                      )}
                       {!skin.is_active && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                           <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">{t('pasif')}</span>
@@ -945,17 +956,6 @@ function AdminPanelContent() {
                     </div>
                     <div className="p-4">
                       <h3 className="font-bold text-slate-900 dark:text-white truncate">{skin.name}</h3>
-                      {skin.tier ? (
-                        <p className={`text-xl font-black mt-1 ${
-                          skin.tier === 'premium_plus' 
-                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent' 
-                            : 'text-purple-600'
-                        }`}>
-                          {skin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM'}
-                        </p>
-                      ) : (
-                        <p className="text-xl font-black text-orange-600 mt-1">{skin.price} {t('tl')}</p>
-                      )}
                       <div className="flex gap-2 mt-3">
                         <button
                           onClick={() => handleOpenSkinModal(skin)}

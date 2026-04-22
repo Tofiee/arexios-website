@@ -77,8 +77,8 @@ async def send_support_log(request: SupportRequest):
 
 class SkinPurchaseRequest(BaseModel):
     skin_name: str
-    skin_id: int
-    price: int
+    skin_id: int | None = None
+    tier: str | None = None
     player_nick: str
     discord_id: str = ""
     optional_note: str = ""
@@ -89,13 +89,14 @@ async def send_skin_purchase(request: SkinPurchaseRequest):
     if not MARKET_WEBHOOK:
         return {"status": "success", "message": "Demo mode: Siparişiniz simüle edildi."}
         
+    tier_display = "PREMIUM+" if request.tier == "premium_plus" else "PREMIUM" if request.tier else "Bilinmeyen"
+    
     embed = {
-        "title": "🎮 Yeni Skin Satın Alma Talebi",
-        "color": 16753920, # Turuncu
+        "title": "🎮 Yeni Skin Paket Satın Alma Talebi",
+        "color": 16753920,
         "fields": [
-            {"name": "Skin", "value": request.skin_name, "inline": True},
-            {"name": "Skin ID", "value": str(request.skin_id), "inline": True},
-            {"name": "Fiyat", "value": f"{request.price} TL", "inline": True},
+            {"name": "Paket", "value": request.skin_name, "inline": True},
+            {"name": "Tier", "value": tier_display, "inline": True},
             {"name": "Oyuncu Nicki", "value": request.player_nick, "inline": True},
             {"name": "Discord İletişimi", "value": request.discord_id if request.discord_id else "Belirtilmemiş", "inline": True},
             {"name": "Ek Not", "value": request.optional_note or "Not yok", "inline": False}

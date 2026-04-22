@@ -102,8 +102,10 @@ export default function SkinMarket({ liveChatRef }) {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
           <Sparkles className="w-3 h-3" />
-          Premium
-          <span className="font-black text-yellow-300">+</span>
+          <span className="relative">
+            Premium
+            <span className="absolute -top-1 -right-2 text-yellow-300 font-black text-[10px] leading-none">+</span>
+          </span>
         </span>
       );
     }
@@ -119,8 +121,10 @@ export default function SkinMarket({ liveChatRef }) {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white animate-pulse">
           <Sparkles className="w-3 h-3" />
-          Premium
-          <span className="font-black text-yellow-300">+</span>
+          <span className="relative">
+            Premium
+            <span className="absolute -top-1 -right-2 text-yellow-300 font-black text-[10px] leading-none">+</span>
+          </span>
         </span>
       );
     }
@@ -189,8 +193,10 @@ export default function SkinMarket({ liveChatRef }) {
                 }}
               >
                 <Icon className="w-4 h-4" />
-                {tier.name}
-                {tier.suffix && <span className="font-black text-yellow-300">{tier.suffix}</span>}
+                <span className="relative">
+                  {tier.name}
+                  {tier.suffix && <span className="absolute -top-1 -right-2 text-yellow-300 font-black text-xs leading-none">{tier.suffix}</span>}
+                </span>
               </button>
             );
           })}

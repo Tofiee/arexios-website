@@ -474,11 +474,17 @@ async def admin_login(sid, data):
     
     await broadcast_admin_list()
     await sio.emit('admin_online', {
-        'admin_id': admin_id, 
-        'admin_name': admin_name, 
+        'admin_id': admin_id,
+        'admin_name': admin_name,
         'admin_steam_id': admin_steam_id,
         'status': 'online'
     })
+
+@sio.event
+async def admin_subscribe_to_session(sid, data):
+    session_id = data.get('session_id')
+    if session_id:
+        await sio.enter_room(sid, f'session_{session_id}')
 
 @sio.event
 async def admin_heartbeat(sid, data):

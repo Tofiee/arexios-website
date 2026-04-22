@@ -658,6 +658,7 @@ function AdminPanelContent() {
 
   const handleTakeSession = (session) => {
     setActiveSession(session);
+    newSocket.emit('admin_subscribe_to_session', { session_id: session.id });
     fetchSessionMessages(session.id);
     fetchSessionInfo(session.id);
   };

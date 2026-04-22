@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
-import { ShoppingBag, ShoppingCart, Info, X } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, Info, X, Crown, Sparkles } from 'lucide-react';
 
 export default function SkinMarket({ liveChatRef }) {
   const { t } = useTranslation();
@@ -107,8 +107,8 @@ export default function SkinMarket({ liveChatRef }) {
   };
 
   const tiers = [
-    { id: 'premium', name: 'Premium', icon: Crown, animatedGradient: false },
-    { id: 'premium_plus', name: 'Premium', suffix: '+', icon: Sparkles, animatedGradient: true }
+    { id: 'premium', name: 'Premium', animatedGradient: false },
+    { id: 'premium_plus', name: 'Premium', suffix: '+', animatedGradient: true }
   ];
 
   if (loading) {
@@ -144,7 +144,6 @@ export default function SkinMarket({ liveChatRef }) {
 
 <div className="flex flex-wrap justify-center gap-4 mb-8">
           {tiers.map(tier => {
-            const Icon = tier.icon;
             const isSelected = selectedTier === tier.id;
             return (
               <button
@@ -161,7 +160,7 @@ export default function SkinMarket({ liveChatRef }) {
                   background: 'linear-gradient(to right, #f59e0b, #d97706)'
                 } : undefined}
               >
-                <Icon className="w-4 h-4" />
+                <Crown className="w-4 h-4" />
                 <span className="relative">
                   {tier.name}
                   {tier.suffix && <span className="absolute text-yellow-300 font-black text-lg leading-none" style={{ top: '-0.375rem', right: '-0.520rem' }}>+</span>}

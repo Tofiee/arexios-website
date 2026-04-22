@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { io } from 'socket.io-client';
+import i18n from 'i18next';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 import { ShoppingBag, ShoppingCart, Info, X, Crown } from 'lucide-react';
@@ -21,7 +22,7 @@ export default function PremiumMarket({ liveChatRef }) {
   const [optionalNote, setOptionalNote] = useState('');
   const [purchasing, setPurchasing] = useState(false);
   const [message, setMessage] = useState(null);
-  const [tierPrices, setTierPrices] = useState({ premium: 0, premium_plus: 0 });
+  const [tierPrices, setTierPrices] = useState({ premium: 0, premium_plus: 0, premium_usd: 0, premium_plus_usd: 0 });
   const socketRef = useRef(null);
 
   useEffect(() => {
@@ -60,12 +61,24 @@ export default function PremiumMarket({ liveChatRef }) {
       const res = await api.get('/admin/settings');
       setTierPrices({
         premium: res.data.tier_premium_price || 0,
-        premium_plus: res.data.tier_premium_plus_price || 0
+        premium_plus: res.data.tier_premium_plus_price || 0,
+        premium_usd: res.data.tier_premium_price_usd || 0,
+        premium_plus_usd: res.data.tier_premium_plus_price_usd || 0
       });
     } catch (err) {
       console.error('Failed to fetch tier prices:', err);
     }
   };
+
+  const getPrice = (tier) => {
+    const isEn = i18n.language === 'en';
+    if (tier === 'premium_plus') {
+      return isEn ? tierPrices.premium_plus_usd : tierPrices.premium_plus;
+    }
+    return isEn ? tierPrices.premium_usd : tierPrices.premium;
+  };
+
+  const getCurrency = () => i18n.language === 'en' ? 'USD' : 'TL';
 
   const fetchSkins = async (tier = null, categoryId = null) => {
     try {
@@ -89,9 +102,8 @@ const handlePurchase = (e) => {
     setPurchasing(true);
 
     const tierDisplay = selectedSkin.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM';
-    const price = selectedSkin.tier === 'premium_plus'
-      ? (tierPrices.premium_plus || 0)
-      : (tierPrices.premium || 0);
+    const price = getPrice(selectedSkin.tier);
+    const currency = getCurrency();
 
     if (liveChatRef?.current) {
       liveChatRef.current.sendSkinPurchase({
@@ -99,6 +111,7 @@ const handlePurchase = (e) => {
         tier: selectedSkin.tier,
         tierDisplay,
         price,
+        currency,
         playerNick,
         discordId,
         optionalNote
@@ -162,7 +175,7 @@ const handlePurchase = (e) => {
 <div className="flex flex-wrap justify-center gap-4 mb-8">
           {tiers.map(tier => {
             const isSelected = selectedTier === tier.id;
-            const price = tierPrices[tier.id] || 0;
+            const price = tier.id === 'premium_plus' ? getPrice('premium_plus') : getPrice('premium');
             return (
               <button
                 key={tier.id}
@@ -298,9 +311,7 @@ const handlePurchase = (e) => {
                   )}
                   {selectedSkin.tier && (
                     <p className="text-2xl font-black text-orange-600 mt-1">
-                      {selectedSkin.tier === 'premium_plus' 
-                        ? (tierPrices.premium_plus || 0) 
-                        : (tierPrices.premium || 0)} TL
+{getPrice(selectedSkin.tier)} {getCurrency()}
                     </p>
                   )}
                 </div>

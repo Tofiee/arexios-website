@@ -108,6 +108,8 @@ class SiteSettings(Base):
     ts3_query_password = Column(String(100), nullable=True)
     tier_premium_price = Column(Integer, default=0)
     tier_premium_plus_price = Column(Integer, default=0)
+    tier_premium_price_usd = Column(Integer, default=0)
+    tier_premium_plus_price_usd = Column(Integer, default=0)
     announcement_title = Column(String(255), nullable=True)
     announcement_content = Column(Text, nullable=True)
     announcement_active = Column(Boolean, default=False)

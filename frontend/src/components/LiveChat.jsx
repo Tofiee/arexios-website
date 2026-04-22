@@ -76,10 +76,11 @@ const LiveChat = forwardRef(({ initialMessage = '' }, ref) => {
       }
     },
     close: () => setIsOpen(false),
-    sendSkinPurchase: (skinInfo) => {
+sendSkinPurchase: (skinInfo) => {
       setIsOpen(true);
       const tierDisplay = skinInfo.tier === 'premium_plus' ? 'PREMIUM+' : 'PREMIUM';
-      let message = `🎮 SKIN PAKET SATIN ALMA TALEBİ\n\n📦 Paket: ${skinInfo.skinName}\n⭐ Tier: ${tierDisplay}`;
+      const currency = skinInfo.currency || 'TL';
+      let message = `🎮 ${t('premium_purchase_request')}\n\n📦 ${t('package')}: ${skinInfo.skinName}\n⭐ Tier: ${tierDisplay}\n💰 ${t('price')}: ${skinInfo.price} ${currency}`;
       if (skinInfo.playerNick) message += `\n👤 ${t('ingame_nick')}: ${skinInfo.playerNick}`;
       if (skinInfo.discordId) message += `\n💬 ${t('discord_id')}: ${skinInfo.discordId}`;
       if (skinInfo.optionalNote) message += `\n📝 ${t('optional_note')}: ${skinInfo.optionalNote}`;

@@ -1075,16 +1075,24 @@ function AdminPanelContent() {
               <div className="bg-white dark:bg-[#151822] rounded-xl border border-slate-200 dark:border-slate-800 p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <Crown className="w-5 h-5 text-yellow-500" />
-                  {t('skin_market_title')}
+                  {t('premium_market')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Premium Fiyat (TL)</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('premium_price_tl')}</label>
                     <input type="number" value={settingsForm?.tier_premium_price || ''} onChange={(e) => setSettingsForm({...settingsForm, tier_premium_price: e.target.value})} placeholder="0" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Premium+ Fiyat (TL)</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('premium_plus_price_tl')}</label>
                     <input type="number" value={settingsForm?.tier_premium_plus_price || ''} onChange={(e) => setSettingsForm({...settingsForm, tier_premium_plus_price: e.target.value})} placeholder="0" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('premium_price_usd')}</label>
+                    <input type="number" value={settingsForm?.tier_premium_price_usd || ''} onChange={(e) => setSettingsForm({...settingsForm, tier_premium_price_usd: e.target.value})} placeholder="0" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{t('premium_plus_price_usd')}</label>
+                    <input type="number" value={settingsForm?.tier_premium_plus_price_usd || ''} onChange={(e) => setSettingsForm({...settingsForm, tier_premium_plus_price_usd: e.target.value})} placeholder="0" className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg focus:outline-none focus:border-orange-500" />
                   </div>
                 </div>
               </div>

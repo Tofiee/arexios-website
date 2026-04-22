@@ -951,7 +951,7 @@ function AdminPanelContent() {
                       )}
                       {!skin.is_active && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                          <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">{t('pasif')}</span>
+                          <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">{t('passive')}</span>
                         </div>
                       )}
                     </div>
@@ -963,7 +963,7 @@ function AdminPanelContent() {
                           className="flex-1 flex items-center justify-center gap-1 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors"
                         >
                           <Edit className="w-3 h-3" />
-                          {t('düzenle')}
+                          {t('edit')}
                         </button>
                         <button
                           onClick={() => handleDeleteSkin(skin.id)}
@@ -1451,41 +1451,41 @@ function AdminPanelContent() {
                         }`}
                       >
                         <span className="w-2 h-2 rounded-full bg-current"></span>
-                        {t('çevrimiçi')}
-                      </button>
-                      <button
-                        onClick={() => handleSetStatus('busy')}
-                        className={`py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
-                          currentStatus === 'busy'
-                            ? 'bg-red-500 text-white'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-red-100'
-                        }`}
-                      >
-                        <span className="w-2 h-2 rounded-full bg-current"></span>
-                        {t('meşgul')}
-                      </button>
-                      <button
-                        onClick={() => handleSetStatus('away')}
-                        className={`py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
-                          currentStatus === 'away'
-                            ? 'bg-yellow-500 text-white'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-yellow-100'
-                        }`}
-                      >
-                        <span className="w-2 h-2 rounded-full bg-current"></span>
-                        {t('uzakta')}
-                      </button>
-                      <button
-                        onClick={() => handleSetStatus('offline')}
-                        className={`py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
-                          currentStatus === 'offline'
-                            ? 'bg-slate-500 text-white'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200'
-                        }`}
-                      >
-                        <span className="w-2 h-2 rounded-full bg-current"></span>
-                        {t('çevrimdışı')}
-                      </button>
+{t('online')}
+                       </button>
+                       <button
+                         onClick={() => handleSetStatus('busy')}
+                         className={`py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+                           currentStatus === 'busy'
+                             ? 'bg-red-500 text-white'
+                             : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-red-100'
+                         }`}
+                       >
+                         <span className="w-2 h-2 rounded-full bg-current"></span>
+                         {t('busy')}
+                       </button>
+                       <button
+                         onClick={() => handleSetStatus('away')}
+                         className={`py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+                           currentStatus === 'away'
+                             ? 'bg-yellow-500 text-white'
+                             : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-yellow-100'
+                         }`}
+                       >
+                         <span className="w-2 h-2 rounded-full bg-current"></span>
+                         {t('away')}
+                       </button>
+                       <button
+                         onClick={() => handleSetStatus('offline')}
+                         className={`py-1.5 px-2 rounded text-xs font-medium transition-colors flex items-center justify-center gap-1 ${
+                           currentStatus === 'offline'
+                             ? 'bg-slate-500 text-white'
+                             : 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200'
+                         }`}
+                       >
+                         <span className="w-2 h-2 rounded-full bg-current"></span>
+                         {t('offline')}
+                       </button>
                     </div>
                   </div>
                 </div>
@@ -1678,7 +1678,7 @@ function AdminPanelContent() {
                         className="px-6 py-3 bg-orange-600 hover:bg-orange-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors flex items-center gap-2"
                       >
                         <Send className="w-5 h-5" />
-                        {t('gönder')}
+                        {t('send')}
                       </button>
                     </div>
                   </div>
@@ -1735,7 +1735,7 @@ function AdminPanelContent() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('kategori')}</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('category')}</label>
                 <select
                   value={skinForm.category_id}
                   onChange={(e) => setSkinForm({ ...skinForm, category_id: e.target.value })}
@@ -1758,7 +1758,7 @@ function AdminPanelContent() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('resim')}</label>
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">{t('image')}</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -1906,7 +1906,7 @@ function AdminPanelContent() {
                 disabled={!selectedTransferAdmin}
                 className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
               >
-                {t('devret')}
+                {t('transfer')}
               </button>
             </div>
           </div>

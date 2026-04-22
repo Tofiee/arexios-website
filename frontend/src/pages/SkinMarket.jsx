@@ -178,11 +178,13 @@ export default function SkinMarket({ liveChatRef }) {
                 key={tier.id}
                 onClick={() => setSelectedTier(isSelected ? null : tier.id)}
                 className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 hover:scale-105 ${
-                  isSelected
-                    ? 'text-white shadow-lg ' + (tier.animated ? 'premium-plus-animated' : `bg-gradient-to-r ${tier.color}`)
-                    : `bg-gradient-to-r ${tier.bgColor} text-slate-700 dark:text-slate-300`
+                  isSelected ? 'text-white shadow-lg' : `bg-gradient-to-r ${tier.bgColor} text-slate-700 dark:text-slate-300`
                 }`}
-                style={isSelected && !tier.animated ? { background: `linear-gradient(to right, #f59e0b, #d97706)` } : undefined}
+                style={isSelected && tier.animated ? {
+                  background: 'linear-gradient(-45deg, #9333ea, #ec4899, #ef4444, #f97316, #9333ea)',
+                  backgroundSize: '400% 400%',
+                  animation: 'premiumGradient 4s ease infinite'
+                } : isSelected && !tier.animated ? { background: 'linear-gradient(to right, #f59e0b, #d97706)' } : undefined}
               >
                 <Icon className="w-4 h-4" />
                 {tier.name}

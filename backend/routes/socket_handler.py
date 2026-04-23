@@ -34,17 +34,17 @@ async def get_location_from_ip(ip_address):
 
 sio = socketio.AsyncServer(
     async_mode='asgi',
-ALLOWED_ORIGINS = [
-    FRONTEND_URL,
-    "http://127.0.0.1:5173",
-    "http://localhost:5173",
-    "https://arexios-website.vercel.app",
-    "https://*.vercel.app",
-    "https://arexios-website-production.up.railway.app",
-    "https://*.up.railway.app",
-]
-
-cors_allowed_origins=ALLOWED_ORIGINS,
+    cors_allowed_origins=[
+        FRONTEND_URL,
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "https://arexios-website.vercel.app",
+        "https://*.vercel.app"
+    ],
+    cors_credentials=True,
+    ping_timeout=60,
+    ping_interval=25
+)
 
 online_admins = {}
 active_sessions = {}

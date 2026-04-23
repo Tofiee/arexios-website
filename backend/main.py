@@ -20,9 +20,6 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:5173",
     "https://arexios-website.vercel.app",
-    "https://*.vercel.app",
-    "https://arexios-website-production.up.railway.app",
-    "https://*.up.railway.app",
 ]
 
 Base.metadata.create_all(bind=engine)

@@ -1,7 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import socketio
 import asyncio
@@ -23,7 +23,7 @@ app = FastAPI(title="Arexios API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -63,8 +63,8 @@ async def startup_event():
 def read_root():
     return {"message": "Welcome to Arexios API"}
 
-sio_app = socketio.ASGIApp(sio, app)
+app = socketio.ASGIApp(sio, app)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(sio_app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

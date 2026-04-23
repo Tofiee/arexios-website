@@ -31,13 +31,14 @@ app = FastAPI(title="Arexios API")
 
 app.add_middleware(SessionMiddleware, secret_key=security.SECRET_KEY)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+@app.middleware("http")
+async def cors_middleware(request, call_next):
+    response = await call_next(request)
+    origin = request.headers.get("origin", "*")
+    response.headers["Access-Control-Allow-Origin"] = origin
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Cookie"
+    return response
 
 app.include_router(google.router)
 app.include_router(steam.router)

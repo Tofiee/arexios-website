@@ -15,6 +15,13 @@ load_dotenv(override=True)
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
 
+ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://arexios-website.vercel.app",
+]
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Arexios API")
@@ -23,7 +30,7 @@ app.add_middleware(SessionMiddleware, secret_key=security.SECRET_KEY)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -40,19 +40,7 @@ def parse_users_ini(content: str) -> list[UsersIniEntry]:
             account_type = tokens[3].strip() if len(tokens) > 3 else ""
 
             if identity.startswith('STEAM_'):
-                steam_id = identity
-                name = None
-                if line.startswith(';') is False:
-                    match = re.search(r'//\s*(.+)$', line)
-                    if match:
-                        name = match.group(1).strip().rstrip('.')
-                entries.append(UsersIniEntry(
-                    auth_type='STEAM',
-                    steam_id=steam_id,
-                    flags=flags,
-                    identity=identity,
-                    name=name
-                ))
+                continue
             else:
                 name = identity
                 entries.append(UsersIniEntry(

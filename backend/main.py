@@ -20,6 +20,9 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:5173",
     "https://arexios-website.vercel.app",
+    "https://arexios-website-production.up.railway.app",
+    "https://*.vercel.app",
+    "https://*.up.railway.app",
 ]
 
 Base.metadata.create_all(bind=engine)
@@ -30,8 +33,8 @@ app.add_middleware(SessionMiddleware, secret_key=security.SECRET_KEY)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

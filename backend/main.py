@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import Response
 from fastapi.staticfiles import StaticFiles
 import socketio
 import asyncio
@@ -15,36 +16,19 @@ load_dotenv(override=True)
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
 
-ALLOWED_ORIGINS = [
-    FRONTEND_URL,
-    "http://127.0.0.1:5173",
-    "http://localhost:5173",
-    "https://arexios-website.vercel.app",
-    "https://arexios-website-production.up.railway.app",
-    "https://*.vercel.app",
-    "https://*.up.railway.app",
-]
-
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Arexios API")
 
-app.add_middleware(SessionMiddleware, secret_key=security.SECRET_KEY)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.middleware("http")
-async def cors_middleware(request, call_next):
-    origin = request.headers.get("origin", "*")
-    if request.method == "OPTIONS":
-        from starlette.responses import Response
-        response = Response(status_code=200)
-    else:
-        response = await call_next(request)
-    response.headers["Access-Control-Allow-Origin"] = origin if origin else "*"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Cookie, X-Requested-With"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Max-Age"] = "86400"
-    return response
+app.add_middleware(SessionMiddleware, secret_key=security.SECRET_KEY)
 
 app.include_router(google.router)
 app.include_router(steam.router)
@@ -81,8 +65,6 @@ def read_root():
 
 sio_app = socketio.ASGIApp(sio, app)
 
-app = sio_app
-
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(sio_app, host="127.0.0.1", port=8000)

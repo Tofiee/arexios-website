@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import Response, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import socketio
 import asyncio
@@ -20,9 +19,16 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Arexios API")
 
+origins = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "https://arexios-website.vercel.app",
+    FRONTEND_URL,
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

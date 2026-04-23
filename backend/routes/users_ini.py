@@ -25,66 +25,67 @@ class UsersIniSyncResult(BaseModel):
 def parse_users_ini(content: str) -> list[UsersIniEntry]:
     entries = []
     lines = content.strip().split('\n')
-    
+
     for line in lines:
         line = line.strip()
         if not line or line.startswith(';'):
             continue
-        
-        # Extract name from quotes if present at start
-        name = None
-        if line.startswith('"'):
-            end_quote = line.find('"', 1)
-            if end_quote > 0:
-                name = line[1:end_quote]
-        
-        # Skip if it's a STEAM ID
-        if name and name.startswith('STEAM'):
-            continue
-        
-        parts = line.split()
-        if len(parts) >= 3:
-            auth_type = parts[0].upper()
-            steam_id = parts[1]
-            flags = parts[2]
-            
-            # Skip STEAM entries
-            if auth_type in ['STEAM', 'STEAM_ID', 'SID']:
-                continue
-            
-            entries.append(UsersIniEntry(
-                auth_type=auth_type,
-                steam_id=steam_id,
-                flags=flags,
-                identity=None,
-                name=name
-            ))
-    
+
+        tokens = re.findall(r'"([^"]*)"', line)
+
+        if len(tokens) >= 3:
+            identity = tokens[0].strip()
+            password = tokens[1].strip() if len(tokens) > 1 else ""
+            flags = tokens[2].strip() if len(tokens) > 2 else ""
+            account_type = tokens[3].strip() if len(tokens) > 3 else ""
+
+            if identity.startswith('STEAM_'):
+                steam_id = identity
+                name = None
+                if line.startswith(';') is False:
+                    match = re.search(r'//\s*(.+)$', line)
+                    if match:
+                        name = match.group(1).strip().rstrip('.')
+                entries.append(UsersIniEntry(
+                    auth_type='STEAM',
+                    steam_id=steam_id,
+                    flags=flags,
+                    identity=identity,
+                    name=name
+                ))
+            else:
+                name = identity
+                entries.append(UsersIniEntry(
+                    auth_type='NAME',
+                    steam_id=password or '',
+                    flags=flags,
+                    identity=identity,
+                    name=name
+                ))
+        else:
+            parts = line.split()
+            if len(parts) >= 3:
+                auth_type = parts[0].upper()
+                steam_id = parts[1]
+                flags = parts[2]
+                if auth_type not in ['STEAM', 'STEAM_ID', 'SID']:
+                    entries.append(UsersIniEntry(
+                        auth_type=auth_type,
+                        steam_id=steam_id,
+                        flags=flags,
+                        identity=None,
+                        name=parts[0].strip('"')
+                    ))
+
     return entries
 
-def get_existing_adminlist(path: str) -> set[str]:
-    steam_ids = set()
-    if os.path.exists(path):
-        with open(path, 'r') as f:
-            content = f.read()
-            for line in content.strip().split('\n'):
-                line = line.strip()
-                if not line or line.startswith('"') or line.startswith('//') or line.startswith('#'):
-                    continue
-                if line.startswith(';') and '----' in line:
-                    continue
-                parts = line.split()
-                if len(parts) >= 2 and parts[0] == 'STEAM':
-                    steam_ids.add(parts[1])
-    return steam_ids
-
 def write_adminlist_entries(path: str, entries: list[UsersIniEntry]):
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write("; --- Arexios Admin List ---\n")
         for entry in entries:
-            if entry.name:
-                f.write(f'"{entry.name}"\n')
-            elif entry.steam_id.startswith('STEAM'):
-                f.write(f'"{entry.steam_id}"\n')
+            name = entry.name or entry.identity or entry.steam_id
+            if name:
+                f.write(f'"{name}"\n')
 
 @router.post("/users-ini/upload")
 async def upload_users_ini(
@@ -93,18 +94,18 @@ async def upload_users_ini(
 ):
     if not file.filename.endswith('.ini'):
         raise HTTPException(status_code=400, detail="Sadece .ini dosyası kabul edilir")
-    
+
     content = await file.read()
     try:
         text = content.decode('utf-8')
     except:
         text = content.decode('latin-1')
-    
+
     entries = parse_users_ini(text)
-    
+
     if not entries:
         raise HTTPException(status_code=400, detail="Geçerli admin girişi bulunamadı")
-    
+
     return {
         "filename": file.filename,
         "entries_found": len(entries),
@@ -126,33 +127,37 @@ async def sync_users_ini(
 ):
     if not file.filename.endswith('.ini'):
         raise HTTPException(status_code=400, detail="Sadece .ini dosyası kabul edilir")
-    
+
     content = await file.read()
     try:
         text = content.decode('utf-8')
     except:
         text = content.decode('latin-1')
-    
+
     entries = parse_users_ini(text)
-    
+
     if not entries:
         raise HTTPException(status_code=400, detail="Geçerli admin girişi bulunamadı")
-    
+
     settings = db.query(models.SiteSettings).first()
     adminlist_path = getattr(settings, 'cs16_adminlist_path', None)
-    
+
     if not adminlist_path:
         adminlist_path = "/root/cstrike/addons/amxmodx/configs/adminlist.txt"
-    
+
     os.makedirs(os.path.dirname(adminlist_path), exist_ok=True)
-    
+
     write_adminlist_entries(adminlist_path, entries)
-    
+
+    local_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'adminlist.txt')
+    os.makedirs(os.path.dirname(local_path), exist_ok=True)
+    write_adminlist_entries(local_path, entries)
+
     return UsersIniSyncResult(
         total_entries=len(entries),
         added_entries=len(entries),
         skipped_entries=0,
-        added_list=[e.name or e.steam_id for e in entries],
+        added_list=[e.name or e.identity or e.steam_id for e in entries],
         skipped_list=[]
     )
 

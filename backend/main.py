@@ -35,9 +35,10 @@ app.add_middleware(SessionMiddleware, secret_key=security.SECRET_KEY)
 async def cors_middleware(request, call_next):
     response = await call_next(request)
     origin = request.headers.get("origin", "*")
-    response.headers["Access-Control-Allow-Origin"] = origin
+    response.headers["Access-Control-Allow-Origin"] = origin if origin else "*"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS, PATCH"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Cookie"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, Cookie, X-Requested-With"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
 
 app.include_router(google.router)

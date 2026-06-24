@@ -33,26 +33,23 @@ oauth.register(
 @router.get("/login")
 async def login(request: Request):
     base_url = get_base_url(request)
-    frontend_url = base_url.replace(":8001", ":5174")
 
     if not os.getenv("GOOGLE_CLIENT_ID") or not os.getenv("GOOGLE_CLIENT_SECRET"):
-        return RedirectResponse(url=f"{frontend_url}/login?error=google_not_configured")
+        return RedirectResponse(url=f"{FRONTEND_URL}/login?error=google_not_configured")
 
     redirect_uri = f"{base_url}/auth/google/callback"
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @router.get("/callback")
 async def callback(request: Request, db: Session = Depends(get_db)):
-    base_url = get_base_url(request)
-    frontend_url = base_url.replace(":8001", ":5174")
     try:
         token = await oauth.google.authorize_access_token(request)
         userinfo = token.get('userinfo')
     except Exception as e:
-        return RedirectResponse(url=f"{frontend_url}/login?error=google_failed")
+        return RedirectResponse(url=f"{FRONTEND_URL}/login?error=google_failed")
         
     if not userinfo:
-        return RedirectResponse(url=f"{frontend_url}/login?error=google_failed")
+        return RedirectResponse(url=f"{FRONTEND_URL}/login?error=google_failed")
 
     provider_id = str(userinfo.get("sub"))
     email = userinfo.get("email")
@@ -81,4 +78,4 @@ async def callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
 
     access_token = security.create_access_token(data={"sub": db_user.provider_id})
-    return RedirectResponse(url=f"{frontend_url}/profile?token={access_token}")
+    return RedirectResponse(url=f"{FRONTEND_URL}/profile?token={access_token}")

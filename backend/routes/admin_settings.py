@@ -104,6 +104,11 @@ def get_or_create_settings(db: Session) -> models.SiteSettings:
 def get_settings(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
+    admin_perm = db.query(models.LiveChatAdmin).filter(
+        models.LiveChatAdmin.user_id == current_user.id
+    ).first()
+    if admin_perm and not admin_perm.can_settings:
+        raise HTTPException(status_code=403, detail="Bu bölüme erişim yetkiniz yok")
     settings = get_or_create_settings(db)
     return SiteSettingsResponse(
         cs16_server_ip=settings.cs16_server_ip,
@@ -126,6 +131,11 @@ def get_settings(db: Session = Depends(get_db), current_user: User = Depends(get
 def update_settings(data: SiteSettingsUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
+    admin_perm = db.query(models.LiveChatAdmin).filter(
+        models.LiveChatAdmin.user_id == current_user.id
+    ).first()
+    if admin_perm and not admin_perm.can_settings:
+        raise HTTPException(status_code=403, detail="Bu bölüme erişim yetkiniz yok")
     settings = get_or_create_settings(db)
     
     settings.cs16_server_ip = data.cs16_server_ip

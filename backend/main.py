@@ -77,7 +77,7 @@ async def startup_event():
 def read_root():
     return {"status": "ok"}
 
-app = socketio.ASGIApp(sio, app)
+app = socketio.ASGIApp(sio, app, cors_allowed_origins=origins)
 
 if __name__ == "__main__":
     import uvicorn

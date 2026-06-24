@@ -36,6 +36,7 @@ services:
       - ADDITIONAL_ORIGINS=${ADDITIONAL_ORIGINS:-}
       - DISCORD_MARKET_WEBHOOK=${DISCORD_MARKET_WEBHOOK:-}
       - DISCORD_SUPPORT_WEBHOOK=${DISCORD_SUPPORT_WEBHOOK:-}
+      - FORWARDED_ALLOW_IPS=*
     volumes:
       - uploads_data:/app/uploads
     depends_on:
@@ -47,6 +48,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    args:
+      VITE_API_URL: ${VITE_API_URL:-}
     ports:
       - "${FRONTEND_PORT:-5174}:80"
     depends_on:

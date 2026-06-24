@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import Navbar from './components/Navbar';
 import LiveChat from './components/LiveChat';
 import SiteAnnouncementModal from './components/SiteAnnouncementModal';
@@ -71,6 +72,26 @@ function App() {
   const chatRef = useRef(null);
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin';
+
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const updateTitle = () => {
+      const pageTitleKeys = {
+        '/': 'page_title_home',
+        '/stats': 'page_title_stats',
+        '/market': 'page_title_market',
+        '/premium-market': 'page_title_premium_market',
+        '/login': 'page_title_login',
+        '/profile': 'page_title_profile',
+        '/admin': 'page_title_admin',
+      };
+      const key = pageTitleKeys[location.pathname] || 'page_title_home';
+      console.log('[Title] key:', key, 't():', t(key));
+      document.title = `Arexios Portal | ${t(key)}`;
+    };
+    updateTitle();
+  }, [location.pathname, t]);
 
   return (
     <div className="min-h-screen font-sans selection:bg-orange-500/30 selection:text-white flex flex-col">

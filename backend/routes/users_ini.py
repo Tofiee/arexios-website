@@ -11,9 +11,12 @@ router = APIRouter(prefix="/admin", tags=["admin-settings"])
 class UsersIniEntry(BaseModel):
     auth_type: str
     steam_id: str
+    password: str = ""
     flags: str
+    tag: str = ""
     identity: str | None = None
     name: str | None = None
+    comment: str = ""
 
 class UsersIniSyncResult(BaseModel):
     total_entries: int
@@ -31,24 +34,40 @@ def parse_users_ini(content: str) -> list[UsersIniEntry]:
         if not line or line.startswith(';'):
             continue
 
+        comment = ""
+        if '//' in line:
+            line, raw_comment = line.split('//', 1)
+            comment = raw_comment.strip()
+
         tokens = re.findall(r'"([^"]*)"', line)
 
         if len(tokens) >= 3:
             identity = tokens[0].strip()
             password = tokens[1].strip() if len(tokens) > 1 else ""
             flags = tokens[2].strip() if len(tokens) > 2 else ""
-            account_type = tokens[3].strip() if len(tokens) > 3 else ""
+            tag = tokens[3].strip() if len(tokens) > 3 else ""
 
             if identity.startswith('STEAM_'):
-                continue
+                entries.append(UsersIniEntry(
+                    auth_type='STEAM',
+                    steam_id=identity,
+                    password='',
+                    flags=flags,
+                    tag=tag,
+                    identity=identity,
+                    name=comment or '',
+                    comment=comment
+                ))
             else:
-                name = identity
                 entries.append(UsersIniEntry(
                     auth_type='NAME',
                     steam_id=password or '',
+                    password=password or '',
                     flags=flags,
+                    tag=tag,
                     identity=identity,
-                    name=name
+                    name=identity,
+                    comment=comment
                 ))
         else:
             parts = line.split()
@@ -60,9 +79,11 @@ def parse_users_ini(content: str) -> list[UsersIniEntry]:
                     entries.append(UsersIniEntry(
                         auth_type=auth_type,
                         steam_id=steam_id,
+                        password='',
                         flags=flags,
                         identity=None,
-                        name=parts[0].strip('"')
+                        name=parts[0].strip('"'),
+                        comment=comment
                     ))
 
     return entries
@@ -71,9 +92,13 @@ def write_adminlist_entries(path: str, entries: list[UsersIniEntry]):
     with open(path, 'w', encoding='utf-8') as f:
         f.write("; --- Arexios Admin List ---\n")
         for entry in entries:
-            name = entry.name or entry.identity or entry.steam_id
-            if name:
-                f.write(f'"{name}"\n')
+            if entry.auth_type == 'NAME':
+                name = entry.name or entry.identity
+                if name:
+                    f.write(f'"{name}"\n')
+            elif entry.auth_type == 'STEAM':
+                if entry.steam_id:
+                    f.write(f'"{entry.steam_id}"\n')
 
 @router.post("/users-ini/upload")
 async def upload_users_ini(
@@ -99,10 +124,13 @@ async def upload_users_ini(
         "entries_found": len(entries),
         "entries": [
             {
-                "steam_id": e.steam_id,
-                "flags": e.flags,
+                "auth_type": e.auth_type,
                 "name": e.name,
-                "auth_type": e.auth_type
+                "password": e.password if e.auth_type == 'NAME' else '',
+                "steam_id": e.steam_id if e.auth_type == 'STEAM' else '',
+                "flags": e.flags,
+                "tag": e.tag,
+                "comment": e.comment
             }
             for e in entries
         ]
@@ -145,7 +173,7 @@ async def sync_users_ini(
         total_entries=len(entries),
         added_entries=len(entries),
         skipped_entries=0,
-        added_list=[e.name or e.identity or e.steam_id for e in entries],
+        added_list=[(e.steam_id if e.auth_type == 'STEAM' else (e.name or e.identity or e.steam_id)) for e in entries],
         skipped_list=[]
     )
 

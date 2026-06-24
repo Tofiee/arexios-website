@@ -5,6 +5,8 @@ from typing import Optional, List
 from datetime import datetime
 from database import get_db, SessionLocal
 import models
+from models import User
+from routes.auth import get_current_user
 
 router = APIRouter(prefix="/support", tags=["Support Chat"])
 
@@ -59,7 +61,9 @@ def create_session(data: SessionCreate, db: Session = Depends(get_db)):
     )
 
 @router.get("/session/{session_id}", response_model=SessionResponse)
-def get_session(session_id: int, db: Session = Depends(get_db)):
+def get_session(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     session = db.query(models.SupportSession).filter(models.SupportSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -74,7 +78,9 @@ def get_session(session_id: int, db: Session = Depends(get_db)):
     )
 
 @router.get("/session/{session_id}/messages", response_model=List[MessageResponse])
-def get_messages(session_id: int, db: Session = Depends(get_db)):
+def get_messages(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     messages = db.query(models.SupportMessage).filter(
         models.SupportMessage.session_id == session_id
     ).order_by(models.SupportMessage.created_at).all()
@@ -92,7 +98,9 @@ def get_messages(session_id: int, db: Session = Depends(get_db)):
     ]
 
 @router.get("/sessions")
-def get_all_sessions(status: Optional[str] = None, db: Session = Depends(get_db)):
+def get_all_sessions(status: Optional[str] = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     query = db.query(models.SupportSession)
     if status:
         query = query.filter(models.SupportSession.status == status)
@@ -131,7 +139,9 @@ def get_all_sessions(status: Optional[str] = None, db: Session = Depends(get_db)
     return result
 
 @router.put("/session/{session_id}/close")
-def close_session(session_id: int, db: Session = Depends(get_db)):
+def close_session(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     session = db.query(models.SupportSession).filter(models.SupportSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -142,7 +152,9 @@ def close_session(session_id: int, db: Session = Depends(get_db)):
     return {"message": "Session closed"}
 
 @router.delete("/session/{session_id}")
-def delete_session(session_id: int, db: Session = Depends(get_db)):
+def delete_session(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     session = db.query(models.SupportSession).filter(models.SupportSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -154,7 +166,9 @@ def delete_session(session_id: int, db: Session = Depends(get_db)):
     return {"message": "Session deleted"}
 
 @router.put("/messages/{message_id}/read")
-def mark_read(message_id: int, db: Session = Depends(get_db)):
+def mark_read(message_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     message = db.query(models.SupportMessage).filter(models.SupportMessage.id == message_id).first()
     if not message:
         raise HTTPException(status_code=404, detail="Message not found")
@@ -165,7 +179,9 @@ def mark_read(message_id: int, db: Session = Depends(get_db)):
     return {"message": "Marked as read"}
 
 @router.get("/stats")
-def get_stats(db: Session = Depends(get_db)):
+def get_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     total = db.query(models.SupportSession).count()
     waiting = db.query(models.SupportSession).filter(models.SupportSession.status == "waiting").count()
     active = db.query(models.SupportSession).filter(models.SupportSession.status == "active").count()
@@ -179,7 +195,9 @@ def get_stats(db: Session = Depends(get_db)):
     }
 
 @router.get("/session/{session_id}/info")
-def get_session_info(session_id: int, db: Session = Depends(get_db)):
+def get_session_info(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     session = db.query(models.SupportSession).filter(models.SupportSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -219,7 +237,9 @@ def get_session_info(session_id: int, db: Session = Depends(get_db)):
     }
 
 @router.put("/session/{session_id}/close")
-def close_session(session_id: int, db: Session = Depends(get_db)):
+def close_session(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     session = db.query(models.SupportSession).filter(models.SupportSession.id == session_id).first()
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")

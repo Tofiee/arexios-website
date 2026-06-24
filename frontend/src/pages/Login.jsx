@@ -3,7 +3,13 @@ import { useTranslation } from 'react-i18next';
 // Using direct URL params for errors now instead of state
 import { useLocation } from 'react-router-dom';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost')) return envUrl;
+  const host = window.location.hostname;
+  return `http://${host}:8001`;
+};
+const API_URL = getApiUrl();
 
 export default function Login() {
   const { t } = useTranslation();

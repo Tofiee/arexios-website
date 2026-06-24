@@ -38,6 +38,10 @@ sio = socketio.AsyncServer(
         FRONTEND_URL,
         "http://127.0.0.1:5173",
         "http://localhost:5173",
+        "http://127.0.0.1:5174",
+        "http://localhost:5174",
+        "http://45.74.247.48:5174",
+        "http://45.74.247.48:8001",
         "https://arexios-website.vercel.app",
         "https://*.vercel.app"
     ],

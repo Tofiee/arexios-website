@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional, List
+from datetime import datetime
 from database import get_db
 import models
 from security import decode_access_token
@@ -20,13 +21,27 @@ class ComplaintResponse(BaseModel):
     user_id: int
     username: str
     complaint_type: str
-    target_name: Optional[str]
-    target_steam_id: Optional[str]
-    message: str
-    status: str
-    created_at: str
-    class Config:
-        from_attributes = True
+    target_name: Optional[str] = None
+    target_steam_id: Optional[str] = None
+    message: str = ""
+    status: str = "pending"
+    created_at: Optional[str] = None
+    model_config = {"from_attributes": True}
+
+    @classmethod
+    def model_validate_complaint(cls, obj):
+        data = {
+            "id": obj.id,
+            "user_id": obj.user_id,
+            "username": obj.username,
+            "complaint_type": obj.complaint_type,
+            "target_name": obj.target_name,
+            "target_steam_id": obj.target_steam_id,
+            "message": obj.message or "",
+            "status": obj.status,
+            "created_at": obj.created_at.isoformat() if obj.created_at else None,
+        }
+        return cls(**data)
 
 def get_current_user_id(token: str = None):
     if not token:
@@ -53,9 +68,9 @@ def create_complaint(
     db.add(db_complaint)
     db.commit()
     db.refresh(db_complaint)
-    return db_complaint
+    return ComplaintResponse.model_validate_complaint(db_complaint)
 
 @router.get("/", response_model=List[ComplaintResponse])
 def get_complaints(db: Session = Depends(get_db)):
     complaints = db.query(models.Complaint).order_by(models.Complaint.created_at.desc()).all()
-    return complaints
+    return [ComplaintResponse.model_validate_complaint(c) for c in complaints]

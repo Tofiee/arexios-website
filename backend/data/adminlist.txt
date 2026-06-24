@@ -1,55 +1,24 @@
-;-------------------- Yönetici ------------------------ [bdemijnopq]  
-"STEAM_0:1:78302719" "" "bcdefghijklmnopq" "ce" // ANIL.
-"STEAM_0:1:644454788" "" "bcdefghijklmnopq" "ce" // POLOOOOO;
-"STEAM_0:1:869692472" "" "bcdefghijklmnopq" "ce" // KİLLERYOU
-
-
-
-
-;-------------------- Moderator ----------------------- [bcdmijnopq] 
-"SPACER ` Benzema777" "benzema1337" "bcdmijnopq" "a"
-"SPACER ` Bayhan" "evanes" "bcdmijnopq" "a"
-"AREXIOS ` Oguzlardansena" "senaxx1212" "bcdmijnopq" "a" // 
-"AREXIOS ` Montana" "5399SK." "bcdmijnopq" "a" // KİLLERYOU
-
-
-;-------------------- Elit Admin ------------------------ [bdmijnopqu]
- 
-
-
-
-
-
-;-------------------- Full Admin ------------------------ [bdmijnopqr]
-
-
-
-
-
-
-;-------------------- Admin --------------------------- [ bdmijnopqt ]  
-"AREXIOS ` JAMBI" "460560" "bdmijnopqt" "a" // KİLLERYOU
-"AREXIOS ` SARA" "345sarehh90qw" "bdmijnopqt" "a" // KİLLERYOU
-"AREXIOS ` Oshimen" "123456o" "bdmijnopqt" "a" // Anil
-"AREXIOS ` CanBey" "Can414182" "bdmijnoqpt" "a" // Montana
-"AREXIOS ` does not live" "does1324" "bdminoqpt" "a" // KOSOVALI
-"AREXIOS ` NIOJIOJUUAK" "niojio123" "bdmijnoqpt" "a" // KİLLERYOU
-;-------------------- Top15 Admini -------------------- [ bmijnos ]  
-
-
-
-
-
-;-------------------- Uye ----------------------------- [ bmiw ] 
-"ARX ` FAKO*" "fakobaba321" "bmiw" "a" // KOSOVALI
-"ARX ` DarkFedile" "senafenasena" "bmiw" "a" // KOSOVALI
-"ARX ` Torres" "shafdjhAS" "bmiw" "a" // KİLLERYOU 
-"ARX ` PANTER" "BAYRAMANKARA06" "bmiw" "a" // KİLLERYOU       
-"ARX ` XRX8_EXE" "legend11" "bmiw" "a" // KİLLERYOU
-"STEAM_0:1:485590493" "" "bmiw" "ce" // makedonya kralı
-"ARX ` MrPsyKophTT" "xum1unx5s" "bmiw" "a" // KİLLERYOU
-"ARX ` melih36" "melih1907" "bmiw" "a" // KİLLERYOU
-"ARX ` tanker necla" "159753" "bmiw" "a" // KİLLERYOU
-"ARX ` Redkit" "red8080" "bmiw" "a" // KİLLERYOU
-"ARX ` M1tozz" "halit1831clshtyycsknr" "bmiw" "a" // KİLLERYOU
-"ARX ` SARSILMAZ" "170303As." "bmiw" "a" // KİLLERYOU
+; --- Arexios Admin List ---
+"STEAM_0:1:203042927"
+"STEAM_0:1:495785164"
+"STEAM_0:1:175369751"
+"STEAM_0:0:756121475"
+"STEAM_0:1:806529592"
+"KOSOVALI"
+"STEAM_0:0:389443063"
+"STEAM_0:0:943262191"
+"STEAM_0:1:78302719"
+"STEAM_0:1:644454788"
+"STEAM_0:1:869692472"
+"AREXIOS ` Oguzlardansena"
+"STEAM_0:1:777936328"
+"AREXIOS ` NioJioJuuaK"
+"AREXIOS ` JAMBI"
+"AREXIOS ` does not live"
+"STEAM_0:0:414226868"
+"ARX ` melih36"
+"ARX ` Calyxba"
+"ARX ` -_-RunDowN-_-"
+"ARX ` Brookie"
+"ARX ` fern"
+"ARX ` UNLOST THE UNBEATEN"

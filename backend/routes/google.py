@@ -9,8 +9,12 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5174")
+
+def get_base_url(request: Request) -> str:
+    host = request.headers.get("Host", "127.0.0.1:8001")
+    scheme = request.headers.get("X-Forwarded-Proto", "http")
+    return f"{scheme}://{host}"
 
 router = APIRouter(prefix="/auth/google", tags=["Google OAuth"])
 
@@ -28,22 +32,27 @@ oauth.register(
 
 @router.get("/login")
 async def login(request: Request):
-    if not os.getenv("GOOGLE_CLIENT_ID") or not os.getenv("GOOGLE_CLIENT_SECRET"):
-        return RedirectResponse(url=f"{FRONTEND_URL}/login?error=google_not_configured")
+    base_url = get_base_url(request)
+    frontend_url = base_url.replace(":8001", ":5174")
 
-    redirect_uri = f"{BACKEND_URL}/auth/google/callback"
+    if not os.getenv("GOOGLE_CLIENT_ID") or not os.getenv("GOOGLE_CLIENT_SECRET"):
+        return RedirectResponse(url=f"{frontend_url}/login?error=google_not_configured")
+
+    redirect_uri = f"{base_url}/auth/google/callback"
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @router.get("/callback")
 async def callback(request: Request, db: Session = Depends(get_db)):
+    base_url = get_base_url(request)
+    frontend_url = base_url.replace(":8001", ":5174")
     try:
         token = await oauth.google.authorize_access_token(request)
         userinfo = token.get('userinfo')
     except Exception as e:
-        return RedirectResponse(url=f"{FRONTEND_URL}/login?error=google_failed")
+        return RedirectResponse(url=f"{frontend_url}/login?error=google_failed")
         
     if not userinfo:
-        return RedirectResponse(url=f"{FRONTEND_URL}/login?error=google_failed")
+        return RedirectResponse(url=f"{frontend_url}/login?error=google_failed")
 
     provider_id = str(userinfo.get("sub"))
     email = userinfo.get("email")
@@ -72,4 +81,4 @@ async def callback(request: Request, db: Session = Depends(get_db)):
         db.commit()
 
     access_token = security.create_access_token(data={"sub": db_user.provider_id})
-    return RedirectResponse(url=f"{FRONTEND_URL}/profile?token={access_token}")
+    return RedirectResponse(url=f"{frontend_url}/profile?token={access_token}")

@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from typing import Optional, List
 from database import get_db
 import models
+from models import User
+from routes.auth import get_current_user
 
 router = APIRouter(prefix="/admin", tags=["admin-settings"])
 
@@ -98,7 +101,9 @@ def get_or_create_settings(db: Session) -> models.SiteSettings:
     return settings
 
 @router.get("/settings", response_model=SiteSettingsResponse)
-def get_settings(db: Session = Depends(get_db)):
+def get_settings(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     settings = get_or_create_settings(db)
     return SiteSettingsResponse(
         cs16_server_ip=settings.cs16_server_ip,
@@ -118,7 +123,9 @@ def get_settings(db: Session = Depends(get_db)):
     )
 
 @router.put("/settings", response_model=SiteSettingsResponse)
-def update_settings(data: SiteSettingsUpdate, db: Session = Depends(get_db)):
+def update_settings(data: SiteSettingsUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     settings = get_or_create_settings(db)
     
     settings.cs16_server_ip = data.cs16_server_ip
@@ -157,7 +164,9 @@ def update_settings(data: SiteSettingsUpdate, db: Session = Depends(get_db)):
     )
 
 @router.get("/gametracker/check")
-def check_gametracker(ip: str, port: str, db: Session = Depends(get_db)):
+def check_gametracker(ip: str, port: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     gametracker_url = f"https://www.gametracker.com/server_info/{ip}:{port}/"
     return {
         "url": gametracker_url,
@@ -165,7 +174,9 @@ def check_gametracker(ip: str, port: str, db: Session = Depends(get_db)):
     }
 
 @router.get("/livechat-admins", response_model=list[LiveChatAdminResponse])
-def get_livechat_admins(db: Session = Depends(get_db)):
+def get_livechat_admins(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     admins = db.query(models.LiveChatAdmin).filter(models.LiveChatAdmin.is_active == True).all()
     return [
         LiveChatAdminResponse(
@@ -184,7 +195,9 @@ def get_livechat_admins(db: Session = Depends(get_db)):
     ]
 
 @router.post("/livechat-admins", response_model=LiveChatAdminResponse)
-def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db)):
+def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     if data.steam_id:
         existing = db.query(models.LiveChatAdmin).filter(
             models.LiveChatAdmin.steam_id == data.steam_id
@@ -247,7 +260,9 @@ def add_livechat_admin(data: LiveChatAdminCreate, db: Session = Depends(get_db))
     )
 
 @router.put("/livechat-admins/{admin_id}", response_model=LiveChatAdminResponse)
-def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, current_steam_id: str = None, db: Session = Depends(get_db)):
+def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, current_steam_id: str = None, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     admin = db.query(models.LiveChatAdmin).filter(models.LiveChatAdmin.id == admin_id).first()
     if not admin:
         raise HTTPException(status_code=404, detail="Admin bulunamadı")
@@ -285,7 +300,9 @@ def update_livechat_admin(admin_id: int, data: LiveChatAdminUpdate, current_stea
     )
 
 @router.delete("/livechat-admins/{admin_id}")
-def delete_livechat_admin(admin_id: int, db: Session = Depends(get_db)):
+def delete_livechat_admin(admin_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     admin = db.query(models.LiveChatAdmin).filter(models.LiveChatAdmin.id == admin_id).first()
     if not admin:
         raise HTTPException(status_code=404, detail="Admin bulunamadı")
@@ -298,7 +315,9 @@ def delete_livechat_admin(admin_id: int, db: Session = Depends(get_db)):
     return {"message": "Admin silindi"}
 
 @router.get("/announcements", response_model=list[AnnouncementResponse])
-def get_announcements(db: Session = Depends(get_db)):
+def get_announcements(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     announcements = db.query(models.Announcement).order_by(models.Announcement.created_at.desc()).all()
     return [
         AnnouncementResponse(
@@ -314,7 +333,9 @@ def get_announcements(db: Session = Depends(get_db)):
     ]
 
 @router.post("/announcements", response_model=AnnouncementResponse)
-def create_announcement(data: AnnouncementCreate, db: Session = Depends(get_db)):
+def create_announcement(data: AnnouncementCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     if data.is_active:
         db.query(models.Announcement).update({models.Announcement.is_active: False})
     
@@ -339,7 +360,9 @@ def create_announcement(data: AnnouncementCreate, db: Session = Depends(get_db))
     )
 
 @router.put("/announcements/{announcement_id}", response_model=AnnouncementResponse)
-def update_announcement(announcement_id: int, data: AnnouncementUpdate, db: Session = Depends(get_db)):
+def update_announcement(announcement_id: int, data: AnnouncementUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     announcement = db.query(models.Announcement).filter(models.Announcement.id == announcement_id).first()
     if not announcement:
         raise HTTPException(status_code=404, detail="Duyuru bulunamadi")
@@ -370,7 +393,9 @@ def update_announcement(announcement_id: int, data: AnnouncementUpdate, db: Sess
     )
 
 @router.delete("/announcements/{announcement_id}")
-def delete_announcement(announcement_id: int, db: Session = Depends(get_db)):
+def delete_announcement(announcement_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     announcement = db.query(models.Announcement).filter(models.Announcement.id == announcement_id).first()
     if not announcement:
         raise HTTPException(status_code=404, detail="Duyuru bulunamadi")

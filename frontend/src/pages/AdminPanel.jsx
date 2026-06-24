@@ -6,7 +6,8 @@ import { AuthContext } from '../context/AuthContext';
 import { PushProvider, usePush } from '../context/PushContext';
 import api from '../api';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; return `http://${window.location.hostname}:8001`; };
+const SOCKET_URL = getApiUrl();
 
 function AdminPanelContent() {
   const { t } = useTranslation();
@@ -577,7 +578,7 @@ function AdminPanelContent() {
       const res = await api.post('/skins/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setSkinForm({ ...skinForm, image_url: `http://127.0.0.1:8000${res.data.url}` });
+      setSkinForm({ ...skinForm, image_url: `${getApiUrl()}${res.data.url}` });
     } catch (err) {
       console.error('Upload failed:', err);
       alert(t('file_upload_error'));

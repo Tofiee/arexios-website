@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 import socketio
 import asyncio
 from database import engine, Base
-from routes import google, steam, users, servers, stats, discord, discord_auth, admins, complaints, gametracker, support, push, skins, skin_categories, import_data, migrate, admin_settings, users_ini
+from routes import google, steam, auth, users, servers, stats, discord, discord_auth, admins, complaints, gametracker, support, push, skins, skin_categories, import_data, migrate, admin_settings, users_ini
 from routes.socket_handler import sio, admin_status_scheduler, session_cleanup_scheduler, start_server_monitor
 import security
 import os
@@ -17,11 +17,14 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Arexios API")
+app = FastAPI(title="Arexios API", docs_url=None, redoc_url=None)
 
 origins = [
     "http://127.0.0.1:5173",
     "http://localhost:5173",
+    "http://127.0.0.1:5174",
+    "http://localhost:5174",
+
     "https://arexios-website.vercel.app",
     FRONTEND_URL,
 ]
@@ -38,6 +41,7 @@ app.add_middleware(SessionMiddleware, secret_key=security.SECRET_KEY)
 
 app.include_router(google.router)
 app.include_router(steam.router)
+app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(servers.router)
 app.include_router(stats.router)
@@ -67,10 +71,10 @@ async def startup_event():
 
 @app.get("/")
 def read_root():
-    return {"message": "Welcome to Arexios API"}
+    return {"status": "ok"}
 
 app = socketio.ASGIApp(sio, app)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)

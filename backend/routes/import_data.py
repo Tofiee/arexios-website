@@ -1,5 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 from sqlalchemy import text
+from database import get_db
+from models import User
+from routes.auth import get_current_user
 import os
 
 router = APIRouter()
@@ -64,7 +68,9 @@ def get_connection():
     )
 
 @router.post("/import-initial-data")
-def import_initial_data():
+def import_initial_data(current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekli")
     results = {"server_admins": None, "skin_categories": None, "skins": None, "users": None}
     
     try:

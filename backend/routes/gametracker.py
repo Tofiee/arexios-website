@@ -7,6 +7,11 @@ import asyncio
 import re
 import os
 import html
+import unicodedata
+import time
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 router = APIRouter(prefix="/gametracker", tags=["GameTracker"])
 
@@ -14,22 +19,94 @@ CS_IP = "95.173.173.24"
 CS_PORT = 27015
 BOT_NAMES = ["CSGO.ARXCS.COM", "TS3.ARXCS.COM", "IP: CSGO.ARXCS.COM", "CSGO.ARXCS"]
 OYUN_TRACKER_API = "https://tracker.oyunyoneticisi.com/api.php"
+STEAM_API_KEY = os.getenv("STEAM_WEB_API_KEY", "")
 
 def parse_adminlist_file(file_path):
     admins = []
+    steam_admins = []
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith(';'):
                     continue
-                match = re.match(r'"([^"]+)"', line)
+                # full format: "name" "password" "flags" "tag"
+                match = re.match(r'^"([^"]+)"\s+"([^"]*)"\s+"([^"]*)"\s+"([^"]*)"', line)
                 if match:
-                    admin_name = match.group(1)
-                    admins.append(admin_name)
+                    identity = match.group(1)
+                    if identity.startswith("STEAM_"):
+                        steam_admins.append(identity)
+                    elif identity:
+                        admins.append(identity)
+                else:
+                    # simplified format: "name"
+                    simple = re.match(r'^"([^"]+)"$', line)
+                    if simple:
+                        name = simple.group(1)
+                        if not name.startswith("STEAM_"):
+                            admins.append(name)
+                        else:
+                            steam_admins.append(name)
     except Exception:
         pass
-    return admins
+    return admins, steam_admins
+
+def normalize_name(name: str) -> str:
+    name = name.strip().lower()
+    name = unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore').decode('ASCII')
+    name = name.replace('*', '').replace(';', '').replace(':', '').replace('`', "'")
+    return name.strip()
+
+def is_admin_online(player_name: str, admin_names: list[str]) -> bool:
+    p = normalize_name(player_name)
+    for admin in admin_names:
+        a = normalize_name(admin)
+        if a == p:
+            return True
+        if a in p or p in a:
+            return True
+    return False
+
+_resolved_steam_names = {}
+_last_resolved = 0
+STEAM_RESOLVE_INTERVAL = 300
+
+def steam_to_64(sid: str) -> str | None:
+    try:
+        parts = sid.split(":")
+        if len(parts) != 3 or not parts[0].startswith("STEAM_"):
+            return None
+        y = int(parts[1])
+        z = int(parts[2])
+        return str(76561197960265728 + (z * 2) + y)
+    except (ValueError, IndexError):
+        return None
+
+def resolve_steam_names(steam_ids: list[str]) -> dict[str, str]:
+    global _resolved_steam_names, _last_resolved
+    now = time.time()
+    if now - _last_resolved < STEAM_RESOLVE_INTERVAL:
+        return _resolved_steam_names
+    result = {}
+    if not STEAM_API_KEY or not steam_ids:
+        return result
+    try:
+        steam64_list = []
+        for sid in steam_ids[:100]:
+            s64 = steam_to_64(sid)
+            if s64:
+                steam64_list.append(s64)
+        if steam64_list:
+            url = f"https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key={STEAM_API_KEY}&steamids={','.join(steam64_list)}"
+            resp = requests.get(url, timeout=5)
+            data = resp.json()
+            for player in data.get("response", {}).get("players", []):
+                result[player["steamid"]] = player.get("personaname", "")
+            _resolved_steam_names = result
+            _last_resolved = now
+    except Exception:
+        pass
+    return result
 
 def get_admin_list():
     possible_paths = [
@@ -41,7 +118,7 @@ def get_admin_list():
     for path in possible_paths:
         if os.path.exists(path):
             return parse_adminlist_file(path)
-    return []
+    return [], []
 
 async def get_server_info_with_admin():
     try:
@@ -57,7 +134,12 @@ async def get_server_info_with_admin():
             players = data.get("players", [])
             assets = data.get("assets", {})
             
-            admin_names = get_admin_list()
+            nick_admins, steam_admins = get_admin_list()
+            admin_names = list(nick_admins)
+            steam_names = resolve_steam_names(steam_admins)
+            for s64, name in steam_names.items():
+                if name:
+                    admin_names.append(name)
             admin_count = 0
             online_admins = []
             
@@ -65,7 +147,7 @@ async def get_server_info_with_admin():
                 player_name = html.unescape(player.get("name", "")).strip()
                 if player_name and not any(bot.lower() in player_name.lower() for bot in BOT_NAMES):
                     for admin_name in admin_names:
-                        if admin_name.lower() == player_name.lower():
+                        if is_admin_online(player_name, [admin_name]):
                             admin_count += 1
                             online_admins.append(admin_name)
                             break
@@ -128,14 +210,17 @@ async def get_server_info():
         info = a2s.info(address, timeout=3.0)
         players = a2s.players(address, timeout=2.0)
         
-        admin_names = get_admin_list()
+        nick_admins, steam_admins = get_admin_list()
+        admin_names = list(nick_admins)
+        steam_names = resolve_steam_names(steam_admins)
+        for s64, name in steam_names.items():
+            if name:
+                admin_names.append(name)
         admin_online = 0
         for player in players:
             if player.name.strip() and not any(bot.lower() in player.name.lower() for bot in BOT_NAMES):
-                for admin_name in admin_names:
-                    if admin_name.lower() == player.name.strip().lower():
-                        admin_online += 1
-                        break
+                if is_admin_online(player.name.strip(), admin_names):
+                    admin_online += 1
         
         return {
             "status": "success",

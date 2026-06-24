@@ -11,6 +11,7 @@ class User(Base):
     provider_id = Column(String(100), unique=True, index=True, nullable=False)
     email = Column(String(100), nullable=True)
     username = Column(String(100), nullable=False)
+    hashed_password = Column(String(255), nullable=True)
     avatar_url = Column(String(255), nullable=True)
     steam_id = Column(String(50), nullable=True)
     discord_id = Column(String(50), nullable=True)

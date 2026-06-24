@@ -5,7 +5,8 @@ import { Send, X, Minimize2, Server, AlertTriangle, Shield, User, Loader2 } from
 import { AuthContext } from '../context/AuthContext';
 import api from '../api';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; return `http://${window.location.hostname}:8001`; };
+const SOCKET_URL = getApiUrl();
 const BOT_NAMES = ['CSGO.ARXCS.COM', 'TS3.ARXCS.COM', 'IP: CSGO.ARXCS.COM'];
 
 const getStoredMessages = () => {

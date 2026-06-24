@@ -6,7 +6,8 @@ import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 import { ShoppingBag, ShoppingCart, Info, X, Crown } from 'lucide-react';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; return `http://${window.location.hostname}:8001`; };
+const SOCKET_URL = getApiUrl();
 
 export default function PremiumMarket({ liveChatRef }) {
   const { t } = useTranslation();
@@ -349,7 +350,7 @@ const handlePurchase = (e) => {
                   {!user?.discord_username && (
                     <button
                       type="button"
-                      onClick={() => window.location.href = `http://127.0.0.1:8000/discord/login?link_token=${localStorage.getItem('access_token')}`}
+                      onClick={() => window.location.href = `${getApiUrl()}/discord/login?link_token=${localStorage.getItem('access_token')}`}
                       className="whitespace-nowrap flex items-center px-4 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-colors shadow-lg"
                     >
                       {t('auto_fetch')}

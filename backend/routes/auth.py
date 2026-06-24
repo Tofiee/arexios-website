@@ -35,7 +35,7 @@ def login(user_credentials: schemas.UserLogin, db: Session = Depends(get_db)):
         (models.User.email == user_credentials.username_or_email)
     ).first()
     
-    if not user:
+    if not user or not user.hashed_password:
         raise HTTPException(status_code=403, detail="Invalid Credentials")
         
     if not security.verify_password(user_credentials.password, user.hashed_password):

@@ -347,7 +347,14 @@
     "activate": "Activate",
     "deactivate": "Deactivate",
     "edit_announcement": "Edit Announcement",
-    "subtitle_optional": "Subtitle (Optional)"
+    "subtitle_optional": "Subtitle (Optional)",
+    "page_title_home": "Home",
+    "page_title_stats": "Statistics",
+    "page_title_market": "Market",
+    "page_title_premium_market": "Premium Market",
+    "page_title_login": "Login",
+    "page_title_profile": "Profile",
+    "page_title_admin": "Admin Panel"
   },
   "active_session": "Active Session",
   "add_category_btn": "Add Category",

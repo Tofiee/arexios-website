@@ -4,7 +4,8 @@ import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 import { ShoppingCart, Crown, Shield, Star, CheckCircle, X, Info } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; return `http://${window.location.hostname}:8001`; };
+const API_URL = getApiUrl();
 
 export default function Market() {
   const { t } = useTranslation();

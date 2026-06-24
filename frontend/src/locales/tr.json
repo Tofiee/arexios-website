@@ -277,7 +277,14 @@
     "activate": "Aktif Et",
     "deactivate": "Pasif Et",
     "edit_announcement": "Duyuruyu Düzenle",
-    "subtitle_optional": "Alt başlık (Opsiyonel)"
+    "subtitle_optional": "Alt başlık (Opsiyonel)",
+    "page_title_home": "Ana Sayfa",
+    "page_title_stats": "İstatistikler",
+    "page_title_market": "Market",
+    "page_title_premium_market": "Premium Market",
+    "page_title_login": "Giriş Yap",
+    "page_title_profile": "Profil",
+    "page_title_admin": "Admin Paneli"
   },
   "active_session": "Aktif Oturum",
   "add_category_btn": "Kategori Ekle",

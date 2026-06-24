@@ -9,6 +9,7 @@ import requests
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
 VERCEL_URL = os.getenv("VERCEL_URL", "https://arexios-website.vercel.app")
+ADDITIONAL_ORIGINS = os.getenv("ADDITIONAL_ORIGINS", "")
 
 CS_IP = "95.173.173.24"
 CS_PORT = 27015
@@ -32,19 +33,23 @@ async def get_location_from_ip(ip_address):
     except Exception:
         return ip_address
 
+cors_origins = [
+    FRONTEND_URL,
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+    "http://127.0.0.1:5174",
+    "http://localhost:5174",
+    "http://45.74.247.48:5174",
+    "http://45.74.247.48:8001",
+    "https://arexios-website.vercel.app",
+    "https://*.vercel.app"
+]
+if ADDITIONAL_ORIGINS:
+    cors_origins.extend([o.strip() for o in ADDITIONAL_ORIGINS.split(",") if o.strip()])
+
 sio = socketio.AsyncServer(
     async_mode='asgi',
-    cors_allowed_origins=[
-        FRONTEND_URL,
-        "http://127.0.0.1:5173",
-        "http://localhost:5173",
-        "http://127.0.0.1:5174",
-        "http://localhost:5174",
-        "http://45.74.247.48:5174",
-        "http://45.74.247.48:8001",
-        "https://arexios-website.vercel.app",
-        "https://*.vercel.app"
-    ],
+    cors_allowed_origins=cors_origins,
     cors_credentials=True,
     ping_timeout=60,
     ping_interval=25

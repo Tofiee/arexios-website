@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
+ADDITIONAL_ORIGINS = os.getenv("ADDITIONAL_ORIGINS", "")
 
 Base.metadata.create_all(bind=engine)
 
@@ -29,9 +30,8 @@ origins = [
     FRONTEND_URL,
 ]
 
-additional_origins_env = os.getenv("ADDITIONAL_ORIGINS", "")
-if additional_origins_env:
-    origins.extend([o.strip() for o in additional_origins_env.split(",") if o.strip()])
+if ADDITIONAL_ORIGINS:
+    origins.extend([o.strip() for o in ADDITIONAL_ORIGINS.split(",") if o.strip()])
 
 app.add_middleware(
     CORSMiddleware,

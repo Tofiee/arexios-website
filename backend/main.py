@@ -29,6 +29,10 @@ origins = [
     FRONTEND_URL,
 ]
 
+additional_origins_env = os.getenv("ADDITIONAL_ORIGINS", "")
+if additional_origins_env:
+    origins.extend([o.strip() for o in additional_origins_env.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

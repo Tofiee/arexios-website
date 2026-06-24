@@ -4,9 +4,14 @@ import { initReactI18next } from 'react-i18next';
 import translationEN from './locales/en.json';
 import translationTR from './locales/tr.json';
 
+function mergeRootKeys(json) {
+  const { translation, ...rest } = json;
+  return { ...translation, ...rest };
+}
+
 const resources = {
-  en: { translation: translationEN.translation },
-  tr: { translation: translationTR.translation }
+  en: { translation: mergeRootKeys(translationEN) },
+  tr: { translation: mergeRootKeys(translationTR) }
 };
 
 i18n

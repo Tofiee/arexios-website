@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import { PushProvider, usePush } from '../context/PushContext';
 import api from '../api';
 
-const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; return `http://${window.location.hostname}:8001`; };
+const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; const h = window.location.hostname; if (h.includes('trycloudflare') || h.includes('ngrok')) return window.location.origin; return `http://${h}:8001`; };
 const SOCKET_URL = getApiUrl();
 
 function AdminPanelContent() {

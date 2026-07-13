@@ -6,7 +6,7 @@ import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 import { ShoppingBag, ShoppingCart, Info, X, Crown } from 'lucide-react';
 
-const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; return `http://${window.location.hostname}:8001`; };
+const getApiUrl = () => { const e = import.meta.env.VITE_API_URL; if (e && !e.includes('127.0.0.1') && !e.includes('localhost')) return e; const h = window.location.hostname; if (h.includes('trycloudflare') || h.includes('ngrok')) return window.location.origin; return `http://${h}:8001`; };
 const SOCKET_URL = getApiUrl();
 
 export default function PremiumMarket({ liveChatRef }) {

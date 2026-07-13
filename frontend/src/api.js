@@ -4,7 +4,7 @@ const getApiUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost')) return envUrl;
   const host = window.location.hostname;
-  if (host.includes('ngrok')) {
+  if (host.includes('trycloudflare') || host.includes('ngrok')) {
     return window.location.origin;
   }
   return `http://${host}:8001`;
